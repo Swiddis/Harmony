@@ -1,1 +1,5 @@
-// Routing entry point for room CRUD operations
+exports.index = (req, res) => {
+    res.render('index', {
+        'title': 'Home'
+    });
+};
