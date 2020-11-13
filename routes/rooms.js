@@ -1,0 +1,1 @@
+// Routing entry point for room CRUD operations
