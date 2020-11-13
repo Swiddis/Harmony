@@ -1,1 +1,9 @@
-// Routing entry point for user CRUD operations
+const createUser = () => {};
+
+const getUser = () => {};
+
+const updateUser = () => {};
+
+const deleteUser = () => {};
+
+const authenticateUser = () => {};
