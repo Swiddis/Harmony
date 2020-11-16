@@ -72,6 +72,7 @@ exports.getUser = (username, callback) => {
     });
 };
 
+//Simply updates the user and saves them to the db.
 const updateAndSaveUser = (us, user) => {
     if (user.avatar) {
         us.avatar = user.avatar;
@@ -104,6 +105,7 @@ const updateAndSaveUser = (us, user) => {
  */
 exports.updateUser = (user, callback) => {
     let username = user.username;
+    //Update the cached user.
     for (let us of user_cache) {
         if (us.username == username) {
             updateAndSaveUser(us, user);
@@ -112,6 +114,7 @@ exports.updateUser = (user, callback) => {
         }
     }
 
+    //Cache not found, update and push the update to the db.
     User.findOne({username}, (err, us) => {
         if (err) {
             console.error("Could not fetch user from db.");
@@ -150,4 +153,5 @@ exports.deleteUser = (username, callback) => {
 };
 
 exports.authenticateUser = () => {
+    //TODO Implement this.
 };
