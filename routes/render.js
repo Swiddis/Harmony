@@ -14,6 +14,6 @@ exports.login = (req, res) => {
     });
 }
 
-exports.checkAcces = (req, res) => {
+exports.checkAccess = (req, res) => {
 
 }

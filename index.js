@@ -18,8 +18,14 @@ var urlencodedParser = bodyParser.urlencoded({
 app.get('/', render.index);
 
 app.get("/login", render.login);
-app.post("/login", urlencodedParser, render.checkAcces);
+app.post("/login", urlencodedParser, render.checkAccess);
 
+app.post('/room', urlencodedParser, rooms.createRoom);
 app.get('/room/:room_id', rooms.getRoom);
+app.post('/room/:room_id', urlencodedParser, rooms.sendToRoom)
+
+app.post('/user', urlencodedParser, users.createUser);
+app.get('/user/:usermame', users.getUser);
+app.patch('/user/:username', urlencodedParser, user.updateUser);
 
 app.listen(3000);
