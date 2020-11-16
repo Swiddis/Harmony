@@ -1,6 +1,6 @@
 // User POST endpoint
 // Post to /user, accepts input in JSON format
-const createUser = () => {
+exports.createUser = () => {
     let user = {
         username: req.body.username,
         password: req.body.password,
@@ -29,7 +29,7 @@ const createUser = () => {
 
 // User GET API endpoint
 // Takes username as path variable, e.g. /user/john_doe
-const getUser = () => {
+exports.getUser = () => {
     let username = req.params.username;
     let response;
 
@@ -56,7 +56,7 @@ const getUser = () => {
 
 // User PATCH endpoint
 // Patch to /user/username
-const updateUser = (req, res) => {
+exports.updateUser = (req, res) => {
     let username = req.params.username;
     let updates = {
         avatar: req.body.avatar,
@@ -85,7 +85,7 @@ const updateUser = (req, res) => {
     res.json(response);
 };
 
-const deleteUser = () => {
+exports.deleteUser = () => {
     let user = req.params.username;
     let response;
     try {
@@ -108,6 +108,11 @@ const deleteUser = () => {
     res.json(response);
 };
 
-const authenticateUser = () => {
-    // TODO
+exports.authenticateUser = (req, res) => {
+    res.json({
+        'timestamp': new Date().toISOString(),
+        'status': 200,
+        'path': '/user/authenticate',
+        'authorities': ['USER', 'ADMIN']
+    });
 };

@@ -5,7 +5,7 @@
  * API is accessed at the /room path
  */
 
- const db = require('../db/roomdb');
+const db = require('../db/roomdb');
 
  // Room POST API endpoint
  // Post to /room, accepts input in JSON format

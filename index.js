@@ -3,6 +3,7 @@ const pug = require('pug')
 const path = require('path');
 const render = require('./routes/render');
 const rooms = require('./routes/rooms');
+const users = require('./routes/users');
 const bodyParser = require('body-parser');
 
 const app = express();
@@ -27,5 +28,6 @@ app.post('/room/:room_id', urlencodedParser, rooms.sendToRoom)
 app.post('/user', urlencodedParser, users.createUser);
 app.get('/user/:usermame', users.getUser);
 app.patch('/user/:username', urlencodedParser, user.updateUser);
+app.get('/user/authenticate', users.authenticateUser);
 
 app.listen(3000);
