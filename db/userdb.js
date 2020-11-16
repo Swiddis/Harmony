@@ -72,10 +72,81 @@ exports.getUser = (username, callback) => {
     });
 };
 
-exports.updateUser = (username, user) => {
+const updateAndSaveUser = (us, user) => {
+    if (user.avatar) {
+        us.avatar = user.avatar;
+    }
+
+    if (user.password) {
+        let salt = bcrypt.genSaltSync(10);
+        let hash = bcrypt.hashSync(user.password, salt);
+        user.password = hash;
+        us.password = user.password;
+    }
+
+    if (user.joined_rooms) {
+        us.joined_rooms = user.joined_rooms;
+    }
+
+    new User(us).save((err, user) => {
+        if (err) {
+            console.error("Could not update user '" + username + "'");
+            return;
+        }
+    });
 };
 
-exports.deleteUser = () => {
+/**
+ * Updates the user by username. The user passed in should contain a
+ * plain text password if it is going to be updated. This password will be hashed.
+ * @param user - The information to update the user with.
+ * @param callback - The method to callback
+ */
+exports.updateUser = (user, callback) => {
+    let username = user.username;
+    for (let us of user_cache) {
+        if (us.username == username) {
+            updateAndSaveUser(us, user);
+            callback(undefined, us);
+            return;
+        }
+    }
+
+    User.findOne({username}, (err, us) => {
+        if (err) {
+            console.error("Could not fetch user from db.");
+            callback(err);
+            return;
+        }
+        updateAndSaveUser(us, user);
+        callback(undefined, us);
+    });
+};
+
+/**
+ * Deletes the user by the given username
+ * @param username - The username to find and delete
+ */
+exports.deleteUser = (username, callback) => {
+    //Remove from cache
+    for (let i = 0; i < user_cache.length; i++) {
+        let us = user_cache[i];
+        if (us.username == username) {
+            user_cache.splice(i, 1);
+            break;
+        }
+    }
+
+    //Remove from db
+    User.deleteOne({username}, (err, user) => {
+        if (err) {
+            console.error("Could not delete user");
+            callback(err);
+            return;
+        }
+
+        callback(undefined, user);
+    });
 };
 
 exports.authenticateUser = () => {
