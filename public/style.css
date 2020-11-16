@@ -1,1 +1,90 @@
 /* Style */
+html {
+    background-color: rgba(239, 243, 243, 0.712);
+}
+
+body {
+    text-align: center;
+    padding: 20px;
+    height: fit-content;
+}
+
+/* navbar */
+nav {
+    border: 1px solid white;
+    display: flex;
+    background: rgb(121, 118, 115);
+    color: whitesmoke;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+li {
+    float: left;
+}
+
+li, a {
+    display: inline-block;
+    padding: 7px 9px;
+    font-size: large;
+    color: whitesmoke;
+}
+
+a:hover {
+    background-color: #658882;
+}
+
+/* login Form */
+#LoginPage {
+    width: 100%;
+    float: left;
+    padding-top: 75px;
+    justify-content: center;
+    display: flex;
+}
+
+#loginForm {
+    background-color: rgba(113, 119, 119, 0.788);
+    width: 50%;
+    height: auto;
+    position: absolute;
+    margin: 50px 36px;
+}
+
+#userName, #passcode {
+    padding: 12px 20px;
+    margin: 8px 0;
+    width: 100%;
+    box-sizing: border-box;
+    justify-content: center;
+    display: inline-flex;
+}
+
+#submitButton, #signUpButton {
+    padding: 12px 30px;
+    margin: auto;
+    width: 70%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+}
+#loginSubmit, #signUpHref {
+    margin: 8px 0;
+    border: thick;
+    cursor: pointer;
+}
+input {
+    width: 30%;
+    box-sizing : border-box;
+    height: 20px;
+    display: flex;
+}
+
+label {
+    padding: 0px 8px;
+}
