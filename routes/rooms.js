@@ -70,6 +70,7 @@ exports.getRoom = (req, res) => {
 exports.sendToRoom = (req, res) => {
     let room_id = req.params.room_id;
     let message = req.body.message;
+    let response;
     
     try {
         db.sendToRoom(room_id, message);

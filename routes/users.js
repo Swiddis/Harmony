@@ -5,6 +5,7 @@ const createUser = () => {
         username: req.body.username,
         password: req.body.password,
     };
+    let response;
 
     try {
         db.createUser(user);
@@ -63,6 +64,7 @@ const updateUser = (req, res) => {
         password: req.body.password,
         joined_rooms: req.body.joined_rooms
     };
+    let response;
     
     try {
         db.updateUser(username, updates);
@@ -77,14 +79,33 @@ const updateUser = (req, res) => {
             'timestamp': new Date().toISOString(),
             'status': 500,
             'error': err.message(),
-            'path': '/room'
+            'path': '/user'
         };
     }
     res.json(response);
 };
 
 const deleteUser = () => {
-    // TODO
+    let user = req.params.username;
+    let response;
+    try {
+        db.deleteUser(username);
+        response = {
+            'timestamp': new Date().toISOString(),
+            'status': 200,
+            'path': '/user'
+        };
+    } catch (err) {
+        res.status(500);
+        response = {
+            'timestamp': new Date().toISOString(),
+            'status': 500,
+            'error': err.message(),
+            'path': '/user'
+        };
+    }
+
+    res.json(response);
 };
 
 const authenticateUser = () => {
