@@ -1,9 +1,10 @@
 const express = require('express');
 const pug = require('pug')
 const path = require('path');
+const render = require('./routes/render');
+const rooms = require('./routes/rooms');
+const users = require('./routes/users');
 const bodyParser = require('body-parser');
-const userdb = require('./db/userdb');
-const rendering = require('./routes/render');
 
 const app = express();
 
@@ -11,38 +12,22 @@ app.set('view engine', 'pug');
 app.set('views', __dirname + '/views');
 app.use(express.static(path.join(__dirname, '/public')));
 
-app.get('/', rendering.index);
+var urlencodedParser = bodyParser.urlencoded({
+    extended: true
+})
 
-//The following methods are really just test end-points. Modify and export to other classes at will.
-app.post('/createuser', bodyParser.json(), (req, res) => {
-    userdb.createUser(req.body, (err, user) => {
-        if (err) {
-            res.status(400).json({err});
-            return;
-        }
-        res.status(204).send();
-    });
-});
+app.get('/', render.index);
 
-app.put('/updateuser', bodyParser.json(), (req, res) => {
-    userdb.updateUser(req.body, (err, user) => {
-        if (err) {
-            res.status(400).json({err});
-            return;
-        }
+app.get("/login", render.login);
+app.post("/login", urlencodedParser, render.checkAccess);
 
-        res.status(204).send();
-    });
-});
+app.post('/room', urlencodedParser, rooms.createRoom);
+app.get('/room/:room_id', rooms.getRoom);
+app.post('/room/:room_id', urlencodedParser, rooms.sendToRoom)
 
-app.delete('/deleteuser/:username', (req, res) => {
-    userdb.deleteUser(req.params.username, (err, user) => {
-        if(err) {
-            res.status(500).send(err);
-        } else {
-            res.status(204).send();
-        }
-    });
-});
+app.post('/user', urlencodedParser, users.createUser);
+app.get('/user/:usermame', users.getUser);
+app.patch('/user/:username', urlencodedParser, users.updateUser);
+app.get('/user/authenticate', users.authenticateUser);
 
 app.listen(3000);
