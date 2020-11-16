@@ -16,21 +16,26 @@ exports.createRoom = (req, res) => {
         password: req.body.password,
         nicknames: req.body.nicknames
     };
+    let response;
 
     try {
         db.createRoom(room);
-        res.status(204);
-        res.send();
+        response = {
+            'timestamp': new Date().toISOString(),
+            'status': 200,
+            'path': '/room'
+        };
     } catch (err) {
+        res.status(500);
         response = {
             'timestamp': new Date().toISOString(),
             'status': 500,
             'error': err.message(),
             'path': '/room'
         };
-        res.status(500);
-        res.json(response);
     }
+
+    res.json(response);
 };
 
 // Room GET API endpoint
@@ -48,13 +53,13 @@ exports.getRoom = (req, res) => {
             'path': '/room/' + encodeURIComponent(room.room_id)
         };
     } catch (err) {
+        res.status(500);
         response = {
             'timestamp': new Date().toISOString(),
             'status': 500,
             'error': err.message(),
             'path': '/room'
         };
-        res.status(500);
     }
 
     res.json(response);
@@ -68,18 +73,21 @@ exports.sendToRoom = (req, res) => {
     
     try {
         db.sendToRoom(room_id, message);
-        res.status(204);
-        res.send();
+        response = {
+            'timestamp': new Date().toISOString(),
+            'status': 200,
+            'path': '/room'
+        };
     } catch (err) {
+        res.status(500);
         response = {
             'timestamp': new Date().toISOString(),
             'status': 500,
             'error': err.message(),
             'path': '/room'
         };
-        res.status(500);
-        res.json(response);
     }
+    res.json(response);
 };
 
 exports.authorizeRoomAccess = (req, res) => {
