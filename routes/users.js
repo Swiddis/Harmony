@@ -1,57 +1,20 @@
 // User POST endpoint
 // Post to /user, accepts input in JSON format
-exports.createUser = () => {
+exports.createUser = (req, res) => {
     let user = {
         username: req.body.username,
         password: req.body.password,
     };
-    let response;
 
-    try {
-        db.createUser(user);
-        res.status(201);
-        response = {
-            'timestamp': new Date().toISOString(),
-            'status': 201,
-            'path': '/user'
-        };
-    } catch (err) {
-        res.status(500);
-        response = {
-            'timestamp': new Date().toISOString(),
-            'status': 500,
-            'error': err.message(),
-            'path': '/user'
-        };
-    }
-    res.json(response);
+    db.createUser(user, buildResponse);
 };
 
 // User GET API endpoint
 // Takes username as path variable, e.g. /user/john_doe
-exports.getUser = () => {
+exports.getUser = (req, res) => {
     let username = req.params.username;
-    let response;
 
-    try {
-        let user = db.getUser(username);
-        response = {
-            'timestamp': new Date().toISOString(),
-            'status': 200,
-            'data': user,
-            'path': '/user/' + encodeURIComponent(user.username)
-        };
-    } catch (err) {
-        res.status(500);
-        response = {
-            'timestamp': new Date().toISOString(),
-            'status': 500,
-            'error': err.message(),
-            'path': '/user'
-        };
-    }
-
-    res.json(response);
+    db.getUser(username, buildResponse);
 };
 
 // User PATCH endpoint
@@ -64,55 +27,56 @@ exports.updateUser = (req, res) => {
         password: req.body.password,
         joined_rooms: req.body.joined_rooms
     };
-    let response;
+
+    db.updateUser(username, updates, buildResponse);
+};
+
+// User DELETE endpoint
+// Delete at /user/username
+exports.deleteUser = (req, res) => {
+    let username = req.params.username;
     
-    try {
-        db.updateUser(username, updates);
-        response = {
-            'timestamp': new Date().toISOString(),
-            'status': 200,
-            'path': '/user'
-        };
-    } catch (err) {
-        res.status(500);
-        response = {
-            'timestamp': new Date().toISOString(),
-            'status': 500,
-            'error': err.message(),
-            'path': '/user'
-        };
-    }
-    res.json(response);
+    db.deleteUser(username, buildResponse);
 };
 
-exports.deleteUser = () => {
-    let user = req.params.username;
-    let response;
-    try {
-        db.deleteUser(username);
-        response = {
-            'timestamp': new Date().toISOString(),
-            'status': 200,
-            'path': '/user'
-        };
-    } catch (err) {
-        res.status(500);
-        response = {
-            'timestamp': new Date().toISOString(),
-            'status': 500,
-            'error': err.message(),
-            'path': '/user'
-        };
-    }
-
-    res.json(response);
-};
-
+// User authentication endpoint
+// Authenticate /user/authenticate
 exports.authenticateUser = (req, res) => {
+    // TODO, utilize database
     res.json({
         'timestamp': new Date().toISOString(),
         'status': 200,
         'path': '/user/authenticate',
         'authorities': ['USER', 'ADMIN']
     });
+};
+
+const buildResponse = (err, user) => {
+    let response;
+    let user_path = user ? '/' + encodeURIComponent(user.username) : '';
+
+    if (err) {
+        response = {
+            'timestamp': new Date().toISOString(),
+            'path': '/user' + user_path,
+            'error': err.message()
+        }
+        if (err.message() == "User not found") {
+            response.status = 404;
+        } else if (err.message == "User already exists") {
+            response.status = 403;
+        }else {
+            response.status = 500;
+        }
+    } else {
+        response = {
+            'timestamp': new Date().toISOString(),
+            'status': 200,
+            'path': '/user' + user_path
+        }
+        if (user) response.data = user;
+    }
+
+    res.status(response.status);
+    res.json(response);
 };
