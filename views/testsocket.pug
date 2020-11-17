@@ -2,6 +2,13 @@ extends navBar
 
 block head
     script(src="/scripts/socket.io.js")
-    script(src="/scripts/socketmanager.js")
 
 block content
+    div(id="messages")
+    form(id="setUsername")
+        input(type="text" id="username")
+        input(type="submit" value="Set Username")
+    form(id="sendMessage")
+        textarea(id="message")
+        input(type="submit" value="Submit")
+    script(src="/scripts/socketmanager.js")

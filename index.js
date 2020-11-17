@@ -14,16 +14,23 @@ io.on('connection', (socket) => {
     console.log("Received connection. Waiting for credentials.");
 
     socket.on('username', (username) => {
+        socket.username = username;
         console.log(username + " connected");
+        io.emit('message', {username, message: "connected!"});
     });
 
-    socket.on('disconnect', (username) => {
-        console.log("Received disconnect request for user " + username);
+    socket.on('disconnect', () => {
+        console.log("Received disconnect request for user " + socket.username);
+        if (!socket.username || socket.username == "") {
+            return;
+        }
+        io.emit('message', {username: socket.username, message: "disconnected."});
     });
 
     socket.on('message', (message) => {
         console.log("Received message: ");
         console.log(message);
+        io.emit('message', {username: socket.username, message: message.message});
     });
 });
 
