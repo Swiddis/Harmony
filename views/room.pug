@@ -1,0 +1,23 @@
+doctype
+html
+    head
+        link(rel="stylesheet", href="/room.css")
+    body
+        div(id="container")
+            div(id="room_list")
+                //Room Placeholders
+                span(class="room" href="")
+                span(class="room" href="")
+                span(class="room" href="")
+                span(class="room" href="")
+                span(class="room" href="")
+            div(id="container2")
+                div(id="top_container")
+                    div(id="username") Ratel
+                    div(id="space")
+                    div(id="logout")
+                        a(href="/logout") Logout
+                div(id="messages")
+                div(id="message_container")
+                    textarea(id="my_message" placeholder="Message")
+                    input(type="submit" id="sendBtn" value="SEND")
