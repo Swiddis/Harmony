@@ -49,13 +49,6 @@ exports.authenticateUser = (req, res) => {
     let password = req.body.password;
 
     db.authenticateUser(username, password, buildAuthResponse);
-
-    res.json({
-        'timestamp': new Date().toISOString(),
-        'status': 200,
-        'path': '/user/authenticate',
-        'authorities': ['USER', 'ADMIN']
-    });
 };
 
 const buildResponse = (err, user) => {
