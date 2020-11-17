@@ -23,11 +23,13 @@ exports.createRoom = (room, callback) => {
             return;
         }
         if (room) {
-            callback("Room already exists", rm);
+            callback(new Error("Room already exists"), rm);
         } else {
-            let salt = bcrypt.genSaltSync(10);
-            let hash = bcrypt.hashSync(room.password, salt);
-            room.password = hash;
+            if (room.password) {
+                let salt = bcrypt.genSaltSync(10);
+                let hash = bcrypt.hashSync(room.password, salt);
+                room.password = hash;
+            }
 
             new Room(room).save((err, rm) => {
                 if (err) {
@@ -63,14 +65,14 @@ exports.getRoom = (id, callback) => {
         if (err) { //This is only thrown if there is a problem finding a room.
             console.error("Could not load room by id '" + room + "'");
             console.error(err);
-            callback(err);
+            callback(err, {room_id});
             return;
         }
         if (room) {
             room_cache.push(room);
             callback(undefined, room);
         } else {
-            callback("Room not found");
+            callback(new Error("Room not found"), {room_id});
         }
     });
 };
