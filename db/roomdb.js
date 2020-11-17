@@ -65,14 +65,14 @@ exports.getRoom = (id, callback) => {
         if (err) { //This is only thrown if there is a problem finding a room.
             console.error("Could not load room by id '" + room + "'");
             console.error(err);
-            callback(err, {room_id});
+            callback(err, {room_id: id});
             return;
         }
         if (room) {
             room_cache.push(room);
             callback(undefined, room);
         } else {
-            callback(new Error("Room not found"), {room_id});
+            callback(new Error("Room not found"), {room_id: id});
         }
     });
 };
