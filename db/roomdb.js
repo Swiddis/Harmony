@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const {Room} = require('../conf/mongo_conf');
+const {Room, Message} = require('../conf/mongo_conf');
 let room_cache = [];
 
 /**
@@ -74,6 +74,44 @@ exports.getRoom = (id, callback) => {
         } else {
             callback(new Error("Room not found"), {room_id});
         }
+    });
+};
+
+/**
+ * Gets messages as an array for the specified room (newest first).
+ * Callback structured as callback(err, messages)
+ * @param room - The room id to find messages for
+ * @param callback - The callback function.
+ */
+exports.getMessages = (room, callback) => {
+    Message.find({room}, null, {sort: {date: -1}}, (err, messages) => {
+        if (err) {
+            console.error("Could not find messages for room '" + room + "'");
+            console.error(err);
+            callback(err);
+            return;
+        }
+        callback(undefined, messages);
+    });
+};
+
+/**
+ * Message should be a fully formatted message (ie room, content, sender, and is_file all set. Server will set the timestamp.)
+ * The room is derived from the message object itself.
+ * @param message - The fully formatted message to send.
+ * @param callback - The callback function to call upon success/failure
+ */
+exports.sendMessage = (message, callback) => {
+    let room_id = message.room;
+    new Message(message).save((err, message) => {
+        if (err) {
+            console.error("Could not save message to the database!");
+            console.error(err);
+            callback(err);
+            return;
+        }
+        console.log("Message sent to " + room_id + " saved to the database.");
+        callback(undefined, message);
     });
 };
 
