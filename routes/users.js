@@ -26,7 +26,7 @@ exports.updateUser = (req, res) => {
     let username = req.params.username;
     let updates = {
         avatar: req.body.avatar,
-        username: req.body.uesrname,
+        username: req.body.username,
         password: req.body.password,
         joined_rooms: req.body.joined_rooms
     };
