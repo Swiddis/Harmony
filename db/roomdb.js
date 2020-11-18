@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
-const {Room, Message} = require('../conf/mongo_conf');
+const {User, Room, Message} = require('../conf/mongo_conf');
+const userdb = require('./userdb');
 let room_cache = [];
 
 /**
@@ -116,11 +117,50 @@ exports.sendMessage = (message, callback) => {
     });
 };
 
-exports.authorizeRoomAccess = () => {
+/**
+ * Attempts to authorize the user for the given room by password.
+ * @param room_id - The room_id to authorize to.
+ * @param password - The plain text password to check against the database.
+ * @param callback - Callback formatted as callback(err, success) where success is a boolean.
+ */
+exports.authorizeRoomAccess = (username, room_id, password, callback) => {
     /*
-    This will be the method that assigns the room to the user's
-    list of joined rooms?
+    Maybe move this to userdb.js?
+    UNTESTED!
      */
+    userdb.getUser(username, (err, user) => {
+        if (err) {
+            callback(err, false);
+            return;
+        }
+
+        if (!user) { //The user has to exist!
+            callback(new Error("User not found"), false);
+            return;
+        }
+
+        this.getRoom(room_id, (err, room) => {
+            if (err) {
+                callback(err, false);
+                return;
+            }
+
+            if (!room) {
+                callback(new Error("Room not found"), false);
+                return;
+            }
+
+            if (!room.password || bcrypt.compareSync(password, room.password)) {
+                //Authenticated!
+                user.joined_rooms.push(room.room_id);
+                callback(undefined, true);
+                new User(user).save();
+            } else {
+                //Not authenticated.
+                callback(new Error("Invalid credentials"), false);
+            }
+        });
+    });
 };
 
 exports.establishUserDMs = (user1, user2) => {

@@ -159,7 +159,7 @@ exports.deleteUser = (username, callback) => {
  * @param callback - The callback (ie callback(err, user))
  */
 exports.authenticateUser = (username, password, callback) => {
-    getUser(username, (err, user) => {
+    this.getUser(username, (err, user) => {
         if (err) {
             console.error("Error authenticating user '" + username + "':");
             console.error(err);
