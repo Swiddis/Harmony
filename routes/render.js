@@ -18,6 +18,15 @@ exports.login = (req, res) => {
     });
 }
 
+exports.rooms = (req, res) => {
+    User.find((err, user) => {
+        res.render("Room", {
+            'title': "Room",
+            users: user
+        })
+    })
+}
+
 exports.checkAccess = (req, res) => {
     if(req.body.username == "" || req.body.password == null) {
         res.redirect("/login");
@@ -38,6 +47,16 @@ exports.checkAccess = (req, res) => {
             res.redirect("/room");
         } else {
             res.redirect("/login");
+        }
+    });
+}
+
+exports.logout = (req, res) => {
+    req.session.destroy(err => {
+        if(err) {
+            console.log(err);
+        } else {
+            res.redirect("/");
         }
     });
 }
