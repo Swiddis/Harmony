@@ -18,6 +18,33 @@ html
                     div(id="logout")
                         a(href="/logout") Logout
                 div(id="messages")
-                div(id="message_container")
-                    textarea(id="my_message" placeholder="Message")
+                    //Message Placeholders
+                    span(class="message_box")
+                        span(class="avatar")
+                        span(class="name") Person 1:
+                        span(class="message") Hello World!
+                    span(class="message_box")
+                        span(class="avatar")
+                        span(class="name") Person 2:
+                        span(class="message") Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam posuere ex mi, condimentum bibendum sapien sagittis quis. Sed dapibus pharetra scelerisque. In sit amet pellentesque ipsum. Maecenas ultricies ut justo vel viverra. Ut in efficitur dui, vel consequat erat. In hac habitasse platea dictumst. Nam vel odio magna. Duis ut fermentum tellus, sed sollicitudin tellus. Suspendisse potenti. Donec elementum volutpat lectus in gravida.
+                    span(class="message_box")
+                        span(class="avatar")
+                        span(class="name") Person 1:
+                        span(class="message") Maecenas et enim quis ipsum cursus fermentum. Curabitur luctus porttitor mattis. Morbi convallis elit dictum diam tristique, in placerat metus hendrerit. Ut id dolor laoreet nunc volutpat condimentum ac ac sem. Phasellus hendrerit dictum purus, at viverra augue sagittis sit amet. Pellentesque mauris mauris, eleifend non ultrices ac, rutrum a tellus. Cras eget libero in metus lacinia finibus. Ut facilisis non eros vel tristique.
+                    span(class="message_box")
+                        span(class="avatar")
+                        span(class="name") Person 2:
+                        span(class="message") Proin lorem leo, imperdiet eu metus in, aliquet interdum elit. Nulla vitae nunc erat. Morbi et tristique neque. Curabitur laoreet justo elementum tellus feugiat rhoncus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Proin vulputate urna id diam semper pulvinar. Pellentesque finibus nisl ultrices luctus consequat. Fusce eu semper nunc, maximus vehicula sapien. In ipsum massa, gravida non consequat at, iaculis sit amet metus.
+                    span(class="message_box")
+                        span(class="avatar")
+                        span(class="name") Person 2:
+                        span(class="message") In orci est, egestas nec varius eget, interdum vel nulla. Nullam blandit ligula in est feugiat dignissim. Curabitur porttitor eget dolor vel euismod. Vivamus vitae lectus nibh. Sed posuere sapien sed tortor pellentesque, sit amet suscipit neque tempor. Donec sit amet semper odio, convallis eleifend lectus. Vivamus rhoncus velit ac magna malesuada, id efficitur ex pulvinar. Donec viverra laoreet vehicula. Morbi rutrum diam non nisl iaculis commodo id vel justo. Nunc id cursus neque, nec porttitor nisl. Phasellus id pellentesque elit. Nulla nec nulla vel libero luctus suscipit vitae a lectus. Proin pharetra faucibus quam ac semper.
+                    span(class="message_box")
+                        span(class="avatar")
+                        span(class="name") Person 1:
+                        span(class="message") This is the end of the test placeholders :)
+                    //span(class="message_box") Person2: Hello other Human
+                //div(id="message_container")
+                form(id="message_container")
+                    textarea(id="my_message" placeholder="Message" rows="1")
                     input(type="submit" id="sendBtn" value="SEND")
