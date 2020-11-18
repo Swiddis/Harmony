@@ -16,12 +16,13 @@ function Client(io, socket) {
 
     this.broadcastMessage = (message) => {
         let db_message = {
-            room: message.room_id,
+            room_id: message.room_id,
             content: message.message,
             sender: message.username,
             is_file: false,
             timestamp: new Date()
         }
+        //We might need to actually call this on the rooms.js script if needed.
         db.sendMessage(db_message, (err, msg) => {});
 
         io.emit('message', {username: socket.username, message: message.message});
