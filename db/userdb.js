@@ -152,6 +152,33 @@ exports.deleteUser = (username, callback) => {
     });
 };
 
-exports.authenticateUser = () => {
-    //TODO Implement this.
+/**
+ * Test authentication with stored password in the database.
+ * @param username - The username to check
+ * @param password - The plain-text password to check
+ * @param callback - The callback (ie callback(err, user))
+ */
+exports.authenticateUser = (username, password, callback) => {
+    getUser(username, (err, user) => {
+        if (err) {
+            console.error("Error authenticating user '" + username + "':");
+            console.error(err);
+            callback(err);
+            return;
+        }
+
+        if (user) {
+            if (bcrypt.compareSync(password, user.password)) {
+                //Authenticated!
+                //TODO Store and send back list of authorities
+                callback(undefined, ["USER", "ADMIN"]);
+            } else {
+                //Not authenticated.
+                callback(new Error("Invalid credentials"));
+            }
+        } else {
+            callback(new Error("User not found"));
+        }
+
+    });
 };
