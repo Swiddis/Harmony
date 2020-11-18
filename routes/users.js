@@ -42,11 +42,12 @@ exports.deleteUser = (req, res) => {
     db.deleteUser(username, buildResponse);
 };
 
-// User authentication endpoint
+// User GET authentication endpoint
 // Authenticate /user/authenticate
 exports.authenticateUser = (req, res) => {
-    let username = req.body.username;
-    let password = req.body.password;
+    let auth = btoa(req.headers.Authorization.substring(6)).split(':'); // Remove leading 'Basic ' and convert from base64
+    let username = auth[0];
+    let password = auth.slice(1).join(':');
 
     db.authenticateUser(username, password, buildAuthResponse);
 };
