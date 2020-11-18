@@ -88,3 +88,29 @@ input {
 label {
     padding: 0px 8px;
 }
+
+/*Create Account Form*/
+#createAccount {
+    background-color: rgba(113, 119, 119, 0.788);
+    width: 50%;
+    height: auto;
+    position: absolute;
+    margin: 50px 36px;
+}
+
+#username, #password {
+    padding: 12px 20px;
+    margin: 8px 0;
+    width: 60%;
+    box-sizing: border-box;
+    justify-content: center;
+    display: inline-flex;
+}
+
+#createSubmit{
+    cursor: pointer;
+    margin: 10px 0;
+    justify-content: center;
+    display: inline-flex;
+}
+
