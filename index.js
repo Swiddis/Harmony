@@ -50,7 +50,8 @@ app.post("/login", urlencodedParser, render.checkAccess);
 
 app.post('/room', urlencodedParser, rooms.createRoom);
 app.get('/room/:room_id', rooms.getRoom);
-app.post('/room/:room_id', urlencodedParser, rooms.sendToRoom)
+app.post('/room/:room_id', urlencodedParser, rooms.sendToRoom);
+app.get('/room/authorize/:room_id', rooms.authorizeRoomAccess);
 
 app.post('/user', urlencodedParser, users.createUser);
 app.get('/user/:usermame', users.getUser);

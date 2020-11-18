@@ -41,7 +41,12 @@ exports.sendToRoom = (req, res) => {
 };
 
 exports.authorizeRoomAccess = (req, res) => {
-    // TODO
+    let auth = btoa(req.headers.Authorization.substring(6)).split(':'); // Remove leading 'Basic ' and convert from base64
+    let username = auth[0];
+    let password = auth.slice(1).join(':');
+    let room_id = req.params.room_id;
+
+    db.authorizeRoomAccess(username, password, room_id, buildAuthResponse);
 };
 
 exports.establishUserDMs = (req, res) => {
@@ -77,3 +82,32 @@ const buildResponse = (err, room) => {
     res.status(response.status);
     res.json(response);
 };
+
+const buildAuthResponse = (err, authorities) => {
+    let response;
+
+    if (err) {
+        response = {
+            'timestamp': new Date().toISOString(),
+            'path': '/room/authorize',
+            'error': err.message()
+        }
+        if (err.message() == "Room not found") {
+            response.status = 404;
+        } else if (err.message() == "Invalid credentials") {
+            response.status = 401;
+        } else {
+            response.status = 500;
+        }
+    } else {
+        response = {
+            'timestamp': new Date().toISOString(),
+            'status': 200,
+            'path': '/room/authorize',
+            'authorities': authorities
+        }
+    }
+
+    res.status(response.status);
+    res.json(response);
+}
