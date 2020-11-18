@@ -62,7 +62,8 @@ app.use(
 
 app.get('/', render.index);
 
-app.get("/room", checkAuth, render.rooms)
+app.get("/room", render.rooms)
+//app.get("/room", checkAuth, render.rooms)
 
 app.get("/login", render.login);
 app.post("/login", urlencodedParser, render.checkAccess);
