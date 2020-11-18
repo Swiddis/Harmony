@@ -34,7 +34,7 @@ form.onsubmit = () => {
 socket.on('message', msg => {
     console.log(msg);
     messages.innerHTML += "<span class='message_box'>" + 
-                                "<span class='avatar'></span>'" + 
+                                "<span class='avatar'></span>" +
                                 "<span class='name'>" + msg.username +  "</span>" + 
                                 "<span class='message'>" + msg.message + "</span>" + 
                             "</span>";
