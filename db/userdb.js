@@ -23,7 +23,7 @@ exports.createUser = (user_obj, callback) => {
             return;
         }
         if (user) {
-            callback(res, new Error("User already exists"), user);
+            callback(new Error("User already exists"), user);
         } else {
             console.log("Didn't have any errors, but didn't find user.");
             let salt = bcrypt.genSaltSync(10);
