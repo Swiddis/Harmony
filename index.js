@@ -47,6 +47,9 @@ app.get("/room", render.rooms)
 app.get("/login", render.login);
 app.post("/login", urlencodedParser, render.checkAccess);
 
+app.get("/signUp", render.createAccount);
+app.post("/signUp", urlencodedParser, render.checkAccess);
+
 app.post('/room', urlencodedParser, rooms.createRoom);
 app.get('/room/:room_id', rooms.getRoom);
 app.post('/room/:room_id', urlencodedParser, rooms.sendToRoom)
