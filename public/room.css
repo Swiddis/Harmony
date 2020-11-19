@@ -2,14 +2,15 @@
 body{
     margin: 0;
     overflow: hidden;
+    background-color: #36393f;
 }
 
 #container{
     display: flex;
     margin: 0;
-    background-color: #36393f;
     width: 100%;
     height: 45em;
+    position: absolute;
 }
 
 #container2{
@@ -31,14 +32,17 @@ body{
 .room{
     background-color:white;
     border: 2px solid black;
-    border-radius: 10px;
+    border-radius: 30px;
     height: 3em;
     width: 3em;
     margin: .75em;
     cursor: pointer;
+    transition: border-radius 0.2s;
 }
 .room:hover{
     background-color:gray;
+    border-radius: 15px;
+    transition: border-radius 0.2s;
 }
 
 
@@ -71,21 +75,61 @@ body{
 #messages{
     /*background-color: gray;*/
     flex-grow: 30;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+
+.message_box{
+    color: #fff;
+    margin: 1em 2em;
+    background-color: #222;
+    width: 80%;
+    padding: 1em;
+}
+
+.avatar{
+    background-color: #fff;
+    padding: 1.5em;
+    margin: 0 1em;
+    border: 2px solid #000;
+    border-radius: 100px;
+    display: inline-flex;
+    float: left;
+}
+
+.message_name{
+    padding: 2em;
+    border-bottom: 2px solid white;
+    display: block;
+    font-size: 20px;
+}
+
+.message{
+    display: block;
+    font-size: 18px;
 }
 
 /* Send Message Display*/
 #message_container{
     background-color: #3f444b;
     flex-grow: 1;
-    padding: 0;
+    padding: 1em;
     display: flex;
+}
+
+form{
+    margin: 0;
+    padding: 0;
+    
 }
 textarea{
     border: 2px solid black;
     border-radius: 8px;
     resize: none;
-    width: 95%;
+    width: 90%;
     height: 90%;
+    margin: 0 1em;
     padding: 5px 10px 0;
     font-size: 18px;
 }
@@ -100,3 +144,24 @@ input[type=submit] {
 input[type=submit]:hover {
  background-color: gray;
 }
+
+
+/* Scrollbar (Note is only supported on: (Chrome, Edge, Safari and Opera)*/
+::-webkit-scrollbar {
+    width: 12px;
+  }
+  
+  /* Track 
+  ::-webkit-scrollbar-track {
+  }*/
+   
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background-color: #222; 
+    border-radius: 10px;
+  }
+  
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #111; 
+  }

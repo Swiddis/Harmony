@@ -34,7 +34,7 @@ exports.sendToRoom = (req, res) => {
     let room_id = req.params.room_id;
     let message = req.body.message;
     
-    db.sendToRoom(room_id, message, buildResponse);
+    db.sendMessage({room_id, message}, buildResponse);
 };
 
 exports.authorizeRoomAccess = (req, res) => {
@@ -47,12 +47,12 @@ exports.establishUserDMs = (req, res) => {
 
 const buildResponse = (err, room) => {
     let response;
-    let room_path = room ? '/' + encodeURIComponent(room.room_id) : '';
+    let room_path = '/room' + (room ? '/' + encodeURIComponent(room.room_id) : '');
 
     if (err) {
         response = {
             'timestamp': new Date().toISOString(),
-            'path': '/room' + room_path,
+            'path': room_path,
             'error': err.message()
         }
         if (err.message() == "Room not found") {
@@ -66,7 +66,7 @@ const buildResponse = (err, room) => {
         response = {
             'timestamp': new Date().toISOString(),
             'status': 200,
-            'path': '/room' + room_path
+            'path': room_path
         }
         if (room) response.data = room;
     }

@@ -1,0 +1,20 @@
+extends navBar
+
+block content
+    title=title
+    
+
+    form(id="createAccount" action="/signUp" method="post")
+        p 
+        |Username: 
+        br
+        input(type="text", name="userName", id="username")
+        br
+        br
+        p 
+        |Password: 
+        br
+        input(type="password", name="password", id="password")
+        br
+        br
+        input(type="submit", value="Sign Up", id="createSubmit")

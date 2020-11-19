@@ -1,9 +1,11 @@
 const socket = io.connect(document.location.host);
 const messages = document.getElementById("messages");
-const form = document.getElementById("sendMessage");
-const messageBox = document.getElementById("message");
+const form = document.getElementById("message_container");
+const messageBox = document.getElementById("my_message");
 const setUsername = document.getElementById("setUsername");
 const username = document.getElementById("username");
+
+const usernameText = document.getElementById("usernameText");
 
 setUsername.onsubmit = () => {
     if(username.value == "") {
@@ -14,6 +16,7 @@ setUsername.onsubmit = () => {
     console.log("Setting username");
     socket.emit('username', username.value);
     alert("Username set!");
+    usernameText.innerHTML = username.value;
     return false;
 };
 
@@ -30,5 +33,9 @@ form.onsubmit = () => {
 
 socket.on('message', msg => {
     console.log(msg);
-    messages.innerHTML += "<div class='message'>" + msg.username + ": " + msg.message + "</div>";
+    messages.innerHTML += "<span class='message_box'>" + 
+                                "<span class='avatar'></span>'" + 
+                                "<span class='name'>" + msg.username +  "</span>" + 
+                                "<span class='message'>" + msg.message + "</span>" + 
+                            "</span>";
 });
