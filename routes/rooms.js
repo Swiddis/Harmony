@@ -10,7 +10,6 @@ const db = require('../db/roomdb');
  // Room POST API endpoint
  // Post to /room, accepts input in JSON format
 exports.createRoom = (req, res) => {
-    let currMethod = 'createRoom';
     let room = {
         room_id: req.body.id,
         room_title: req.body.title,
@@ -24,7 +23,6 @@ exports.createRoom = (req, res) => {
 // Room GET API endpoint
 // Takes room ID as path variable, e.g. /room/public
 exports.getRoom = (req, res) => {
-    let currMethod = 'getRoom';
     let room_id = req.params.room_id;
 
     db.getRoom(room_id, buildResponse);
@@ -33,7 +31,6 @@ exports.getRoom = (req, res) => {
 // Room messaging POST endpoint
 // Post to /room/room_id
 exports.sendToRoom = (req, res) => {
-    let currMethod = 'sendToRoom';
     let room_id = req.params.room_id;
     let message = req.body.message;
     
