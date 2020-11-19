@@ -56,6 +56,9 @@ app.get('/user/:usermame', users.getUser);
 app.patch('/user/:username', urlencodedParser, users.updateUser);
 app.get('/user/authenticate', users.authenticateUser);
 
+app.get("/signup", render.signUp);
+app.post("/signUp", urlencodedParser, users.createUser);
+
 //TODO Development purposes. Will be removed for prod.
 app.get('/testsocket', (req, res) => {
     res.render('testsocket')

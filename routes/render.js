@@ -18,6 +18,13 @@ exports.login = (req, res) => {
     });
 }
 
+exports.signUp = (req, res) => {
+    res.render("create", {
+        title: "SignUp",
+        config: config
+    });
+}
+
 exports.rooms = (req, res) => {
     User.find((err, user) => {
         res.render("Room", {
