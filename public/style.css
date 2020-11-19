@@ -26,6 +26,8 @@ ul {
 
 li {
     float: left;
+    margin-top: 16px;
+
 }
 
 li, a {
@@ -43,7 +45,7 @@ a:hover {
 #LoginPage {
     width: 100%;
     float: left;
-    padding-top: 75px;
+    padding-top: 0px;
     justify-content: center;
     display: flex;
 }
@@ -73,10 +75,10 @@ a:hover {
     display: flex;
     justify-content: center;
 }
-#loginSubmit, #signUpHref {
-    margin: 8px 0;
-    border: thick;
+#loginSubmit {
+    margin: 10px 0;
     cursor: pointer;
+    justify-content: center;
 }
 input {
     width: 30%;
@@ -90,6 +92,14 @@ label {
 }
 
 /*Create Account Form*/
+#SignUpPage{
+    width: 100%;
+    float: left;
+    padding-top: 0px;
+    justify-content: center;
+    display: flex;
+}
+
 #createAccount {
     background-color: rgba(113, 119, 119, 0.788);
     width: 50%;
@@ -114,3 +124,13 @@ label {
     display: inline-flex;
 }
 
+/* Images */
+#webEx {
+    width: 930px;
+    height: 450px;
+}
+
+#logo {
+    width: 90px;
+    height: 80px;
+}

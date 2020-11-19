@@ -11,29 +11,8 @@ const app = express();
 
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
-io.on('connection', (socket) => {
-    console.log("Received connection. Waiting for credentials.");
-
-    socket.on('username', (username) => {
-        socket.username = username;
-        console.log(username + " connected");
-        io.emit('message', {username, message: "connected!"});
-    });
-
-    socket.on('disconnect', () => {
-        console.log("Received disconnect request for user " + socket.username);
-        if (!socket.username || socket.username == "") {
-            return;
-        }
-        io.emit('message', {username: socket.username, message: "disconnected."});
-    });
-
-    socket.on('message', (message) => {
-        console.log("Received message: ");
-        console.log(message);
-        io.emit('message', {username: socket.username, message: message.message});
-    });
-});
+const Client = require('./routes/client');
+io.on('connection', (socket) => new Client(io, socket));
 
 
 app.set('view engine', 'pug');
@@ -78,6 +57,10 @@ app.get('/user/:usermame', users.getUser);
 app.patch('/user/:username', urlencodedParser, users.updateUser);
 app.get('/user/authenticate', users.authenticateUser);
 
+app.get("/signup", render.signUp);
+app.post("/signUp", urlencodedParser, users.createUser);
+
+//TODO Development purposes. Will be removed for prod.
 app.get('/testsocket', (req, res) => {
     res.render('testsocket')
 });

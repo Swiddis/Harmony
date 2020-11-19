@@ -1,6 +1,7 @@
 // User POST endpoint
 
 const { response } = require("express");
+const db = require("../db/userdb");
 
 // Post to /user, accepts input in JSON format
 exports.createUser = (req, res) => {

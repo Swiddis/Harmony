@@ -33,11 +33,11 @@ exports.getRoom = (req, res) => {
 // Room messaging POST endpoint
 // Post to /room/room_id
 exports.sendToRoom = (req, res) => {
-    let currMethod = 'sendToRoom';
+    let currMethod = 'sendMessage';
     let room_id = req.params.room_id;
     let message = req.body.message;
     
-    db.sendToRoom(room_id, message, buildResponse);
+    db.sendMessage({room_id, message}, buildResponse);
 };
 
 exports.authorizeRoomAccess = (req, res) => {
