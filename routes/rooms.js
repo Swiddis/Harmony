@@ -17,7 +17,7 @@ exports.createRoom = (req, res) => {
         nicknames: req.body.nicknames
     };
     
-    db.createRoom(res, room, buildCreationResponse);
+    db.createRoom(room, (err, room) => buildCreationResponse(res, err, room));
 };
 
 // Room GET API endpoint
@@ -25,7 +25,7 @@ exports.createRoom = (req, res) => {
 exports.getRoom = (req, res) => {
     let room_id = req.params.room_id;
 
-    db.getRoom(res, room_id, buildResponse);
+    db.getRoom(room_id, (err, room) => buildResponse(res, err, room));
 };
 
 // Room messaging POST endpoint
@@ -34,7 +34,8 @@ exports.sendToRoom = (req, res) => {
     let room_id = req.params.room_id;
     let message = req.body.message;
     
-    db.sendMessage(res, {room_id, message}, buildResponse);
+    db.sendMessage({room_id, message},
+        (err, message) => buildResponse(res, err, message));
 };
 
 exports.authorizeRoomAccess = (req, res) => {
@@ -43,7 +44,7 @@ exports.authorizeRoomAccess = (req, res) => {
     let password = auth.slice(1).join(':');
     let room_id = req.params.room_id;
 
-    db.authorizeRoomAccess(username, password, room_id, buildAuthResponse);
+    db.authorizeRoomAccess(username, password, room_id, (err, authorities) => buildAuthResponse(res, err, authorities));
 };
 
 exports.establishUserDMs = (req, res) => {
@@ -85,7 +86,7 @@ const buildResponse = (res, err, room, created=false) => {
     res.json(response);
 };
 
-const buildAuthResponse = (err, authorities) => {
+const buildAuthResponse = (res, err, authorities) => {
     let response;
 
     if (err) {

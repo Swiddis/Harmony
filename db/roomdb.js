@@ -16,16 +16,16 @@ let room_cache = [];
  * @param room - The room object to create and save to the db.
  * @param callback - The callback function taking in (err, room)
  */
-exports.createRoom = (res, room, callback) => {
+exports.createRoom = (room, callback) => {
     Room.findOne({room_id: room.room_id}, (err, rm) => {
         if (err) {
             console.error("Could not fetch room from DB");
             console.error(err);
-            callback(res, err);
+            callback(err);
             return;
         }
         if (room) {
-            callback(res, new Error("Room already exists"), rm);
+            callback(new Error("Room already exists"), rm);
         } else {
             if (room.password) {
                 let salt = bcrypt.genSaltSync(10);
@@ -37,11 +37,11 @@ exports.createRoom = (res, room, callback) => {
                 if (err) {
                     console.error("Could not save user to DB.");
                     console.error(err);
-                    callback(res, err);
+                    callback(err);
                     return;
                 }
                 room_cache.push(rm);
-                callback(res, undefined, rm);
+                callback(undefined, rm);
             });
         }
     });
@@ -55,11 +55,11 @@ exports.createRoom = (res, room, callback) => {
  * @param id - The id of the room to find.
  * @param callback - A function to be called. Will be called as callback(err, room)
  */
-exports.getRoom = (res, id, callback) => {
+exports.getRoom = (id, callback) => {
     // We'll cache rooms in memory so we don't always have to query the database
     for (let room of room_cache) {
         if (room.room_id == id) {
-            callback(res, undefined, room);
+            callback(undefined, room);
             return;
         }
     }
@@ -68,14 +68,14 @@ exports.getRoom = (res, id, callback) => {
         if (err) { //This is only thrown if there is a problem finding a room.
             console.error("Could not load room by id '" + room + "'");
             console.error(err);
-            callback(res, err, {room_id: id});
+            callback(err, {room_id: id});
             return;
         }
         if (room) {
             room_cache.push(room);
-            callback(res, undefined, room);
+            callback(undefined, room);
         } else {
-            callback(res, new Error("Room not found"), {room_id: id});
+            callback(new Error("Room not found"), {room_id: id});
         }
     });
 };
@@ -107,17 +107,17 @@ exports.getMessages = (res, room, callback) => {
  * @param callback - The callback function to call upon success/failure
  */
 //Possibly change this to a general 'sendToRoom' to accept files as well? Files are going to be fun.
-exports.sendMessage = (res, message, callback) => {
+exports.sendMessage = (message, callback) => {
     let room_id = message.room_id;
     new Message(message).save((err, message) => {
         if (err) {
             console.error("Could not save message to the database!");
             console.error(err);
-            callback(res, err);
+            callback(err);
             return;
         }
         console.log("Message sent to " + room_id + " saved to the database.");
-        callback(res, undefined, message);
+        callback(undefined, message);
     });
 };
 
@@ -128,47 +128,47 @@ exports.sendMessage = (res, message, callback) => {
  * @param password - The plain text password to check against the database.
  * @param callback - Callback formatted as callback(err, success) where success is a boolean.
  */
-exports.authorizeRoomAccess = (res, username, room_id, password, callback) => {
+exports.authorizeRoomAccess = (username, room_id, password, callback) => {
     /*
     Maybe move this to userdb.js?
     UNTESTED!
      */
     userdb.getUser(username, (err, user) => {
         if (err) {
-            callback(res, err, false);
+            callback(err, []);
             return;
         }
 
         if (!user) { //The user has to exist!
-            callback(res, new Error("User not found"), false);
+            callback(new Error("User not found"), []);
             return;
         }
 
         this.getRoom(room_id, (err, room) => {
             if (err) {
-                callback(res, err, false);
+                callback(err, []);
                 return;
             }
 
             if (!room) {
-                callback(res, new Error("Room not found"), false);
+                callback(new Error("Room not found"), []);
                 return;
             }
 
             if (!room.password || bcrypt.compareSync(password, room.password)) {
                 //Authenticated!
                 user.joined_rooms.push(room.room_id);
-                callback(res, undefined, true);
+                callback(undefined, ["USER", "ADMIN"]);
                 new User(user).save();
             } else {
                 //Not authenticated.
-                callback(res, new Error("Invalid credentials"), false);
+                callback(new Error("Invalid credentials"), []);
             }
         });
     });
 };
 
-exports.establishUserDMs = (res, user1, user2) => {
+exports.establishUserDMs = (user1, user2) => {
     /*
     TODO Create a new room with a random id.
      Add each user to the room (add to joined_rooms)
