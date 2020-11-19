@@ -1,4 +1,4 @@
-const socket = io.connect(document.location.host);
+const socket = io.connect(document.location.host, {query: `username=${document.getElementById("usernameText").innerText}`});
 const messages = document.getElementById("messages");
 const form = document.getElementById("message_container");
 const messageBox = document.getElementById("my_message");
