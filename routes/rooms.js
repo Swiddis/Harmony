@@ -17,7 +17,7 @@ exports.createRoom = (req, res) => {
         nicknames: req.body.nicknames
     };
     
-    db.createRoom(room, buildResponse);
+    db.createRoom(res, room, buildCreationResponse);
 };
 
 // Room GET API endpoint
@@ -25,7 +25,7 @@ exports.createRoom = (req, res) => {
 exports.getRoom = (req, res) => {
     let room_id = req.params.room_id;
 
-    db.getRoom(room_id, buildResponse);
+    db.getRoom(res, room_id, buildResponse);
 };
 
 // Room messaging POST endpoint
@@ -34,7 +34,7 @@ exports.sendToRoom = (req, res) => {
     let room_id = req.params.room_id;
     let message = req.body.message;
     
-    db.sendMessage({room_id, message}, buildResponse);
+    db.sendMessage(res, {room_id, message}, buildResponse);
 };
 
 exports.authorizeRoomAccess = (req, res) => {
@@ -45,7 +45,11 @@ exports.establishUserDMs = (req, res) => {
     // TODO
 };
 
-const buildResponse = (err, room) => {
+const buildCreationResponse = (res, err, room) => {
+    buildResponse(res, err, room, true);
+}
+
+const buildResponse = (res, err, room, created=false) => {
     let response;
     let room_path = '/room' + (room ? '/' + encodeURIComponent(room.room_id) : '');
 
@@ -69,6 +73,7 @@ const buildResponse = (err, room) => {
             'path': room_path
         }
         if (room) response.data = room;
+        if (created) response.status = 204;
     }
 
     res.status(response.status);

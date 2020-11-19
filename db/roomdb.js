@@ -12,19 +12,20 @@ let room_cache = [];
  *     nicknames: [{name: "user1", nick: "me"}, {name: "user2", nick: "you"}]
  * }
  *
+ * @param res - The response object that the callback will use to build an http response
  * @param room - The room object to create and save to the db.
  * @param callback - The callback function taking in (err, room)
  */
-exports.createRoom = (room, callback) => {
+exports.createRoom = (res, room, callback) => {
     Room.findOne({room_id: room.room_id}, (err, rm) => {
         if (err) {
             console.error("Could not fetch room from DB");
             console.error(err);
-            callback(err);
+            callback(res, err);
             return;
         }
         if (room) {
-            callback(new Error("Room already exists"), rm);
+            callback(res, new Error("Room already exists"), rm);
         } else {
             if (room.password) {
                 let salt = bcrypt.genSaltSync(10);
@@ -36,11 +37,11 @@ exports.createRoom = (room, callback) => {
                 if (err) {
                     console.error("Could not save user to DB.");
                     console.error(err);
-                    callback(err);
+                    callback(res, err);
                     return;
                 }
                 room_cache.push(rm);
-                callback(undefined, rm);
+                callback(res, undefined, rm);
             });
         }
     });
@@ -50,14 +51,15 @@ exports.createRoom = (room, callback) => {
  * Attempts to find a room by it's room_id.
  * If one is found, the callback is called using the room as a parameter.
  * Thus, one should check if the room exists in their callback.
+ * @param res - The response object that the callback will use to build an http response
  * @param id - The id of the room to find.
  * @param callback - A function to be called. Will be called as callback(err, room)
  */
-exports.getRoom = (id, callback) => {
+exports.getRoom = (res, id, callback) => {
     // We'll cache rooms in memory so we don't always have to query the database
     for (let room of room_cache) {
         if (room.room_id == id) {
-            callback(undefined, room);
+            callback(res, undefined, room);
             return;
         }
     }
@@ -66,14 +68,14 @@ exports.getRoom = (id, callback) => {
         if (err) { //This is only thrown if there is a problem finding a room.
             console.error("Could not load room by id '" + room + "'");
             console.error(err);
-            callback(err, {room_id: id});
+            callback(res, err, {room_id: id});
             return;
         }
         if (room) {
             room_cache.push(room);
-            callback(undefined, room);
+            callback(res, undefined, room);
         } else {
-            callback(new Error("Room not found"), {room_id: id});
+            callback(res, new Error("Room not found"), {room_id: id});
         }
     });
 };
@@ -81,89 +83,92 @@ exports.getRoom = (id, callback) => {
 /**
  * Gets messages as an array for the specified room (newest first).
  * Callback structured as callback(err, messages)
+ * @param res - The response object that the callback will use to build an http response
  * @param room - The room id to find messages for
  * @param callback - The callback function.
  */
-exports.getMessages = (room, callback) => {
+exports.getMessages = (res, room, callback) => {
     Message.find({room}, null, {sort: {date: -1}}, (err, messages) => {
         if (err) {
             console.error("Could not find messages for room '" + room + "'");
             console.error(err);
-            callback(err);
+            callback(res, err);
             return;
         }
-        callback(undefined, messages);
+        callback(res, undefined, messages);
     });
 };
 
 /**
  * Message should be a fully formatted message (ie room, content, sender, and is_file all set. Server will set the timestamp.)
  * The room is derived from the message object itself.
+ * @param res - The response object that the callback will use to build an http response
  * @param message - The fully formatted message to send.
  * @param callback - The callback function to call upon success/failure
  */
 //Possibly change this to a general 'sendToRoom' to accept files as well? Files are going to be fun.
-exports.sendMessage = (message, callback) => {
+exports.sendMessage = (res, message, callback) => {
     let room_id = message.room_id;
     new Message(message).save((err, message) => {
         if (err) {
             console.error("Could not save message to the database!");
             console.error(err);
-            callback(err);
+            callback(res, err);
             return;
         }
         console.log("Message sent to " + room_id + " saved to the database.");
-        callback(undefined, message);
+        callback(res, undefined, message);
     });
 };
 
 /**
  * Attempts to authorize the user for the given room by password.
+ * @param res - The response object that the callback will use to build an http response
  * @param room_id - The room_id to authorize to.
  * @param password - The plain text password to check against the database.
  * @param callback - Callback formatted as callback(err, success) where success is a boolean.
  */
-exports.authorizeRoomAccess = (username, room_id, password, callback) => {
+exports.authorizeRoomAccess = (res, username, room_id, password, callback) => {
     /*
     Maybe move this to userdb.js?
     UNTESTED!
      */
     userdb.getUser(username, (err, user) => {
         if (err) {
-            callback(err, false);
+            callback(res, err, false);
             return;
         }
 
         if (!user) { //The user has to exist!
-            callback(new Error("User not found"), false);
+            callback(res, new Error("User not found"), false);
             return;
         }
 
         this.getRoom(room_id, (err, room) => {
             if (err) {
-                callback(err, false);
+                callback(res, err, false);
                 return;
             }
 
             if (!room) {
-                callback(new Error("Room not found"), false);
+                callback(res, new Error("Room not found"), false);
                 return;
             }
 
             if (!room.password || bcrypt.compareSync(password, room.password)) {
                 //Authenticated!
                 user.joined_rooms.push(room.room_id);
-                callback(undefined, true);
+                callback(res, undefined, true);
                 new User(user).save();
             } else {
                 //Not authenticated.
-                callback(new Error("Invalid credentials"), false);
+                callback(res, new Error("Invalid credentials"), false);
             }
         });
     });
 };
 
-exports.establishUserDMs = (user1, user2) => {
+exports.establishUserDMs = (res, user1, user2) => {
     /*
     TODO Create a new room with a random id.
      Add each user to the room (add to joined_rooms)

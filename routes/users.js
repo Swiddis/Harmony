@@ -10,7 +10,7 @@ exports.createUser = (req, res) => {
         password: req.body.password,
     };
 
-    db.createUser(user, buildResponse);
+    db.createUser(res, user, buildCreationResponse);
 };
 
 // User GET API endpoint
@@ -18,7 +18,7 @@ exports.createUser = (req, res) => {
 exports.getUser = (req, res) => {
     let username = req.params.username;
 
-    db.getUser(username, buildResponse);
+    db.getUser(res, username, buildResponse);
 };
 
 // User PATCH endpoint
@@ -32,7 +32,7 @@ exports.updateUser = (req, res) => {
         joined_rooms: req.body.joined_rooms
     };
 
-    db.updateUser(username, updates, buildResponse);
+    db.updateUser(res, username, updates, buildResponse);
 };
 
 // User DELETE endpoint
@@ -40,7 +40,7 @@ exports.updateUser = (req, res) => {
 exports.deleteUser = (req, res) => {
     let username = req.params.username;
     
-    db.deleteUser(username, buildResponse);
+    db.deleteUser(res, username, buildResponse);
 };
 
 // User authentication endpoint
@@ -49,10 +49,14 @@ exports.authenticateUser = (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
 
-    db.authenticateUser(username, password, buildAuthResponse);
+    db.authenticateUser(res, username, password, buildAuthResponse);
 };
 
-const buildResponse = (err, user) => {
+const buildCreationResponse = (res, err, room) => {
+    buildResponse(res, err, room, true);
+};
+
+const buildResponse = (res, err, user, created=false) => {
     let response;
     let user_path = user ? '/' + encodeURIComponent(user.username) : '';
 
@@ -76,13 +80,14 @@ const buildResponse = (err, user) => {
             'path': '/user' + user_path
         }
         if (user) response.data = user;
+        if (created) response.status = 201;
     }
 
     res.status(response.status);
     res.json(response);
 };
 
-const buildAuthResponse = (err, authorities) => {
+const buildAuthResponse = (res, err, authorities) => {
     let response;
 
     if (err) {

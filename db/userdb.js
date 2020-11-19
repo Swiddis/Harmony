@@ -14,16 +14,16 @@ let user_cache = [];
  * @param user_obj - The user to create and add to the db.
  * @param callback - The callback function taking in (err, user)
  */
-exports.createUser = (user_obj, callback) => {
+exports.createUser = (res, user_obj, callback) => {
     User.findOne({username: user_obj.username}, (err, user) => {
         if (err) {
             console.error("Could not fetch user from DB");
             console.error(err);
-            callback(err);
+            callback(res, err);
             return;
         }
         if (user) {
-            callback(new Error("User already exists"), user);
+            callback(res, new Error("User already exists"), user);
         } else {
             console.log("Didn't have any errors, but didn't find user.");
             let salt = bcrypt.genSaltSync(10);
@@ -34,11 +34,11 @@ exports.createUser = (user_obj, callback) => {
                 if (err) {
                     console.error("Could not save user to DB.");
                     console.error(err);
-                    callback(err);
+                    callback(res, err);
                     return;
                 }
                 user_cache.push(user);
-                callback(undefined, user);
+                callback(res, undefined, user);
             });
         }
     });
@@ -49,13 +49,13 @@ exports.createUser = (user_obj, callback) => {
  * Calls the callback on the retrieved user object,
  * or calls an empty callback when running into an error.
  * @param username - The username to search for
- * @param callback - The callback method to call on the given user. callback(err, user)
+ * @param callback - The callback method to call on the given user. callback(res, err, user)
  */
-exports.getUser = (username, callback) => {
+exports.getUser = (res, username, callback) => {
     // We'll cache users in memory so we don't always have to query the database
     for (let user of user_cache) {
         if (user.username == username) {
-            callback(undefined, user);
+            callback(res, undefined, user);
             return;
         }
     }
@@ -64,11 +64,11 @@ exports.getUser = (username, callback) => {
         if (err) {
             console.error("Could not find user by username '" + username + "'");
             console.error(err);
-            callback(err);
+            callback(res, err);
             return;
         }
         user_cache.push(user);
-        callback(undefined, user);
+        callback(res, undefined, user);
     });
 };
 
@@ -103,13 +103,13 @@ const updateAndSaveUser = (us, user) => {
  * @param user - The information to update the user with.
  * @param callback - The method to callback
  */
-exports.updateUser = (user, callback) => {
+exports.updateUser = (res, user, callback) => {
     let username = user.username;
     //Update the cached user.
     for (let us of user_cache) {
         if (us.username == username) {
             updateAndSaveUser(us, user);
-            callback(undefined, us);
+            callback(res, undefined, us);
             return;
         }
     }
@@ -118,11 +118,11 @@ exports.updateUser = (user, callback) => {
     User.findOne({username}, (err, us) => {
         if (err) {
             console.error("Could not fetch user from db.");
-            callback(err);
+            callback(res, err);
             return;
         }
         updateAndSaveUser(us, user);
-        callback(undefined, us);
+        callback(res, undefined, us);
     });
 };
 
@@ -144,11 +144,11 @@ exports.deleteUser = (username, callback) => {
     User.deleteOne({username}, (err, user) => {
         if (err) {
             console.error("Could not delete user");
-            callback(err);
+            callback(res, err);
             return;
         }
 
-        callback(undefined, user);
+        callback(res, undefined, user);
     });
 };
 
@@ -156,14 +156,14 @@ exports.deleteUser = (username, callback) => {
  * Test authentication with stored password in the database.
  * @param username - The username to check
  * @param password - The plain-text password to check
- * @param callback - The callback (ie callback(err, user))
+ * @param callback - The callback (ie callback(res, err, user))
  */
-exports.authenticateUser = (username, password, callback) => {
+exports.authenticateUser = (res, username, password, callback) => {
     this.getUser(username, (err, user) => {
         if (err) {
             console.error("Error authenticating user '" + username + "':");
             console.error(err);
-            callback(err);
+            callback(res, err);
             return;
         }
 
@@ -171,13 +171,13 @@ exports.authenticateUser = (username, password, callback) => {
             if (bcrypt.compareSync(password, user.password)) {
                 //Authenticated!
                 //TODO Store and send back list of authorities
-                callback(undefined, ["USER", "ADMIN"]);
+                callback(res, undefined, ["USER", "ADMIN"]);
             } else {
                 //Not authenticated.
-                callback(new Error("Invalid credentials"));
+                callback(res, new Error("Invalid credentials"));
             }
         } else {
-            callback(new Error("User not found"));
+            callback(res, new Error("User not found"));
         }
 
     });
