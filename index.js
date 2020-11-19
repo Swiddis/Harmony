@@ -24,7 +24,7 @@ const urlencodedParser = bodyParser.urlencoded({
 })
 
 const checkAuth = (req, res, next) => {
-    if(req.session.user && req.session.user.isAuthenticated) {
+    if (req.session.user && req.session.user.isAuthenticated) {
         next();
     } else {
         res.redirect("/login");
@@ -41,11 +41,14 @@ app.use(
 
 app.get('/', render.index);
 
-app.get("/room", render.rooms)
-//app.get("/room", checkAuth, render.rooms)
+// app.get("/room", render.rooms)
+app.get("/room", checkAuth, render.rooms)
 
 app.get("/login", render.login);
 app.post("/login", urlencodedParser, render.checkAccess);
+
+app.get("/signUp", render.createAccount);
+app.post("/signUp", urlencodedParser, render.checkAccess);
 
 app.post('/room', urlencodedParser, rooms.createRoom);
 app.get('/room/:room_id', rooms.getRoom);
@@ -62,7 +65,9 @@ app.post("/signup", urlencodedParser, users.createUser); // Redundant?
 
 //TODO Development purposes. Will be removed for prod.
 app.get('/testsocket', (req, res) => {
-    res.render('testsocket')
+    res.render('testsocket', {
+        username: (req.session.user ? req.session.user.username : undefined)
+    })
 });
 
 app.get("/logout", render.logout)

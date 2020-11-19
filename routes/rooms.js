@@ -10,7 +10,6 @@ const db = require('../db/roomdb');
  // Room POST API endpoint
  // Post to /room, accepts input in JSON format
 exports.createRoom = (req, res) => {
-    let currMethod = 'createRoom';
     let room = {
         room_id: req.body.id,
         room_title: req.body.title,
@@ -18,26 +17,25 @@ exports.createRoom = (req, res) => {
         nicknames: req.body.nicknames
     };
     
-    db.createRoom(room, buildResponse);
+    db.createRoom(room, (err, room) => buildCreationResponse(res, err, room));
 };
 
 // Room GET API endpoint
 // Takes room ID as path variable, e.g. /room/public
 exports.getRoom = (req, res) => {
-    let currMethod = 'getRoom';
     let room_id = req.params.room_id;
 
-    db.getRoom(room_id, buildResponse);
+    db.getRoom(room_id, (err, room) => buildResponse(res, err, room));
 };
 
 // Room messaging POST endpoint
 // Post to /room/room_id
 exports.sendToRoom = (req, res) => {
-    let currMethod = 'sendMessage';
     let room_id = req.params.room_id;
     let message = req.body.message;
     
-    db.sendMessage({room_id, message}, buildResponse);
+    db.sendMessage({room_id, message},
+        (err, message) => buildResponse(res, err, message));
 };
 
 exports.authorizeRoomAccess = (req, res) => {
@@ -46,14 +44,18 @@ exports.authorizeRoomAccess = (req, res) => {
     let password = auth.slice(1).join(':');
     let room_id = req.params.room_id;
 
-    db.authorizeRoomAccess(username, password, room_id, buildAuthResponse);
+    db.authorizeRoomAccess(username, password, room_id, (err, authorities) => buildAuthResponse(res, err, authorities));
 };
 
 exports.establishUserDMs = (req, res) => {
     // TODO
 };
 
-const buildResponse = (err, room) => {
+const buildCreationResponse = (res, err, room) => {
+    buildResponse(res, err, room, true);
+}
+
+const buildResponse = (res, err, room, created=false) => {
     let response;
     let room_path = '/room' + (room ? '/' + encodeURIComponent(room.room_id) : '');
 
@@ -77,13 +79,14 @@ const buildResponse = (err, room) => {
             'path': room_path
         }
         if (room) response.data = room;
+        if (created) response.status = 204;
     }
 
     res.status(response.status);
     res.json(response);
 };
 
-const buildAuthResponse = (err, authorities) => {
+const buildAuthResponse = (res, err, authorities) => {
     let response;
 
     if (err) {

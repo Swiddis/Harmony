@@ -1,6 +1,7 @@
 const config = require("../config.json");
 const {User} = require('../conf/mongo_conf');
 const bcrypt = require("bcrypt-nodejs");
+const userdb = require('../db/userdb');
 
 var allowed;
 
@@ -23,13 +24,20 @@ exports.signUp = (req, res) => {
         title: "SignUp",
         config: config
     });
+} //These are duplicates brought over from merging branches and will need to be addressed.
+exports.createAccount = (req, res) => {
+    res.render("create", {
+        title: "Create Account",
+        config: config
+    });
 }
 
 exports.rooms = (req, res) => {
     User.find((err, user) => {
         res.render("Room", {
             'title': "Room",
-            users: user
+            users: user,
+            username: (req.session.user ? req.session.user.username : undefined)
         })
     })
 }
@@ -41,20 +49,23 @@ exports.checkAccess = (req, res) => {
 
     let userName = req.body.username;
     let userPassword = req.body.password;
+    console.log("Attempting to authenticate user " + userName);
 
-    User.findOne({ name: userName }, (err, user) => {
-        if(err) return console.error(err);
-        let passMatch = bcrypt.compareSync(userPassword, user.password);
-        if(passMatch) {
-            req.session.user = {
-                isAuthenticated: true,
-                username: req.body.username
-            };
-            allowed = userName;
-            res.redirect("/room");
-        } else {
-            res.redirect("/login");
+    userdb.authenticateUser(userName, userPassword, (err, user) => {
+        if(err) {
+            if(err.message == "Invalid credentials" || err.message == "User not found") {
+                res.redirect("/login");
+                return;
+            }
         }
+
+        console.log("User authenticated!");
+        req.session.user = {
+            isAuthenticated: true,
+            username: req.body.username
+        };
+        allowed = userName;
+        res.redirect("/room");
     });
 }
 
