@@ -24,13 +24,7 @@ exports.signUp = (req, res) => {
         title: "SignUp",
         config: config
     });
-} //These are duplicates brought over from merging branches and will need to be addressed.
-exports.createAccount = (req, res) => {
-    res.render("create", {
-        title: "Create Account",
-        config: config
-    });
-}
+} 
 
 exports.rooms = (req, res) => {
     User.find((err, user) => {
