@@ -67,8 +67,12 @@ exports.getUser = (username, callback) => {
             callback(err);
             return;
         }
-        user_cache.push(user);
-        callback(undefined, user);
+        if(user) {
+            user_cache.push(user);
+            callback(undefined, user);
+        } else {
+            callback(new Error("User not found"));
+        }
     });
 };
 

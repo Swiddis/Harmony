@@ -4,10 +4,11 @@ block head
     script(src="/scripts/socket.io.js")
 
 block content
+    div(id="username")=username
     div(id="messages")
-    form(id="setUsername")
-        input(type="text" id="username")
-        input(type="submit" value="Set Username")
+    //form(id="setUsername")
+    //    input(type="text" id="username")
+    //    input(type="submit" value="Set Username")
     form(id="sendMessage")
         textarea(id="message")
         input(type="submit" value="Submit")
