@@ -5,6 +5,7 @@ const db = require("../db/userdb");
 
 // Post to /user, accepts input in JSON format
 exports.createUser = (req, res) => {
+    console.log(req.body);
     let user = {
         username: req.body.username,
         password: req.body.password,
@@ -66,11 +67,11 @@ const buildResponse = (res, err, user, created = false) => {
         response = {
             'timestamp': new Date().toISOString(),
             'path': '/user' + user_path,
-            'error': err.message()
+            'error': err.message
         }
-        if (err.message() == "User not found") {
+        if (err.message == "User not found") {
             response.status = 404;
-        } else if (err.message() == "User already exists") {
+        } else if (err.message == "User already exists") {
             response.status = 403;
         } else {
             response.status = 500;
@@ -81,7 +82,10 @@ const buildResponse = (res, err, user, created = false) => {
             'status': 200,
             'path': '/user' + user_path
         }
-        if (user) response.data = user;
+        if (user) {
+            user.password = undefined; //Make sure not to send back the password!
+            response.data = user;
+        }
         if (created) response.status = 201;
     }
 
@@ -96,11 +100,11 @@ const buildAuthResponse = (res, err, authorities) => {
         response = {
             'timestamp': new Date().toISOString(),
             'path': '/user/authenticate',
-            'error': err.message()
+            'error': err.message
         }
-        if (err.message() == "User not found") {
+        if (err.message == "User not found") {
             response.status = 404;
-        } else if (err.message() == "Invalid credentials") {
+        } else if (err.message == "Invalid credentials") {
             response.status = 401;
         } else {
             response.status = 500;

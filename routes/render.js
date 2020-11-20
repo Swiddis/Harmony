@@ -21,10 +21,10 @@ exports.login = (req, res) => {
 
 exports.signUp = (req, res) => {
     res.render("create", {
-        title: "SignUp",
+        title: "Sign Up",
         config: config
     });
-} 
+}
 
 exports.rooms = (req, res) => {
     User.find((err, user) => {
@@ -37,7 +37,7 @@ exports.rooms = (req, res) => {
 }
 
 exports.checkAccess = (req, res) => {
-    if(req.body.username == "" || req.body.password == null) {
+    if (req.body.username == "" || req.body.password == null) {
         res.redirect("/login");
     }
 
@@ -46,8 +46,8 @@ exports.checkAccess = (req, res) => {
     console.log("Attempting to authenticate user " + userName);
 
     userdb.authenticateUser(userName, userPassword, (err, user) => {
-        if(err) {
-            if(err.message == "Invalid credentials" || err.message == "User not found") {
+        if (err) {
+            if (err.message == "Invalid credentials" || err.message == "User not found") {
                 res.redirect("/login");
                 return;
             }
@@ -65,7 +65,7 @@ exports.checkAccess = (req, res) => {
 
 exports.logout = (req, res) => {
     req.session.destroy(err => {
-        if(err) {
+        if (err) {
             console.log(err);
         } else {
             res.redirect("/");

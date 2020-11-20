@@ -63,9 +63,9 @@ const buildResponse = (res, err, room, created=false) => {
         response = {
             'timestamp': new Date().toISOString(),
             'path': room_path,
-            'error': err.message()
+            'error': err.message
         }
-        if (err.message() == "Room not found") {
+        if (err.message == "Room not found") {
             response.status = 404;
         } else if (err.message == "Room already exists") {
             response.status = 403;
@@ -93,11 +93,11 @@ const buildAuthResponse = (res, err, authorities) => {
         response = {
             'timestamp': new Date().toISOString(),
             'path': '/room/authorize',
-            'error': err.message()
+            'error': err.message
         }
-        if (err.message() == "Room not found") {
+        if (err.message == "Room not found") {
             response.status = 404;
-        } else if (err.message() == "Invalid credentials") {
+        } else if (err.message == "Invalid credentials") {
             response.status = 401;
         } else {
             response.status = 500;

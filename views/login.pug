@@ -3,9 +3,9 @@ extends navBar
 block content
     form(method='post' action="/login" id="loginForm")
         div(id="userName")
-            label(for="username") Username:
+            label(for="usernameInput") Username:
             br
-            input(type="text" name="username")
+            input(type="text" id="usernameInput" name="username")
         br
         div(id="passcode")
             label(for="password") Password:
@@ -15,4 +15,4 @@ block content
         div(id='submitButton')
             input(type="submit" value="Login" id="loginSubmit")
         div(id="signUpButton")
-            a(href="/signUp" id="signUpHref") Sign Up
+            a(href="/signup" id="signUpHref") Sign Up
