@@ -1,35 +1,30 @@
-/* General Body*/
+/* General Styles*/
 body{
     margin: 0;
     overflow: hidden;
     background-color: #36393f;
 }
 
-#container{
-    display: flex;
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    position: absolute;
+#username_label{
+    color: #fff;
 }
 
-#container2{
-    display: flex;
-    flex-direction: column;
+.button{
+    background-color: white;
+    padding: 12px 20px;
+    border: 2px solid black;
+    border-radius: 8px;
+    cursor: pointer;
     margin: 0;
-    width: 100%;
 }
 
-/*Room List*/
-#room_list{
-    width: 5em;
-    height: 100%;
-    background-color: #202225;
-    display:flex;
-    flex-direction: column;
-    overflow:auto;
+.button:hover{
+    background-color: gray;
 }
-.room{
+
+
+/*Room (Icon) Styles*/
+.room, #new_room{
     background-color:white;
     border: 2px solid black;
     border-radius: 30px;
@@ -45,49 +40,25 @@ body{
     transition: border-radius 0.2s;
 }
 
-
-
-/* Topbar*/
-#top_container{
-    display:flex; 
-    flex-grow: 1;
-    background-color:gray;
-    width: 100%;
+#new_room{
+    background-color: #0f0;
 }
-#username{
-    background-color: white;
-    width: 10%;
-    text-align: center;
-}
-#space{
-    width: 80%;
-}
-#logout{
-    width: 10%;
-    background-color: white;
-    text-align: center;
+#new_room:hover{
+    background-color: #0a0;
+    border-radius: 15px;
+    transition: border-radius 0.2s;
 }
 
 
 
-
-/* Message Display*/
-#messages{
-    /*background-color: gray;*/
-    flex-grow: 30;
-    display: flex;
-    flex-direction: column;
-    overflow: auto;
-}
-
+/* Displayed Messages (MessageBox, Name, Avatar, Message)*/
 .message_box{
     color: #fff;
     margin: 1em 2em;
     background-color: #222;
-    width: 80%;
+    width: 90%;
     padding: 1em;
 }
-
 .avatar{
     background-color: #fff;
     padding: 1.5em;
@@ -97,32 +68,20 @@ body{
     display: inline-flex;
     float: left;
 }
-
 .message_name{
     padding: 2em;
     border-bottom: 2px solid white;
     display: block;
     font-size: 20px;
 }
-
 .message{
     display: block;
     font-size: 18px;
 }
 
-/* Send Message Display*/
-#message_container{
-    background-color: #3f444b;
-    flex-grow: 1;
-    padding: 1em;
-    display: flex;
-}
 
-form{
-    margin: 0;
-    padding: 0;
-    
-}
+
+/* Input Stuff*/
 textarea{
     border: 2px solid black;
     border-radius: 8px;
@@ -133,16 +92,21 @@ textarea{
     padding: 5px 10px 0;
     font-size: 18px;
 }
-input[type=submit] {
-    background-color: white;
-    padding: 12px 20px;
-    border: 2px solid black;
-    border-radius: 8px;
-    cursor: pointer;
-    margin: 0;
+
+
+
+/* Extra Modal Stuff */
+.close{
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
 }
-input[type=submit]:hover {
- background-color: gray;
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 

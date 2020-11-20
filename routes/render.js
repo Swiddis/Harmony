@@ -31,6 +31,10 @@ exports.rooms = (req, res) => {
         res.render("Room", {
             'title': "Room",
             users: user,
+            //The user should exist and be passed into the render
+            // Since this should be an authenticated end-point, this works.
+            // TestUser1's password is testing123
+            // Other accounts should be able to be created using the sign up page.
             username: (req.session.user ? req.session.user.username : undefined)
         })
     })

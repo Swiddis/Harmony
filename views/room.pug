@@ -1,34 +1,54 @@
 doctype
 html
     head
-        link(rel="stylesheet", href="/room.css")
+        link(rel="stylesheet", href="/roomlayout.css")
+        link(rel="stylesheet", href="/roomstyle.css")
         script(src="/scripts/socket.io.js")
     body
-        div(id="container")
-            div(id="room_list")
-                //Room Placeholders
-                span(class="room" href="")
-                span(class="room" href="")
-                span(class="room" href="")
-                span(class="room" href="")
-                span(class="room" href="")
-            div(id="container2")
-                div(id="top_container")
-                    div(id="usernameText")=username
-                    form(id="setUsername")
-                        input(type="text" id="username" value=username)
-                        input(type="submit" value="Set Username")
-                    div(id="space")
-                    div(id="logout")
-                        a(href="/logout") Logout
-                div(id="messages")
-                    //Message Placeholders
-                    span(class="message_box")
+        div(id="page_container")
+            div(id="left_content")
+                span(class="room")
+                span(id="new_room")
+            div(id="middle_content")
+                div(id="display_messages_container")
+                    div(class="message_box")
                         span(class="avatar")
-                        span(class="name") Person 1:
-                        span(class="message") Hello World!
-                //div(id="message_container")
-                form(id="message_container")
-                    textarea(id="my_message" placeholder="Message" rows="1")
-                    input(type="submit" id="sendBtn" value="SEND")
+                        span(class="name") Nonexistant:
+                        span(class="message") Welcome to the Room!
+                div(id="input_message_container")
+                    textarea(id="my_message" placeholder="Message" onkeypress="return submitOnEnter(event);")
+                    span(id="send_message_button" class="button") Send
+            div(id="right_content")
+                div(id="username_label")=username
+                div(id="logout") 
+                    a(href="/logout") Logout
+
+        div(id="room_modal" class="modal")
+            div(class="modal_content")
+                span(class="close") &times;
+                p Create or Join a Room
+                span(id="create_room_option" class="button") Create Room
+                span(id="join_room_option" class="button") Join Room
+        div(id="create_room_modal" class="modal")
+            div(class="modal_content")
+                span(class="close") &times;
+                p Create Room
+                p Room Id:
+                    input(type="text" id="create_id")
+                p Room Name:
+                    input(type="text" id="create_title")
+                p Password:
+                    input(type="password" id="create_password")
+                p Nicknames
+                    input(type="text" id="create_nicknames")                    
+                span(id="create_room_button" class="button") Create Room
+        div(id="join_room_modal" class="modal")
+            div(class="modal_content")
+                span(class="close") &times;
+                p Join Room
+                p Room Id:
+                    input(type="text" id="join_id")
+                p Password:
+                    input(type="text" id="join_password")
+                span(id="join_room_button" class="button") Join Room
         script(src="/scripts/testmanager.js")

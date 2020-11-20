@@ -53,7 +53,7 @@ app.post('/room/:room_id', urlencodedParser, rooms.sendToRoom);
 app.get('/room/authorize/:room_id', rooms.authorizeRoomAccess);
 
 app.post('/user', urlencodedParser, users.createUser);
-app.get('/user/:usermame', users.getUser);
+app.get('/user/:username', users.getUser);
 app.patch('/user/:username', urlencodedParser, users.updateUser);
 app.get('/user/authenticate', users.authenticateUser);
 
