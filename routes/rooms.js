@@ -12,8 +12,8 @@ const db = require('../db/roomdb');
 exports.createRoom = (req, res) => {
     let currMethod = 'createRoom';
     let room = {
-        room_id: req.body.id,
-        room_title: req.body.title,
+        room_id: req.body.room_id,
+        room_title: req.body.room_title,
         password: req.body.password,
         nicknames: req.body.nicknames
     };
