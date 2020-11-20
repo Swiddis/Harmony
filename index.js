@@ -47,7 +47,7 @@ app.get("/room", checkAuth, render.rooms)
 app.get("/login", render.login);
 app.post("/login", urlencodedParser, render.checkAccess);
 
-app.post('/room', urlencodedParser, rooms.createRoom);
+app.post('/room', bodyParser.json(), rooms.createRoom);
 app.get('/room/:room_id', rooms.getRoom);
 app.post('/room/:room_id', urlencodedParser, rooms.sendToRoom);
 app.get('/room/authorize/:room_id', rooms.authorizeRoomAccess);

@@ -23,10 +23,10 @@ exports.createRoom = (room, callback) => {
             callback(err);
             return;
         }
-        if (room) {
+        if (rm) {
             callback(new Error("Room already exists"), rm);
         } else {
-            if (room.password) {
+            if (room.password && room.password != "") {
                 let salt = bcrypt.genSaltSync(10);
                 let hash = bcrypt.hashSync(room.password, salt);
                 room.password = hash;
