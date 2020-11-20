@@ -25,8 +25,7 @@ async function fetchRoomData(roomid){
 async function fetchRoomMessages(roomid){
     let response = await fetch(`/messages/${roomid}`);
     let data = await response.text();
-    console.log(data);
-    return JSON.parse(data);
+    return JSON.parse(data).data;
 };
 
 window.onload = function(){
@@ -52,14 +51,17 @@ const sendMessage = () => {
 
 socket.on('message', msg => {
     console.log(msg);
-    //if(msg.room_id = currentRoomId)
-    messages_container.innerHTML += "<span class='message_box'>" + 
+    //for now if msg recieved is from currentroomid display
+    if(msg.room_id = currentRoomId){
+        messages_container.innerHTML += "<span class='message_box'>" + 
                                         "<span class='avatar'></span>" +
                                         "<span class='name'>" + msg.username +  "</span>" + 
                                         "<span class='message'>" + msg.message + "</span>" + 
                                      "</span>";
-    //To scroll to bottom every message(Not done)
+        //TODO make scroll to bottom every message only when already scrolled down 
+        //so you aren't scrolled up then go back down while reading
     messages_container.scrollTop = messages_container.scrollHeight;
+    }
 });
 
 const createRoom = () => {
@@ -75,7 +77,7 @@ const createRoom = () => {
         password: password,
         nicknames: [{name: username, nick: nickname}]
     };
-    console.log(room);
+
     fetch('/room', {
         method: 'POST',
         headers: {
@@ -87,8 +89,11 @@ const createRoom = () => {
         console.log(response.status);
         if(response.status === 204){
             console.log("CREATED ROOM SUCCESSFULLy!");
+            //TODO Quick Fix so you don't have to manually join the room after making it
+            document.getElementById("join_id").value = room_id;
+            document.getElementById("join_password").value = password;
+            joinRoom();
             closeModals();
-            //TODO still needs to join room on creation otherwise need to manually join
         }
     });
 };
@@ -118,13 +123,13 @@ const renderRoomContent = (roomid) => {
     console.log("RENDERING ROOM: " + roomid);
     messages_container.innerHTML = "";
     fetchRoomMessages(roomid).then(function(messages){
-        console.log("MESSAGES:" + JSON.stringify(messages));
         currentRoomId = roomid;
-        for(let i = 0; i < messages.length; i++){
+        //Currently the messages array is backwards so will do it this way
+        for(let i = messages.length - 1; i >= 0; i--){
             messages_container.innerHTML += "<span class='message_box'>" + 
                                                 "<span class='avatar'></span>" +
-                                                "<span class='name'>" + messages[i].username +  "</span>" + 
-                                                "<span class='message'>" + messages[i].message + "</span>" + 
+                                                "<span class='name'>" + messages[i].sender +  "</span>" + 
+                                                "<span class='message'>" + messages[i].content + "</span>" + 
                                             "</span>";
         }
     });
@@ -137,7 +142,6 @@ const renderRoomList = () => {
         console.log(user);
         for(let i = 0; i < user.joined_rooms.length; i++){
             rooms_container.innerHTML += `<span class='room' id='${user.joined_rooms[i]}' style='text-align:center' onclick='renderRoomContent("${user.joined_rooms[i]}");'>${user.joined_rooms[i]}</span>`;
-            //makeRoomClickable(user.joined_rooms[i]);
         }
     });
 };
@@ -161,7 +165,16 @@ const closeModals = () => {
     modal.style.display = "none";
     create_modal.style.display = "none";
     join_modal.style.display = "none";
-    //TODO EMPTY INPUT FIELDS
+    
+    //EMPTIES INPUT FIELDS (TODO REDUNDANT)
+    let elements = create_modal.getElementsByTagName("input");
+    for(let i = 0; i < elements.length; i++){
+        elements[i].value = "";
+    }
+    elements = join_modal.getElementsByTagName("input");
+    for(let i = 0; i < elements.length; i++){
+        elements[i].value = "";
+    }
 };
 
 
