@@ -1,0 +1,70 @@
+/* Container Holding all Page Containers*/
+#page_container{
+    display: flex;
+    margin: 0;
+    width: 100%;
+    height: 45em;
+    position: absolute;
+}
+
+/* Left (Room Icon) Container*/
+#left_content{
+    width: 6em;
+    height: 100%;
+    background-color: #202225;
+    display:flex;
+    flex-direction: column;
+    overflow:auto;
+}
+
+/* Center (Messages Display and Input Message) Container*/
+#middle_content{
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    width: 100%;
+}
+
+#display_messages_container{
+    flex-grow: 30;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
+#input_message_container{
+    background-color: #3f444b;
+    flex-grow: 1;
+    padding: 1em;
+    display: flex;
+}
+
+/* Right (Currently just Username and Logout) Container*/
+#right_content{
+    width: 15em;
+    height: 100%;
+    background-color: #202225;
+    display:flex;
+    flex-direction: column;
+    overflow:auto;
+}
+
+
+
+/* Modals */
+ .modal{
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 25%;
+    top: 25%;
+    width: 30%;
+    height: 100%;
+}
+
+.modal_content{
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+  background-color: #555;
+}
