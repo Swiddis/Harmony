@@ -84,15 +84,15 @@ exports.getRoom = (id, callback) => {
  * @param room - The room id to find messages for
  * @param callback - The callback function.
  */
-exports.getMessages = (room, callback) => {
+exports.getMessages = (res, room, callback) => {
     Message.find({room}, null, {sort: {date: -1}}, (err, messages) => {
         if (err) {
             console.error("Could not find messages for room '" + room + "'");
             console.error(err);
-            callback(err);
+            callback(res, err);
             return;
         }
-        callback(undefined, messages);
+        callback(res, undefined, messages);
     });
 };
 
@@ -130,34 +130,34 @@ exports.authorizeRoomAccess = (username, room_id, password, callback) => {
      */
     userdb.getUser(username, (err, user) => {
         if (err) {
-            callback(err, false);
+            callback(err, []);
             return;
         }
 
         if (!user) { //The user has to exist!
-            callback(new Error("User not found"), false);
+            callback(new Error("User not found"), []);
             return;
         }
 
         this.getRoom(room_id, (err, room) => {
             if (err) {
-                callback(err, false);
+                callback(err, []);
                 return;
             }
 
             if (!room) {
-                callback(new Error("Room not found"), false);
+                callback(new Error("Room not found"), []);
                 return;
             }
 
             if (!room.password || bcrypt.compareSync(password, room.password)) {
                 //Authenticated!
                 user.joined_rooms.push(room.room_id);
-                callback(undefined, true);
+                callback(undefined, ["USER", "ADMIN"]);
                 new User(user).save();
             } else {
                 //Not authenticated.
-                callback(new Error("Invalid credentials"), false);
+                callback(new Error("Invalid credentials"), []);
             }
         });
     });

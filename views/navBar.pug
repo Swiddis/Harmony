@@ -15,7 +15,7 @@ html
                                 li(id = item[0]) #{item[0]}
                 
         section
-            div(id=`${title}Page`)
+            div(id=`${title.replace(" ", "")}Page`)
                 h1 #{title}
                 block content
         footer

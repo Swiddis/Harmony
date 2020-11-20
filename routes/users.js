@@ -1,16 +1,17 @@
 // User POST endpoint
 
-const { response } = require("express");
+const {response} = require("express");
 const db = require("../db/userdb");
 
 // Post to /user, accepts input in JSON format
 exports.createUser = (req, res) => {
+    console.log(req.body);
     let user = {
         username: req.body.username,
         password: req.body.password,
     };
 
-    db.createUser(user, buildResponse);
+    db.createUser(user, (err, user) => buildCreationResponse(res, err, user));
 };
 
 // User GET API endpoint
@@ -18,7 +19,7 @@ exports.createUser = (req, res) => {
 exports.getUser = (req, res) => {
     let username = req.params.username;
 
-    db.getUser(username, buildResponse);
+    db.getUser(username, (err, user) => buildResponse(res, err, user));
 };
 
 // User PATCH endpoint
@@ -32,15 +33,15 @@ exports.updateUser = (req, res) => {
         joined_rooms: req.body.joined_rooms
     };
 
-    db.updateUser(username, updates, buildResponse);
+    db.updateUser(username, updates, (err, user) => buildResponse(res, err, user));
 };
 
 // User DELETE endpoint
 // Delete at /user/username
 exports.deleteUser = (req, res) => {
     let username = req.params.username;
-    
-    db.deleteUser(username, buildResponse);
+
+    db.deleteUser(username, (err, user) => buildResponse(res, err, user));
 };
 
 // User GET authentication endpoint
@@ -50,10 +51,15 @@ exports.authenticateUser = (req, res) => {
     let username = auth[0];
     let password = auth.slice(1).join(':');
 
-    db.authenticateUser(username, password, buildAuthResponse);
+    db.authenticateUser(username, password,
+        (err, user) => buildAuthResponse(res, err, user));
 };
 
-const buildResponse = (err, user) => {
+const buildCreationResponse = (res, err, room) => {
+    buildResponse(res, err, room, true);
+};
+
+const buildResponse = (res, err, user, created = false) => {
     let response;
     let user_path = user ? '/' + encodeURIComponent(user.username) : '';
 
@@ -61,13 +67,13 @@ const buildResponse = (err, user) => {
         response = {
             'timestamp': new Date().toISOString(),
             'path': '/user' + user_path,
-            'error': err.message()
+            'error': err.message
         }
-        if (err.message() == "User not found") {
+        if (err.message == "User not found") {
             response.status = 404;
-        } else if (err.message() == "User already exists") {
+        } else if (err.message == "User already exists") {
             response.status = 403;
-        }else {
+        } else {
             response.status = 500;
         }
     } else {
@@ -76,25 +82,29 @@ const buildResponse = (err, user) => {
             'status': 200,
             'path': '/user' + user_path
         }
-        if (user) response.data = user;
+        if (user) {
+            user.password = undefined; //Make sure not to send back the password!
+            response.data = user;
+        }
+        if (created) response.status = 201;
     }
 
     res.status(response.status);
     res.json(response);
 };
 
-const buildAuthResponse = (err, authorities) => {
+const buildAuthResponse = (res, err, authorities) => {
     let response;
 
     if (err) {
         response = {
             'timestamp': new Date().toISOString(),
             'path': '/user/authenticate',
-            'error': err.message()
+            'error': err.message
         }
-        if (err.message() == "User not found") {
+        if (err.message == "User not found") {
             response.status = 404;
-        } else if (err.message() == "Invalid credentials") {
+        } else if (err.message == "Invalid credentials") {
             response.status = 401;
         } else {
             response.status = 500;
