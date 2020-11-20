@@ -79,16 +79,18 @@ async function createRoom(){
 };
 
 const joinRoom = () => {
-    const room_id = document.getElementById("join_id");
-    const password = document.getElementById("join_password");
+    const room_id = document.getElementById("join_id").value;
+    const password = document.getElementById("join_password").value;
 
-    fetch(`/room/authorize/${join_id}`, {
+    fetch(`/room/authorize/${room_id}`, {
         headers: new Headers({
-            "Authorization": `Basic ${atob(`${username}:${password}`)}`
+            "Authorization": "Basic " + btoa(username + ":" + password)
         }),
     })
     .then(response => {
         console.log(response.status);
+        //Keep getting 500 instead of 403 or 404
+        
     });
 };
 
