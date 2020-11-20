@@ -120,6 +120,9 @@ const joinRoom = () => {
 
 //Render Functions
 const renderRoomContent = (roomid) => {
+    if(currentRoomId === roomid){
+        return;
+    }
     console.log("RENDERING ROOM: " + roomid);
     messages_container.innerHTML = "";
     fetchRoomMessages(roomid).then(function(messages){
