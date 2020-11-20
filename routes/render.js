@@ -1,6 +1,5 @@
 const config = require("../config.json");
 const {User} = require('../conf/mongo_conf');
-const bcrypt = require("bcrypt-nodejs");
 const userdb = require('../db/userdb');
 
 var allowed;
