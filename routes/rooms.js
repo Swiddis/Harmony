@@ -1,7 +1,7 @@
 /**
  * Room API endpoints
  * RESTful API for room CRUD operations
- * 
+ *
  * API is accessed at the /room path
  */
 
@@ -15,8 +15,8 @@ const atob = (encoded) => {
     return Buffer.from(encoded, 'base64').toString('binary');
 }
 
- // Room POST API endpoint
- // Post to /room, accepts input in JSON format
+// Room POST API endpoint
+// Post to /room, accepts input in JSON format
 exports.createRoom = (req, res) => {
     let room = {
         room_id: req.body.room_id,
@@ -24,7 +24,7 @@ exports.createRoom = (req, res) => {
         password: req.body.password,
         nicknames: req.body.nicknames
     };
-    
+
     db.createRoom(room, (err, room) => buildCreationResponse(res, err, room));
 };
 
@@ -41,13 +41,16 @@ exports.getRoom = (req, res) => {
 exports.sendToRoom = (req, res) => {
     let room_id = req.params.room_id;
     let message = req.body.message;
-    
+
     db.sendMessage({room_id, message},
         (err, message) => buildResponse(res, err, message));
 };
 
 exports.getMessages = (req, res) => {
+    let room_id = req.params.room_id;
 
+    db.getMessages(room_id,
+        (err, messages) => buildMessageResponse(res, err, messages, room_id));
 };
 
 exports.authorizeRoomAccess = (req, res) => {
@@ -67,7 +70,7 @@ const buildCreationResponse = (res, err, room) => {
     buildResponse(res, err, room, true);
 }
 
-const buildResponse = (res, err, room, created=false) => {
+const buildResponse = (res, err, room, created = false) => {
     let response;
     let room_path = '/room' + (room ? '/' + encodeURIComponent(room.room_id) : '');
 
@@ -81,7 +84,7 @@ const buildResponse = (res, err, room, created=false) => {
             response.status = 404;
         } else if (err.message == "Room already exists") {
             response.status = 403;
-        }else {
+        } else {
             response.status = 500;
         }
     } else {
@@ -92,6 +95,33 @@ const buildResponse = (res, err, room, created=false) => {
         }
         if (room) response.data = room;
         if (created) response.status = 204;
+    }
+
+    res.status(response.status);
+    res.json(response);
+};
+
+const buildMessageResponse = (res, err, messages, room_id) => {
+    let response;
+    let path = '/messages/' + encodeURIComponent(room_id);
+
+    if (err) {
+        response = {
+            'timestamp': new Date().toISOString(),
+            'path': path,
+            'error': err.message
+        }
+        if (err) {
+            response.status = 500;
+        }
+    } else {
+        response = {
+            'timestamp': new Date().toISOString(),
+            'status': 200,
+            'path': path
+        }
+        response.status = 200;
+        response.data = messages;
     }
 
     res.status(response.status);

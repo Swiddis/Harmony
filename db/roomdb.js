@@ -84,15 +84,15 @@ exports.getRoom = (id, callback) => {
  * @param room - The room id to find messages for
  * @param callback - The callback function.
  */
-exports.getMessages = (res, room, callback) => {
+exports.getMessages = (room, callback) => {
     Message.find({room}, null, {sort: {date: -1}}, (err, messages) => {
         if (err) {
             console.error("Could not find messages for room '" + room + "'");
             console.error(err);
-            callback(res, err);
+            callback(err);
             return;
         }
-        callback(res, undefined, messages);
+        callback(undefined, messages);
     });
 };
 
