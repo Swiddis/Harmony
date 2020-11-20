@@ -118,7 +118,7 @@ const renderRoomContent = (roomid) => {
     console.log("RENDERING ROOM: " + roomid);
     messages_container.innerHTML = "";
     fetchRoomMessages(roomid).then(function(messages){
-        console.log("MESSAGES:" + messages);
+        console.log("MESSAGES:" + JSON.stringify(messages));
         currentRoomId = roomid;
         for(let i = 0; i < messages.length; i++){
             messages_container.innerHTML += "<span class='message_box'>" + 
@@ -136,7 +136,7 @@ const renderRoomList = () => {
     fetchUser(username).then(function(user){
         console.log(user);
         for(let i = 0; i < user.joined_rooms.length; i++){
-            rooms_container.innerHTML += `<span class='room' id='${user.joined_rooms[i]}' style='text-align:center' onclick='renderRoomContent(${user.joined_rooms[i]});'>${user.joined_rooms[i]}</span>`;
+            rooms_container.innerHTML += `<span class='room' id='${user.joined_rooms[i]}' style='text-align:center' onclick='renderRoomContent("${user.joined_rooms[i]}");'>${user.joined_rooms[i]}</span>`;
             //makeRoomClickable(user.joined_rooms[i]);
         }
     });

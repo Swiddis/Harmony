@@ -54,6 +54,10 @@ exports.createRoom = (room, callback) => {
  * @param callback - A function to be called. Will be called as callback(err, room)
  */
 exports.getRoom = (id, callback) => {
+    if (!id) {
+        callback(new Error("Room id not defined"));
+        return;
+    }
     // We'll cache rooms in memory so we don't always have to query the database
     for (let room of room_cache) {
         if (room.room_id == id) {
