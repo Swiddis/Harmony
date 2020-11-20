@@ -7,6 +7,14 @@
 
 const db = require('../db/roomdb');
 
+const btoa = (string) => {
+    return Buffer.from(string, 'binary').toString('base64');
+};
+
+const atob = (encoded) => {
+    return Buffer.from(encoded, 'base64').toString('binary');
+}
+
  // Room POST API endpoint
  // Post to /room, accepts input in JSON format
 exports.createRoom = (req, res) => {
@@ -38,13 +46,17 @@ exports.sendToRoom = (req, res) => {
         (err, message) => buildResponse(res, err, message));
 };
 
+exports.getMessages = (req, res) => {
+
+};
+
 exports.authorizeRoomAccess = (req, res) => {
-    let auth = btoa(req.headers.Authorization.substring(6)).split(':'); // Remove leading 'Basic ' and convert from base64
+    let auth = atob(req.headers.authorization.substring(6)).split(':'); // Remove leading 'Basic ' and convert from base64
     let username = auth[0];
     let password = auth.slice(1).join(':');
     let room_id = req.params.room_id;
 
-    db.authorizeRoomAccess(username, password, room_id, (err, authorities) => buildAuthResponse(res, err, authorities));
+    db.authorizeRoomAccess(username, room_id, password, (err, authorities) => buildAuthResponse(res, err, authorities));
 };
 
 exports.establishUserDMs = (req, res) => {
