@@ -108,7 +108,7 @@ exports.getMessages = (room, callback) => {
  */
 //Possibly change this to a general 'sendToRoom' to accept files as well? Files are going to be fun.
 exports.sendMessage = (message, callback) => {
-    let room_id = message.room_id;
+    let room_id = message.room;
     new Message(message).save((err, message) => {
         if (err) {
             console.error("Could not save message to the database!");
