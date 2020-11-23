@@ -101,6 +101,32 @@ exports.getMessages = (room, callback) => {
 };
 
 /**
+ * File data should be formatted the following:
+ * {
+ *     is_file: true,
+ *     content: "/data_url::File Name",
+ *     sender: "sender_username",
+ *     room: "room_id"
+ * }
+ * The data url can be absolute or relative to our server.
+ * @param fileData - The file data to store in the database
+ * @param callback - The function to call once data is committed to the database (callback(err, message))
+ */
+exports.sendFile = (fileData, callback) => {
+    fileData.timestamp = new Date();
+    new Message(fileData).save((err, message) => {
+        if (err) {
+            console.error("Could not save file data to the database!");
+            console.error(err);
+            callback(err);
+            return;
+        }
+        console.log("File data saved!");
+        callback(undefined, message);
+    });
+};
+
+/**
  * Message should be a fully formatted message (ie room, content, sender, and is_file all set. Server will set the timestamp.)
  * The room is derived from the message object itself.
  * @param message - The fully formatted message to send.
