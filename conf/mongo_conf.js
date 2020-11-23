@@ -31,10 +31,10 @@ mongoose.connect('mongodb+srv://admin:Ydp4ZCmttqp2zPj@harmony-main.784cu.mongodb
 });
 
 let userSchema = mongoose.Schema({
-    avatar: String,
     username: String,
     password: String,
-    joined_rooms: [String]
+    joined_rooms: [String],
+    avatar: String
 });
 
 let roomSchema = mongoose.Schema({
@@ -44,7 +44,8 @@ let roomSchema = mongoose.Schema({
     nicknames: [{
         name: String,
         nick: String
-    }]
+    }],
+    roomAvatar: String
 });
 
 let messageSchema = mongoose.Schema({

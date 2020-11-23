@@ -129,3 +129,11 @@ textarea{
   ::-webkit-scrollbar-thumb:hover {
     background: #111; 
   }
+
+  /* Avatar */
+  #avatar {
+      margin-top: 10px;
+      margin-left: 50px;
+      width: 100px;
+      height: 100px;
+  }

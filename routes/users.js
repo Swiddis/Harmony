@@ -9,6 +9,7 @@ exports.createUser = (req, res) => {
     let user = {
         username: req.body.username,
         password: req.body.password,
+        avatar: `https://ui-avatars.com/api/size=256&name=${username}`
     };
 
     db.createUser(user, (err, user) => buildCreationResponse(res, err, user));
