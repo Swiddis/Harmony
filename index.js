@@ -4,8 +4,10 @@ const path = require('path');
 const render = require('./routes/render');
 const rooms = require('./routes/rooms');
 const users = require('./routes/users');
+const media = require('./routes/media');
 const bodyParser = require('body-parser');
-const expressSession = require("express-session");
+const expressSession = require('express-session');
+const multer = require('multer');
 
 const app = express();
 
@@ -14,6 +16,9 @@ const io = require('socket.io')(server);
 const Client = require('./routes/client');
 io.on('connection', (socket) => new Client(io, socket));
 
+const upload = multer({
+    dest: './public/uploads'
+});
 
 app.set('view engine', 'pug');
 app.set('views', __dirname + '/views');
@@ -60,6 +65,12 @@ app.get('/user/authenticate', users.authenticateUser);
 
 app.get("/signup", render.signUp);
 app.post("/signup", urlencodedParser, users.createUser); // Redundant?
+
+app.post(
+    '/media',
+    upload.single('media'),
+    media.uploadMedia
+)
 
 //TODO Development purposes. Will be removed for prod.
 app.get('/testsocket', (req, res) => {
