@@ -13,7 +13,7 @@ exports.uploadMedia = (req, res) => {
         response = {
             'timestamp': new Date().toISOString(),
             'status': 200,
-            'path': '../public/uploads/' + targetPath
+            'path': 'uploads/' + storageName
         };
         res.json(response);
     });
