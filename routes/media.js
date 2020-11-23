@@ -3,7 +3,7 @@ const fs = require('fs');
 
 // Based on https://stackoverflow.com/a/15773267
 exports.uploadMedia = (req, res) => {
-    const tempPath = req.file.path;
+    const tempPath = req.media.path;
 
     const storageName = randomFileName(path.extname(req.file.originalname).toLowerCase());
     const targetPath = path.join(__dirname, '../public/uploads/' + storageName);
