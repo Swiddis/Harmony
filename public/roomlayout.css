@@ -8,7 +8,7 @@
 }
 
 /* Left (Room Icon) Container*/
-#left_content{
+#left_content, #rooms_container{
     width: 6em;
     height: 100%;
     background-color: #202225;

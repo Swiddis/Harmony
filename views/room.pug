@@ -7,14 +7,14 @@ html
     body
         div(id="page_container")
             div(id="left_content")
-                span(class="room")
+                div(id="rooms_container")
                 span(id="new_room")
             div(id="middle_content")
                 div(id="display_messages_container")
                     div(class="message_box")
-                        span(class="avatar")
-                        span(class="name") Nonexistant:
-                        span(class="message") Welcome to the Room!
+                        //span(class="avatar")
+                        //span(class="name")
+                        //span(class="message") 
                 div(id="input_message_container")
                     textarea(id="my_message" placeholder="Message" onkeypress="return submitOnEnter(event);")
                     span(id="send_message_button" class="button") Send

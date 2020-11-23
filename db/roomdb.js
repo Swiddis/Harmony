@@ -54,6 +54,10 @@ exports.createRoom = (room, callback) => {
  * @param callback - A function to be called. Will be called as callback(err, room)
  */
 exports.getRoom = (id, callback) => {
+    if (!id) {
+        callback(new Error("Room id not defined"));
+        return;
+    }
     // We'll cache rooms in memory so we don't always have to query the database
     for (let room of room_cache) {
         if (room.room_id == id) {
@@ -85,7 +89,7 @@ exports.getRoom = (id, callback) => {
  * @param callback - The callback function.
  */
 exports.getMessages = (room, callback) => {
-    Message.find({room}, null, {sort: {date: -1}}, (err, messages) => {
+    Message.find({room}, null, {sort: {timestamp: -1}}, (err, messages) => {
         if (err) {
             console.error("Could not find messages for room '" + room + "'");
             console.error(err);
@@ -104,7 +108,7 @@ exports.getMessages = (room, callback) => {
  */
 //Possibly change this to a general 'sendToRoom' to accept files as well? Files are going to be fun.
 exports.sendMessage = (message, callback) => {
-    let room_id = message.room_id;
+    let room_id = message.room;
     new Message(message).save((err, message) => {
         if (err) {
             console.error("Could not save message to the database!");

@@ -29,7 +29,7 @@ function Client(io, socket) {
         if (!socket.username)
             socket.username = message.username;
         let db_message = {
-            room_id: message.room_id,
+            room: message.room_id,
             content: message.message,
             sender: message.username,
             is_file: false,

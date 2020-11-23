@@ -1,6 +1,5 @@
 const config = require("../config.json");
 const {User} = require('../conf/mongo_conf');
-const bcrypt = require("bcrypt-nodejs");
 const userdb = require('../db/userdb');
 
 var allowed;
@@ -28,7 +27,7 @@ exports.signUp = (req, res) => {
 
 exports.rooms = (req, res) => {
     User.find((err, user) => {
-        res.render("Room", {
+        res.render("room", {
             'title': "Room",
             users: user,
             //The user should exist and be passed into the render

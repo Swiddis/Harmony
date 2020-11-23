@@ -83,8 +83,12 @@ const buildResponse = (res, err, user, created = false) => {
             'path': '/user' + user_path
         }
         if (user) {
-            user.password = undefined; //Make sure not to send back the password!
-            response.data = user;
+            let tempUser = {
+                username: user.username,
+                joined_rooms: user.joined_rooms,
+                avatar: user.avatar
+            }; //Make sure not to send back the password!
+            response.data = tempUser;
         }
         if (created) response.status = 201;
     }
