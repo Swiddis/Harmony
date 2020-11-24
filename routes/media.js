@@ -29,7 +29,8 @@ exports.uploadMedia = (req, res) => {
 };
 
 exports.downloadMedia = (req, res) => {
-    // TODO
+    let file_name = res.body.file_name;
+    return res.sendFile('../public/uploads/' + file_name);
 }
 
 const buildResponse = (res, err, fname) => {
