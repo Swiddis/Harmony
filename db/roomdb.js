@@ -122,7 +122,7 @@ exports.sendFile = (data, callback, res) => {
             return;
         }
         console.log("File data saved!");
-        callback(res, undefined, data.content.split('::')[1]);
+        callback(res, undefined, data.content.split('::')[0]);
     });
 };
 

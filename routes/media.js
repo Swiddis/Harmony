@@ -5,16 +5,22 @@ const image_formats = ['.png', '.jpg', '.gif']
 
 // Based on https://stackoverflow.com/a/15773267
 // Expects multi-part post body, with the file
-// contained in the "media" field and sender information
+// contained in the "file" field and sender information
 // contained in "source"
 exports.uploadMedia = (req, res) => {
+    console.log(req);
+    console.log("\n\n\n");
+    console.log(req.body);
+    console.log("\n\n\n");
+    console.log(req.file);
     const data = {
-        sender: req.source.sender,
-        room_id: req.source.room_id,
+        sender: req.body.sender,
+        room_id: req.body.room_id,
     }
+    console.log(data);
 
-    const temp_path = req.media.path;
-    const storage_name = randomFileName(path.extname(req.media.path).toLowerCase());
+    const temp_path = req.file.path;
+    const storage_name = randomFileName(path.extname(req.file.originalname).toLowerCase());
     const target_path = path.join(__dirname, '../public/uploads/' + storage_name);
 
     fs.rename(temp_path, target_path, err => {
@@ -22,9 +28,9 @@ exports.uploadMedia = (req, res) => {
 
         db.sendFile({
             'is_file': true,
-            'content': `${target_path}::${path.basename(temp_path)}`,
+            'content': `/media/${storage_name}::${path.basename(req.file.originalname)}`,
             sender: data.sender,
-            room_id: data.room_id
+            room: data.room_id
         }, buildResponse, res)
     });
 };
@@ -51,7 +57,7 @@ const buildResponse = (res, err, fname) => {
         response = {
             'timestamp': new Date().toISOString(),
             'status': 200,
-            'path': 'media/' + fname
+            'path': fname
         };
     }
     res.json(response);
@@ -62,7 +68,7 @@ const randomFileName = (ext) => {
     let fname;
     do {
         let id = Math.floor(Math.random() * Math.pow(10, fid_magnitude));
-        fname = ('0'.repeat(fid_magnitude) + id).substr(-len) + fid_magnitude;
-    } while (path.existsSync('../public/uploads/' + fname));
-    return fname;
+        fname = ('0'.repeat(fid_magnitude) + id).substr(-fid_magnitude) + fid_magnitude;
+    } while (fs.existsSync('/public/uploads/' + fname));
+    return fname + ext;
 }

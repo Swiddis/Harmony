@@ -11,29 +11,29 @@ const join_modal = document.getElementById("join_room_modal");
 let username = document.getElementById("username_label").innerText;
 let currentRoomId; //Is assigned whenever in renderRoomContent() is called (meaning onLoad or when clicking on bubble) 
 
-async function fetchUser(username){
+async function fetchUser(username) {
     let response = await fetch(`/user/${username}`);
     let data = await response.text();
     return JSON.parse(data).data;
 };
 
 //Does not include messages
-async function fetchRoomData(roomid){
+async function fetchRoomData(roomid) {
     let response = await fetch(`/room/${roomid}`);
     let data = await response.text();
     console.log(JSON.parse(data));
 };
 
-async function fetchRoomMessages(roomid){
+async function fetchRoomMessages(roomid) {
     let response = await fetch(`/messages/${roomid}`);
     let data = await response.text();
     return JSON.parse(data).data;
 };
 
-window.onload = function(){
-    fetchUser(username).then(function(user){
+window.onload = function () {
+    fetchUser(username).then(function (user) {
         console.log(user);
-        if(user.joined_rooms.length > 0){
+        if (user.joined_rooms.length > 0) {
             renderRoomList();
             //Currently when first loading in, will just load the first room in the list
             renderRoomContent(user.joined_rooms[0]);
@@ -45,7 +45,7 @@ const socket = io.connect(document.location.host, {query: `username=${username}`
 
 //Standard Communication Functions
 const sendMessage = () => {
-    if(message_box.value.length > 2000){
+    if (message_box.value.length > 2000) {
         //TODO: Display to user message is to long! 
         console.log("Message To Long!");
         return;
@@ -59,14 +59,14 @@ const sendMessage = () => {
 socket.on('message', msg => {
     console.log(msg);
     //for now if msg recieved is from currentroomid display
-    if(msg.room_id == currentRoomId){
-        messages_container.innerHTML += "<span class='message_box'>" + 
-                                        "<span class='avatar'></span>" +
-                                        "<span class='name'>" + msg.username +  "</span>" + 
-                                        "<span class='message'>" + msg.message + "</span>" + 
-                                     "</span>";
+    if (msg.room_id == currentRoomId) {
+        messages_container.innerHTML += "<span class='message_box'>" +
+            "<span class='avatar'></span>" +
+            "<span class='name'>" + msg.username + "</span>" +
+            "<span class='message'>" + msg.message + "</span>" +
+            "</span>";
         //TODO make scroll to bottom every message only when already scrolled down 
-    messages_container.scrollTop = messages_container.scrollHeight;
+        messages_container.scrollTop = messages_container.scrollHeight;
     }
 });
 
@@ -86,21 +86,21 @@ const createRoom = () => {
     fetch('/room', {
         method: 'POST',
         headers: {
-        'Content-Type': 'application/json',
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify(room)
     })
-    .then(response => {
-        console.log(response.status);
-        if(response.status === 204){
-            console.log("CREATED ROOM SUCCESSFULLy!");
-            //TODO Quick Fix so you don't have to manually join the room after making it
-            document.getElementById("join_id").value = room_id;
-            document.getElementById("join_password").value = password;
-            joinRoom();
-            closeModals();
-        }
-    });
+        .then(response => {
+            console.log(response.status);
+            if (response.status === 204) {
+                console.log("CREATED ROOM SUCCESSFULLy!");
+                //TODO Quick Fix so you don't have to manually join the room after making it
+                document.getElementById("join_id").value = room_id;
+                document.getElementById("join_password").value = password;
+                joinRoom();
+                closeModals();
+            }
+        });
 };
 
 const joinRoom = () => {
@@ -112,34 +112,34 @@ const joinRoom = () => {
             "Authorization": "Basic " + btoa(username + ":" + password)
         }),
     })
-    .then(response => {
-        if(response.status === 200){
-            console.log("JOINED ROOM: " + room_id);
-            renderRoomList();
-            renderRoomContent(room_id);
-            closeModals();
-        }
+        .then(response => {
+            if (response.status === 200) {
+                console.log("JOINED ROOM: " + room_id);
+                renderRoomList();
+                renderRoomContent(room_id);
+                closeModals();
+            }
 
-    });
+        });
 };
 
 //Render Functions
 const renderRoomContent = (roomid) => {
-    if(currentRoomId === roomid){
+    if (currentRoomId === roomid) {
         return;
     }
     console.log("RENDERING ROOM: " + roomid);
     messages_container.innerHTML = "";
-    fetchRoomMessages(roomid).then(function(messages){
+    fetchRoomMessages(roomid).then(function (messages) {
         currentRoomId = roomid;
         document.getElementById("room_id").value = currentRoomId;
         //Currently the messages array is backwards so will do it this way
-        for(let i = messages.length - 1; i >= 0; i--){
-            messages_container.innerHTML += "<span class='message_box'>" + 
-                                                "<span class='avatar'></span>" +
-                                                "<span class='name'>" + messages[i].sender +  "</span>" + 
-                                                "<span class='message'>" + messages[i].content + "</span>" + 
-                                            "</span>";
+        for (let i = messages.length - 1; i >= 0; i--) {
+            messages_container.innerHTML += "<span class='message_box'>" +
+                "<span class='avatar'></span>" +
+                "<span class='name'>" + messages[i].sender + "</span>" +
+                "<span class='message'>" + messages[i].content + "</span>" +
+                "</span>";
         }
     });
 };
@@ -147,9 +147,9 @@ const renderRoomContent = (roomid) => {
 const renderRoomList = () => {
     rooms_container.innerHTML = "";
 
-    fetchUser(username).then(function(user){
+    fetchUser(username).then(function (user) {
         console.log(user);
-        for(let i = 0; i < user.joined_rooms.length; i++){
+        for (let i = 0; i < user.joined_rooms.length; i++) {
             rooms_container.innerHTML += `<span class='room' id='${user.joined_rooms[i]}' style='text-align:center' onclick='renderRoomContent("${user.joined_rooms[i]}");'>${user.joined_rooms[i]}</span>`;
         }
     });
@@ -157,7 +157,6 @@ const renderRoomList = () => {
 const makeRoomClickable = (roomElementId) => {
     document.getElementById(roomElementId).addEventListener("click", console.log(roomElementId));
 };
-
 
 
 //Assign Buttons Functions
