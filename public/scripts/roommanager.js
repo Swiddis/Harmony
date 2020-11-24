@@ -59,7 +59,7 @@ const sendMessage = () => {
 socket.on('message', msg => {
     console.log(msg);
     //for now if msg recieved is from currentroomid display
-    if(msg.room_id = currentRoomId){
+    if(msg.room_id == currentRoomId){
         messages_container.innerHTML += "<span class='message_box'>" + 
                                         "<span class='avatar'></span>" +
                                         "<span class='name'>" + msg.username +  "</span>" + 
