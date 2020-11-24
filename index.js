@@ -6,15 +6,25 @@ const rooms = require('./routes/rooms');
 const users = require('./routes/users');
 const media = require('./routes/media');
 const bodyParser = require('body-parser');
-const expressSession = require('express-session');
+const expressSession = require("express-session");
 const multer = require('multer');
+const ioManager = require("./io-manager");
+/*
+We can interface with the ioManager like this
+
+    let user = ioManager.getClientByUsername("Travja");
+    if (user) {
+        //This broadcasts a message as "Travja" to room ID "MyRoom".
+        // Because the socket is called Travja, the "TEST BOT" username supplied is overwritten.
+        user.broadcastMessage({message: "Testing socket stuff", room_id: "MyRoom", username: "TEST BOT"});
+    }
+ */
 
 const app = express();
 
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
-const Client = require('./routes/client');
-io.on('connection', (socket) => new Client(io, socket));
+ioManager.init(io);
 
 const upload = multer({
     dest: './public/uploads'
@@ -75,7 +85,8 @@ app.post(
 //TODO Development purposes. Will be removed for prod.
 app.get('/testsocket', (req, res) => {
     res.render('testsocket', {
-        username: (req.session.user ? req.session.user.username : undefined)
+        username: (req.session.user ? req.session.user.username : undefined),
+        title: "Test Socket"
     });
 });
 

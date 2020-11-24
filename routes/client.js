@@ -1,6 +1,9 @@
-let db = require('../db/roomdb');
+const db = require('../db/roomdb');
+const ioManager = require('../io-manager');
 
 function Client(io, socket) {
+
+    this.socket = socket;
     /*
     Message object should be formatted as the following:
     {
@@ -10,6 +13,21 @@ function Client(io, socket) {
     }
     */
 
+    this.getSocket = () => socket;
+    this.getUsername = () => socket.username;
+
+    this.disconnect = () => {
+        ioManager.removeClient(this);
+        if (!socket.username || socket.username == "") {
+            return;
+        }
+        io.emit('message', {username: socket.username, message: "disconnected."});
+    }
+
+    socket.on('disconnect', this.disconnect);
+
+
+    //If there is no supplied username, don't do anything else!
     if (!socket.handshake.query.username) {
         console.error("User connected without a username!");
         return;
@@ -26,12 +44,15 @@ function Client(io, socket) {
     };
 
     this.broadcastMessage = (message) => {
-        if (!socket.username)
+        if (!socket.username && message.username)
             socket.username = message.username;
+        if (!message.username && socket.username)
+            message.username = socket.username;
+
         let db_message = {
             room: message.room_id,
             content: message.message,
-            sender: message.username,
+            sender: socket.username,
             is_file: false,
             timestamp: new Date()
         }
@@ -43,9 +64,11 @@ function Client(io, socket) {
             db.getRoom(message.room_id, (err, room) => {
                 let nickname;
                 // Find the user's nickname (if applicable) and send it along with the message
-                for (let arr of room.nicknames) {
-                    if (arr[0] == message.username)
-                        nickname = arr[1];
+                if (room.nicknames) {
+                    for (let arr of room.nicknames) {
+                        if (arr[0] == message.username)
+                            nickname = arr[1];
+                    }
                 }
 
                 io.emit('message', {
@@ -64,14 +87,6 @@ function Client(io, socket) {
         }
     };
 
-    this.disconnect = () => {
-        if (!socket.username || socket.username == "") {
-            return;
-        }
-        io.emit('message', {username: socket.username, message: "disconnected."});
-    }
-
-    socket.on('disconnect', this.disconnect);
     socket.on('message', (message) => this.broadcastMessage(message));
     return this;
 }
