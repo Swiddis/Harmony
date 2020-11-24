@@ -182,7 +182,8 @@ exports.authorizeRoomAccess = (username, room_id, password, callback) => {
 
             if (!room.password || bcrypt.compareSync(password, room.password)) {
                 //Authenticated!
-                user.joined_rooms.push(room.room_id);
+                if (!user.joined_rooms.includes(room.room_id))
+                    user.joined_rooms.push(room.room_id);
                 callback(undefined, ["USER", "ADMIN"]);
                 new User(user).save();
             } else {
