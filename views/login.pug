@@ -2,10 +2,10 @@ extends navBar
 
 block content
     form(method='post' action="/login" id="loginForm")
-        div(id="userName")
-            label(for="usernameInput") Username:
+        div(id="userNameBox")
+            label(for="username") Username:
             br
-            input(type="text" id="usernameInput" name="username")
+            input(type="text" id="username" name="username")
         br
         div(id="passcode")
             label(for="password") Password:

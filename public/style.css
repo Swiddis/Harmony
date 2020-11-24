@@ -58,7 +58,7 @@ a:hover {
     margin: 50px 36px;
 }
 
-#userName, #passcode {
+#userNameBox, #passcode {
     padding: 12px 20px;
     margin: 8px 0;
     width: 100%;
@@ -108,7 +108,7 @@ label {
     margin: 50px 36px;
 }
 
-#usernameInput, #password {
+#username, #password {
     padding: 12px 20px;
     margin: 8px 0;
     width: 60%;

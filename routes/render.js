@@ -26,7 +26,19 @@ exports.signUp = (req, res) => {
 }
 
 exports.rooms = (req, res) => {
-    User.find((err, user) => {
+    if(!req.session.user) {
+        res.redirect("/login");
+        return;
+    }
+    User.findOne({username: req.session.user.username}, (err, user) => {
+        if(err) {
+            res.json(err);
+            return;
+        }
+        if(!user) {
+            res.redirect("/login");
+            return;
+        }
         res.render("room", {
             'title': "Room",
             users: user,
@@ -34,8 +46,9 @@ exports.rooms = (req, res) => {
             // Since this should be an authenticated end-point, this works.
             // TestUser1's password is testing123
             // Other accounts should be able to be created using the sign up page.
-            username: (req.session.user ? req.session.user.username : undefined)
-        })
+            username: user.username,
+            avatar: user.avatar
+        });
     })
 }
 
