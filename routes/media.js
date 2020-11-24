@@ -1,26 +1,54 @@
 const path = require('path');
 const fs = require('fs');
+const db = require('../db/roomdb.js');
 
 // Based on https://stackoverflow.com/a/15773267
+// Expects multi-part post body, with the file
+// contained in the "media" field and sender information
+// contained in "source"
 exports.uploadMedia = (req, res) => {
-    const tempPath = req.media.path;
+    const data = {
+        sender: req.source.sender,
+        room_id: req.source.room_id,
+    }
 
-    const storageName = randomFileName(path.extname(req.file.originalname).toLowerCase());
-    const targetPath = path.join(__dirname, '../public/uploads/' + storageName);
+    const temp_path = req.media.path;
+    const storage_name = randomFileName(path.extname(req.media.path).toLowerCase());
+    const target_path = path.join(__dirname, '../public/uploads/' + storage_name);
 
-    fs.rename(tempPath, targetPath, err => {
-        if (err) throw err;
-        response = {
-            'timestamp': new Date().toISOString(),
-            'status': 200,
-            'path': 'uploads/' + storageName
-        };
-        res.json(response);
+    fs.rename(temp_path, target_path, err => {
+        if (err) buildResponse(err);
+
+        db.sendFile({
+            'is_file': true,
+            'content': `${target_path}::${path.basename(temp_path)}`,
+            sender: data.sender,
+            room_id: data.room_id
+        }, buildResponse, res)
     });
 };
 
 exports.downloadMedia = (req, res) => {
+    // TODO
+}
 
+const buildResponse = (res, err, fname) => {
+    let response;
+    if (err) {
+        response = {
+            'timestamp': new Date().toISOString(),
+            'status': 500,
+            'path': '/media',
+            'error': err.message
+        };
+    } else {
+        response = {
+            'timestamp': new Date().toISOString(),
+            'status': 200,
+            'path': 'media/' + fname
+        };
+    }
+    res.json(response);
 }
 
 const fid_magnitude = 10;

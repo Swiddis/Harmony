@@ -112,17 +112,17 @@ exports.getMessages = (room, callback) => {
  * @param fileData - The file data to store in the database
  * @param callback - The function to call once data is committed to the database (callback(err, message))
  */
-exports.sendFile = (fileData, callback) => {
-    fileData.timestamp = new Date();
-    new Message(fileData).save((err, message) => {
+exports.sendFile = (data, callback, res) => {
+    data.timestamp = new Date();
+    new Message(data).save((err, message) => {
         if (err) {
             console.error("Could not save file data to the database!");
             console.error(err);
-            callback(err);
+            callback(res, err);
             return;
         }
         console.log("File data saved!");
-        callback(undefined, message);
+        callback(res, undefined, data.content.split('::')[1]);
     });
 };
 
