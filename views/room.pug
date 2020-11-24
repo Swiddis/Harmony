@@ -19,7 +19,7 @@ html
                     textarea(id="my_message" placeholder="Message" onkeypress="return submitOnEnter(event);")
                     span(id="send_message_button" class="button") Send
             div(id="right_content")
-                img(id="avatar" src=avatar)
+                img(class="avatar" id="avatarImg" src=avatar)
                 div(id="username_label")=username
                 div(id="logout") 
                     a(href="/logout") Logout

@@ -59,14 +59,14 @@ body{
     width: 90%;
     padding: 1em;
 }
+
 .avatar{
-    background-color: #fff;
-    padding: 1.5em;
-    margin: 0 1em;
-    border: 2px solid #000;
-    border-radius: 100px;
+    margin: 10px 50px;
+    border-radius: 50px;
     display: inline-flex;
     float: left;
+    width: 100px;
+    height: 100px;
 }
 .message_name{
     padding: 2em;
@@ -113,27 +113,19 @@ textarea{
 /* Scrollbar (Note is only supported on: (Chrome, Edge, Safari and Opera)*/
 ::-webkit-scrollbar {
     width: 12px;
-  }
+}
   
-  /* Track 
-  ::-webkit-scrollbar-track {
-  }*/
-   
-  /* Handle */
-  ::-webkit-scrollbar-thumb {
-    background-color: #222; 
-    border-radius: 10px;
-  }
-  
-  /* Handle on hover */
-  ::-webkit-scrollbar-thumb:hover {
-    background: #111; 
-  }
+/* Track 
+::-webkit-scrollbar-track {
+}*/
 
-  /* Avatar */
-  #avatar {
-      margin-top: 10px;
-      margin-left: 50px;
-      width: 100px;
-      height: 100px;
-  }
+/* Handle */
+::-webkit-scrollbar-thumb {
+background-color: #222; 
+border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+background: #111; 
+}
