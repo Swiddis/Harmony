@@ -132,6 +132,7 @@ const renderRoomContent = (roomid) => {
     messages_container.innerHTML = "";
     fetchRoomMessages(roomid).then(function(messages){
         currentRoomId = roomid;
+        document.getElementById("room_id").value = currentRoomId;
         //Currently the messages array is backwards so will do it this way
         for(let i = messages.length - 1; i >= 0; i--){
             messages_container.innerHTML += "<span class='message_box'>" + 

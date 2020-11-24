@@ -16,8 +16,11 @@ html
                         //span(class="name")
                         //span(class="message") 
                 div(id="input_message_container")
-                    form(id="send_media" action="/media" method="POST")
+                    form(id="send_media" action="/media" method="POST" enctype="multipart/form-data")
                         input(type="file" id="my_file" name="filename")
+                        input(type="text" id="sender" name="sender" value=username style="display: none")
+                        input(type="text" id="room_id" name="room_id" style="display: none")
+                        br
                         input(type="submit")
                         //TODO have a modal popup after choosing a file instead of submit button
                     textarea(id="my_message" placeholder="Message" onkeypress="return submitOnEnter(event);")
@@ -58,6 +61,7 @@ html
                     input(type="text" id="join_id")
                 p Password:
                     input(type="text" id="join_password")
-                span(id="join_room_button" class="button") Join Room
+                span(id="join_room_button" class="button") Join 
+        div(id="nickname_modal" class="modal")
         script(src="/scripts/roommanager.js")
         script(src="/scripts/roomscript.js")
