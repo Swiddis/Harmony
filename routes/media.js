@@ -31,10 +31,10 @@ exports.uploadMedia = (req, res) => {
 
 exports.getMedia = (req, res) => {
     let file_name = req.params.file_name;
-    if (image_formats.contains(path.extname(file_name).toLowerCase())) {
-        return res.sendFile('../public/uploads/' + file_name)
+    if (image_formats.includes(path.extname(file_name).toLowerCase())) {
+        return res.sendFile(path.resolve('./public/uploads/' + file_name));
     } else {
-        return res.download('../public/uploads/' + file_name);
+        return res.download(path.resolve('./public/uploads/' + file_name));
     }
 }
 
