@@ -16,13 +16,20 @@ html
                         //span(class="name")
                         //span(class="message") 
                 div(id="input_message_container")
+                    form(id="send_media" action="/media" method="POST")
+                        input(type="file" id="my_file" name="filename")
+                        input(type="submit")
+                        //TODO have a modal popup after choosing a file instead of submit button
                     textarea(id="my_message" placeholder="Message" onkeypress="return submitOnEnter(event);")
                     span(id="send_message_button" class="button") Send
             div(id="right_content")
                 img(class="avatar" id="avatarImg" src=avatar)
                 div(id="username_label")=username
                 div(id="logout") 
-                    a(href="/logout") Logout
+                    a(href="/logout") 
+                //TODO: Nickname Modal Popup from this button's click
+                span(id="change_nickname_button" class="button") Change Nickname
+                
 
         div(id="room_modal" class="modal")
             div(class="modal_content")
@@ -52,4 +59,5 @@ html
                 p Password:
                     input(type="text" id="join_password")
                 span(id="join_room_button" class="button") Join Room
-        script(src="/scripts/testmanager.js")
+        script(src="/scripts/roommanager.js")
+        script(src="/scripts/roomscript.js")
