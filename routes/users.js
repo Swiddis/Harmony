@@ -2,6 +2,7 @@
 
 const {response} = require("express");
 const db = require("../db/userdb");
+const roomdb = require("../db/roomdb");
 
 // Post to /user, accepts input in JSON format
 exports.createUser = (req, res) => {
@@ -13,6 +14,7 @@ exports.createUser = (req, res) => {
     };
 
     db.createUser(user, (err, user) => buildCreationResponse(res, err, user));
+    roomdb.authorizeRoomAccess(user.username, 'public', '', buildAuthResponse);
 };
 
 // User GET API endpoint
