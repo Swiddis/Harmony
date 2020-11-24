@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const db = require('../db/roomdb.js');
+const image_formats = ['.png', '.jpg', '.gif']
 
 // Based on https://stackoverflow.com/a/15773267
 // Expects multi-part post body, with the file
@@ -28,9 +29,13 @@ exports.uploadMedia = (req, res) => {
     });
 };
 
-exports.downloadMedia = (req, res) => {
-    let file_name = res.body.file_name;
-    return res.sendFile('../public/uploads/' + file_name);
+exports.getMedia = (req, res) => {
+    let file_name = req.params.file_name;
+    if (image_formats.contains(path.extname(file_name).toLowerCase())) {
+        return res.sendFile('../public/uploads/' + file_name)
+    } else {
+        return res.download('../public/uploads/' + file_name);
+    }
 }
 
 const buildResponse = (res, err, fname) => {

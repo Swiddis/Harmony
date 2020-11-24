@@ -80,7 +80,8 @@ app.post(
     '/media',
     upload.single('media'),
     media.uploadMedia
-)
+);
+app.get('/media/:file_name', media.getMedia);
 
 //TODO Development purposes. Will be removed for prod.
 app.get('/testsocket', (req, res) => {
