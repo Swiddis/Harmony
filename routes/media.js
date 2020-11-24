@@ -8,16 +8,10 @@ const image_formats = ['.png', '.jpg', '.gif']
 // contained in the "file" field and sender information
 // contained in "source"
 exports.uploadMedia = (req, res) => {
-    console.log(req);
-    console.log("\n\n\n");
-    console.log(req.body);
-    console.log("\n\n\n");
-    console.log(req.file);
     const data = {
         sender: req.body.sender,
         room_id: req.body.room_id,
     }
-    console.log(data);
 
     const temp_path = req.file.path;
     const storage_name = randomFileName(path.extname(req.file.originalname).toLowerCase());
