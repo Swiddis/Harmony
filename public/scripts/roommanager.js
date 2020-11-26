@@ -5,6 +5,7 @@ const rooms_container = document.getElementById("rooms_container");
 const messages_container = document.getElementById("display_messages_container");
 const message_box = document.getElementById("my_message");
 const modal = document.getElementById("room_modal");
+const nickname_modal = document.getElementById("nickname_modal");
 const create_modal = document.getElementById("create_room_modal");
 const join_modal = document.getElementById("join_room_modal");
 
@@ -36,6 +37,7 @@ window.onload = function () {
         if (user.joined_rooms.length > 0) {
             renderRoomList();
             //Currently when first loading in, will just load the first room in the list
+            console.log("JOINED_ROOMS:" + user.joined_rooms[0]);
             renderRoomContent(user.joined_rooms[0]);
         }
     });
@@ -56,15 +58,28 @@ const sendMessage = () => {
     return false;
 };
 
+const sendFile = () => {
+    
+    var form = document.forms.namedItem("send_media");
+    var formData = new FormData(form);
+
+    formData.append("sender", username);
+    formData.append("room_id", currentRoomId);
+
+    var request = new XMLHttpRequest();
+    request.open('POST', "/media")
+    request.onload = function(){
+        console.log(request.status);
+    }
+    request.send(formData);
+};
+
 socket.on('message', msg => {
     console.log(msg);
     //for now if msg recieved is from currentroomid display
-    if (msg.room_id == currentRoomId) {
-        messages_container.innerHTML += "<span class='message_box'>" +
-            "<span class='avatar'></span>" +
-            "<span class='name'>" + msg.username + "</span>" +
-            "<span class='message'>" + msg.message + "</span>" +
-            "</span>";
+    if (msg.room_id === currentRoomId) {
+        messages_container.innerHTML += formatRoomMessage("NO_AVATAR_YET", msg.username, msg.message, false);
+        
         //TODO make scroll to bottom every message only when already scrolled down 
         messages_container.scrollTop = messages_container.scrollHeight;
     }
@@ -124,22 +139,59 @@ const joinRoom = () => {
 };
 
 //Render Functions
+const formatRoomMessage = (avatar, username, message, isFile) => {
+    let imageRegex = /\.(gif|jpg|png)/;
+    let formattedMessage = "";
+
+    console.log(message);
+
+    //If Message is a file
+    if(isFile){
+        //If message is an image (render it inline)
+        if(imageRegex.test(message)){
+            let index = message.search(imageRegex) + 4;
+            let imgLink = message.slice(0, index);
+            let imgAlt = message.slice(index + 2);
+
+            formattedMessage = 
+            "<span class='message_box'>" +
+                "<span class='avatar'></span>" +
+                "<span class='name'>" + username + "</span>" +
+                "<span class='message'>" + 
+                    `<a href='${imgLink}' download=${imgAlt}><img src='${imgLink}' alt='${imgAlt}' title='${imgAlt}'/></a>`
+                "</span>" +
+            "</span>";
+        }
+        
+        //Allow downloading the file
+
+
+    }else{
+        formattedMessage = 
+        "<span class='message_box'>" +
+            "<span class='avatar'></span>" +
+            "<span class='name'>" + username + "</span>" +
+            "<span class='message'>" + message + "</span>" +
+        "</span>";
+    }
+
+    return formattedMessage;
+};
+
 const renderRoomContent = (roomid) => {
+    //So the room doesn't rerender the same room if clicked again
     if (currentRoomId === roomid) {
         return;
     }
+
     console.log("RENDERING ROOM: " + roomid);
     messages_container.innerHTML = "";
+
     fetchRoomMessages(roomid).then(function (messages) {
         currentRoomId = roomid;
-        document.getElementById("room_id").value = currentRoomId;
         //Currently the messages array is backwards so will do it this way
         for (let i = messages.length - 1; i >= 0; i--) {
-            messages_container.innerHTML += "<span class='message_box'>" +
-                "<span class='avatar'></span>" +
-                "<span class='name'>" + messages[i].sender + "</span>" +
-                "<span class='message'>" + messages[i].content + "</span>" +
-                "</span>";
+            messages_container.innerHTML += formatRoomMessage("NO_AVATAR_YET", messages[i].sender, messages[i].content, messages[i].is_file);
         }
     });
 };
@@ -158,8 +210,14 @@ const makeRoomClickable = (roomElementId) => {
     document.getElementById(roomElementId).addEventListener("click", console.log(roomElementId));
 };
 
+//TODO Come back to make downloading files more fancy
+const downloadFile = (file) => {
+    var element = document.createElement('a');
+};
+
 
 //Assign Buttons Functions
 document.getElementById("send_message_button").addEventListener("click", sendMessage);
 document.getElementById("create_room_button").addEventListener("click", createRoom);
 document.getElementById("join_room_button").addEventListener("click", joinRoom);
+document.getElementById("submit_file_button").addEventListener("click", sendFile);

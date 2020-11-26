@@ -16,13 +16,10 @@ html
                         //span(class="name")
                         //span(class="message") 
                 div(id="input_message_container")
-                    form(id="send_media" action="/media" method="POST" enctype="multipart/form-data")
+                    form(id="send_media" enctype="multipart/form-data")
                         input(type="file" id="my_file" name="media")
-                        input(type="text" id="sender" name="sender" value=username style="display: none")
-                        input(type="text" id="room_id" name="room_id" style="display: none")
-                        br
-                        input(type="submit")
-                        //TODO have a modal popup after choosing a file instead of submit button
+                    span(id="submit_file_button" class="button") Submit File
+                    //TODO have a modal popup after choosing a file instead of submit button
                     textarea(id="my_message" placeholder="Message" onkeypress="return submitOnEnter(event);")
                     span(id="send_message_button" class="button") Send
             div(id="right_content")
@@ -31,8 +28,7 @@ html
                 div(id="logout") 
                     a(href="/logout") 
                 //TODO: Nickname Modal Popup from this button's click
-                span(id="change_nickname_button" class="button") Change Nickname
-                
+                span(id="nickname_button" class="button") Change Nickname
 
         div(id="room_modal" class="modal")
             div(class="modal_content")
@@ -63,5 +59,10 @@ html
                     input(type="text" id="join_password")
                 span(id="join_room_button" class="button") Join 
         div(id="nickname_modal" class="modal")
+            div(class="modal_content") 
+                span(class="close") &times;
+                p Change Nickname
+                    input(type="text" id="change_nickname")
+                span(id="change_nickname_button" class="button") Change
         script(src="/scripts/roommanager.js")
         script(src="/scripts/roomscript.js")
