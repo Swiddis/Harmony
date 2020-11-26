@@ -70,6 +70,16 @@ const sendFile = () => {
     request.open('POST', "/media")
     request.onload = function(){
         console.log(request.status);
+        if(request.status === 200){
+            console.log(request.response);
+
+            socket.emit('message', {
+                username: username,
+                message: JSON.parse(request.response).path,
+                room_id: currentRoomId,
+                is_file: true
+            });
+        }
     }
     request.send(formData);
 };
@@ -78,7 +88,7 @@ socket.on('message', msg => {
     console.log(msg);
     //for now if msg recieved is from currentroomid display
     if (msg.room_id === currentRoomId) {
-        messages_container.innerHTML += formatRoomMessage("NO_AVATAR_YET", msg.username, msg.message, false);
+        messages_container.innerHTML += formatRoomMessage("NO_AVATAR_YET", msg.username, msg.message, msg.is_file);
         
         //TODO make scroll to bottom every message only when already scrolled down 
         messages_container.scrollTop = messages_container.scrollHeight;
@@ -140,32 +150,28 @@ const joinRoom = () => {
 
 //Render Functions
 const formatRoomMessage = (avatar, username, message, isFile) => {
-    let imageRegex = /\.(gif|jpg|png)/;
     let formattedMessage = "";
 
-    console.log(message);
-
     //If Message is a file
-    if(isFile){
-        //If message is an image (render it inline)
-        if(imageRegex.test(message)){
-            let index = message.search(imageRegex) + 4;
-            let imgLink = message.slice(0, index);
-            let imgAlt = message.slice(index + 2);
-
-            formattedMessage = 
+    if(isFile){ 
+        formattedMessage = 
             "<span class='message_box'>" +
                 "<span class='avatar'></span>" +
                 "<span class='name'>" + username + "</span>" +
-                "<span class='message'>" + 
-                    `<a href='${imgLink}' download=${imgAlt}><img src='${imgLink}' alt='${imgAlt}' title='${imgAlt}'/></a>`
-                "</span>" +
-            "</span>";
+                "<span class='message'>";
+
+        //If message is an image (render it inline)
+        if(isFileImage(message)){
+            let fileStr = splitFileString(message);
+            formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'><img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}'/></a>`
+        }else{
+            let fileStr = splitFileString(message);
+            //TODO downloaded files (only tested txt files) are not downloading with the correct name and instead id
+            formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'>${fileStr[1]}</a>`;
         }
         
-        //Allow downloading the file
-
-
+        formattedMessage += "</span></span>";
+        
     }else{
         formattedMessage = 
         "<span class='message_box'>" +
@@ -208,6 +214,16 @@ const renderRoomList = () => {
 };
 const makeRoomClickable = (roomElementId) => {
     document.getElementById(roomElementId).addEventListener("click", console.log(roomElementId));
+};
+
+//Helper Functions
+const isFileImage = (content) => {
+    let imageRegex = /\.(gif|jpg|png)/;
+    return /\.(gif|jpg|jpeg|png)/.test(content);
+};
+
+const splitFileString = (content) => {
+    return content.split("::");
 };
 
 //TODO Come back to make downloading files more fancy
