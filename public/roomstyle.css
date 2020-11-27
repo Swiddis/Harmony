@@ -61,12 +61,12 @@ body{
 }
 
 .avatar{
-    margin: 10px 27px;
+    margin: 10px 50px;
     border-radius: 90px;
     display: inline-flex;
     float: left;
-    width: 150px;
-    height: 150px;
+    width: 100px;
+    height: 100px;
 }
 
 .message_name{

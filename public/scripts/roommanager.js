@@ -105,7 +105,8 @@ const createRoom = () => {
         room_id: room_id,
         room_title: room_title,
         password: password,
-        nicknames: [{name: username, nick: nickname}]
+        nicknames: [{name: username, nick: nickname}],
+        roomAvatar: "./images/room.png"
     };
 
     fetch('/room', {
@@ -207,8 +208,8 @@ const renderRoomList = () => {
 
     fetchUser(username).then(function (user) {
         console.log(user);
-        for (let i = 0; i < user.joined_rooms.length; i++) {
-            rooms_container.innerHTML += `<span class='room' id='${user.joined_rooms[i]}' style='text-align:center' onclick='renderRoomContent("${user.joined_rooms[i]}");'>${user.joined_rooms[i]}</span>`;
+        for (let i = 0; i < user.joined_rooms.length; i++) {//${user.joined_rooms[i]}
+            rooms_container.innerHTML += `<span class='room' id='${user.joined_rooms[i]}' style='text-align:center' onclick='renderRoomContent("${user.joined_rooms[i]}");'><img src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>"</span>`;
         }
     });
 };

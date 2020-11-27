@@ -68,7 +68,7 @@ html
                 img(id="changeAvatar" src=avatar)
                 br
                 select(name="opAvatar" id="avatarSelection")
-                    //- option(value="0") Select Avatar!
+                    option(value="0") Select Avatar!
                     option(value="avatar1") Avatar 1
                     option(value="avatar2") Avatar 2
                     option(value="avatar3") Avatar 3
@@ -79,6 +79,10 @@ html
                     option(value="avatar8") Avatar 8
                     option(value="avatar9") Avatar 9
                     option(value="avatar10") Avatar 10
+                //- br
+                //- br
+                //- form(id="chose_avatar" enctype="multipart/form-data")
+                //-         input(type="file" id="my_file" name="avatar")
                 br
                 br
                 button(id="tryAvatar") Try avatar!
