@@ -18,14 +18,10 @@ exports.uploadMedia = (req, res) => {
     const target_path = path.join(__dirname, '../public/uploads/' + storage_name);
 
     fs.rename(temp_path, target_path, err => {
-        if (err) buildResponse(err);
+        if (err) buildResponse(res, err);
 
-        db.sendFile({
-            'is_file': true,
-            'content': `/media/${storage_name}::${path.basename(req.file.originalname)}`,
-            sender: data.sender,
-            room: data.room_id
-        }, buildResponse, res)
+        let url = `/media/${storage_name}::${path.basename(req.file.originalname)}`
+        buildResponse(res, undefined, url);
     });
 };
 
