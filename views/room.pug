@@ -63,6 +63,28 @@ html
                 span(class="close") &times;
                 p Change Nickname
                     input(type="text" id="change_nickname")
+                p Change Avatar
+                br
+                img(id="changeAvatar" src=avatar)
+                br
+                select(name="opAvatar" id="avatarSelection")
+                    //- option(value="0") Select Avatar!
+                    option(value="avatar1") Avatar 1
+                    option(value="avatar2") Avatar 2
+                    option(value="avatar3") Avatar 3
+                    option(value="avatar4") Avatar 4
+                    option(value="avatar5") Avatar 5
+                    option(value="avatar6") Avatar 6
+                    option(value="avatar7") Avatar 7
+                    option(value="avatar8") Avatar 8
+                    option(value="avatar9") Avatar 9
+                    option(value="avatar10") Avatar 10
+                br
+                br
+                button(id="tryAvatar") Try avatar!
+                script(src="/buttom.js")
+                br
+                br
                 span(id="change_nickname_button" class="button") Change
         script(src="/scripts/roommanager.js")
         script(src="/scripts/roomscript.js")
