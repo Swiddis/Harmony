@@ -231,6 +231,21 @@ const downloadFile = (file) => {
     var element = document.createElement('a');
 };
 
+// Change Avatar\
+const myAvatars = () => {
+    const avatarOption = document.getElementById("avatarSelection");
+    const theAvatar = avatarOption.options[avatarOption.selectedIndex].value;
+    return theAvatar;
+}
+
+const tryAvatarBtn = document.getElementById("tryAvatar");
+tryAvatarBtn.addEventListener("click", function(evt) {
+    evt.preventDefault();
+    const avatar = document.getElementById("changeAvatar");
+    const url = `./images/${myAvatars()}.jpg`;
+    console.log("Avatar: " + url);
+    avatar.src = url;
+})
 
 //Assign Buttons Functions
 document.getElementById("send_message_button").addEventListener("click", sendMessage);
