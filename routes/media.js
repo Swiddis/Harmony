@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const db = require('../db/roomdb.js');
+const {Message} = require("../conf/mongo_conf");
 const image_formats = ['.png', '.jpg', '.gif']
 
 // Based on https://stackoverflow.com/a/15773267
@@ -30,8 +31,26 @@ exports.getMedia = (req, res) => {
     if (image_formats.includes(path.extname(file_name).toLowerCase())) {
         return res.sendFile(path.resolve('./public/uploads/' + file_name));
     } else {
-        return res.download(path.resolve('./public/uploads/' + file_name));
+        getFileName("/media/" + file_name)
+            .then(name => {
+                return res.download(path.resolve('./public/uploads/' + file_name), name);
+            })
     }
+}
+
+const getFileName = async url => {
+    let name = undefined;
+    await Message.findOne({is_file: true, content: {$regex: `^${url}`}}, (err, message) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        if (message) {
+            name = message.content.split("::")[1];
+        }
+    });
+
+    return name;
 }
 
 const buildResponse = (res, err, fname) => {

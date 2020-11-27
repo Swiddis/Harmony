@@ -19,7 +19,6 @@ exports.removeClient = client => {
     }
 
     clients.splice(index, 1);
-    console.log(clients);
 };
 
 exports.getClientByUsername = username => {
