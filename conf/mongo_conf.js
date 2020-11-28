@@ -48,6 +48,61 @@ let roomSchema = mongoose.Schema({
     roomAvatar: String
 });
 
+roomSchema.methods.getNickname = function (username) {
+    for (let obj of this.nicknames) {
+        if (obj.name == username) {
+            return obj.nick;
+        }
+    }
+    return;
+}
+roomSchema.methods.setNickname = function (username, nickname, callback) {
+    let set = false;
+    for (let obj of this.nicknames) {
+        if (obj.name == username) {
+            obj.nick = nickname;
+            set = true;
+        }
+    }
+    if (!set) {
+        this.nicknames.push({name: username, nick: nickname});
+    }
+    this.save(callback);
+}
+/**
+ * Attempts to get the messages for the room.
+ * @param callback - callback(err, messages)
+ */
+roomSchema.methods.getMessages = function (callback) {
+    mongoose.model('message').find({room: this.room_id}, null, {sort: {timestamp: -1}}, (err, messages) => {
+        if (err) {
+            console.error("Could not find messages for room '" + room + "'");
+            console.error(err);
+            callback(err);
+            return;
+        }
+        let tmp = [];
+        if (messages) {
+            for (let mess of messages) {
+                let tmpMessage = {
+                    room: mess.room,
+                    content: mess.content,
+                    sender: mess.sender,
+                    is_file: mess.is_file,
+                    timestamp: mess.timestamp
+                };
+                let user = mess.sender;
+                let nick = this.getNickname(user);
+                if (nick) {
+                    tmpMessage.nickname = nick;
+                }
+                tmp.push(tmpMessage);
+            }
+        }
+        callback(err, tmp);
+    });
+};
+
 let messageSchema = mongoose.Schema({
     room: String,
     content: String,

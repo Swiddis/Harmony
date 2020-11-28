@@ -47,6 +47,40 @@ exports.createRoom = (room, callback) => {
 };
 
 /**
+ * Sets a user's nickname in the specified room. The callback function will be run
+ * after the operation is completed or upon hitting an error.
+ * @param room_id - The room in which to change the nickname
+ * @param username - The user of whom to change their nickname
+ * @param nickname - The nickname to change the user to
+ * @param callback - callback(err, room)
+ */
+exports.setNickname = (room_id, username, nickname, callback) => {
+    if (!room_id) {
+        callback(new Error("Room id not defined"));
+        return;
+    }
+    // We'll cache rooms in memory so we don't always have to query the database
+    for (let room of room_cache) {
+        if (room.room_id == room_id) {
+            room.setNickname(username, nickname, callback);
+            return;
+        }
+    }
+
+    Room.findOne({room_id}, (err, room) => {
+        if (err) { //This is only thrown if there is a problem finding a room.
+            console.error("Could not load room by id '" + room + "'");
+            console.error(err);
+            callback(err, {room_id: id});
+            return;
+        }
+        if (room) {
+            room.setNickname(username, nickname, callback);
+        }
+    });
+};
+
+/**
  * Attempts to find a room by it's room_id.
  * If one is found, the callback is called using the room as a parameter.
  * Thus, one should check if the room exists in their callback.
@@ -89,15 +123,31 @@ exports.getRoom = (id, callback) => {
  * @param callback - The callback function.
  */
 exports.getMessages = (room, callback) => {
-    Message.find({room}, null, {sort: {timestamp: -1}}, (err, messages) => {
-        if (err) {
-            console.error("Could not find messages for room '" + room + "'");
+    Room.findOne({room_id: room}, (err, room) => {
+        if (err) { //This is only thrown if there is a problem finding a room.
+            console.error("Could not load room by id '" + room + "'");
             console.error(err);
-            callback(err);
+            callback(err, {room_id: id});
             return;
         }
-        callback(undefined, messages);
+        if (room) {
+            room.getMessages(callback);
+        } else {
+            callback(new Error("Room does not exist"));
+        }
     });
+    // Message.find({room}, null, {sort: {timestamp: -1}}, (err, messages) => {
+    //     if (err) {
+    //         console.error("Could not find messages for room '" + room + "'");
+    //         console.error(err);
+    //         callback(err);
+    //         return;
+    //     }
+    //     for(let message of messages) {
+    //
+    //     }
+    //     callback(undefined, messages);
+    // });
 };
 
 /**
