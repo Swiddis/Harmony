@@ -1,7 +1,9 @@
 const path = require('path');
 const fs = require('fs');
 const db = require('../db/roomdb.js');
-const {Message} = require("../conf/mongo_conf");
+const {
+    Message
+} = require("../conf/mongo_conf");
 const image_formats = ['.png', '.jpg', '.gif']
 
 // Based on https://stackoverflow.com/a/15773267
@@ -40,7 +42,12 @@ exports.getMedia = (req, res) => {
 
 const getFileName = async url => {
     let name = undefined;
-    await Message.findOne({is_file: true, content: {$regex: `^${url}`}}, (err, message) => {
+    await Message.findOne({
+        is_file: true,
+        content: {
+            $regex: `^${url}`
+        }
+    }, (err, message) => {
         if (err) {
             console.error(err);
             return;

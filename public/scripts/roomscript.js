@@ -24,21 +24,21 @@ const closeModals = () => {
     create_modal.style.display = "none";
     join_modal.style.display = "none";
     nickname_modal.style.display = "none";
-    
+
     //EMPTIES INPUT FIELDS (TODO REDUNDANT)
     let elements = create_modal.getElementsByTagName("input");
-    for(let i = 0; i < elements.length; i++){
+    for (let i = 0; i < elements.length; i++) {
         elements[i].value = "";
     }
     elements = join_modal.getElementsByTagName("input");
-    for(let i = 0; i < elements.length; i++){
+    for (let i = 0; i < elements.length; i++) {
         elements[i].value = "";
     }
 };
 
 //On Enter Submit Message
-function submitOnEnter(evt){
-    if(evt.key === "Enter"){
+function submitOnEnter(evt) {
+    if (evt.key === "Enter") {
         sendMessage();
         message_box.value = "";
         evt.preventDefault();
@@ -50,6 +50,6 @@ document.getElementById("create_room_option").addEventListener("click", displayC
 document.getElementById("join_room_option").addEventListener("click", displayJoinModal);
 document.getElementById("nickname_button").addEventListener("click", displayNicknameModal);
 var closeButtons = document.getElementsByClassName("close");
-for(var i = 0; i < closeButtons.length; i++){
+for (var i = 0; i < closeButtons.length; i++) {
     closeButtons[i].addEventListener("click", closeModals, false);
 }

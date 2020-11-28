@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
-const {User} = require('../conf/mongo_conf');
+const {
+    User
+} = require('../conf/mongo_conf');
 let user_cache = [];
 
 /**
@@ -15,7 +17,9 @@ let user_cache = [];
  * @param callback - The callback function taking in (err, user)
  */
 exports.createUser = (user_obj, callback) => {
-    User.findOne({username: user_obj.username}, (err, user) => {
+    User.findOne({
+        username: user_obj.username
+    }, (err, user) => {
         if (err) {
             console.error("Could not fetch user from DB");
             console.error(err);
@@ -60,14 +64,16 @@ exports.getUser = (username, callback) => {
         }
     }
 
-    User.findOne({username}, (err, user) => {
+    User.findOne({
+        username
+    }, (err, user) => {
         if (err) {
             console.error("Could not find user by username '" + username + "'");
             console.error(err);
             callback(err);
             return;
         }
-        if(user) {
+        if (user) {
             user_cache.push(user);
             callback(undefined, user);
         } else {
@@ -119,7 +125,9 @@ exports.updateUser = (user, callback) => {
     }
 
     //Cache not found, update and push the update to the db.
-    User.findOne({username}, (err, us) => {
+    User.findOne({
+        username
+    }, (err, us) => {
         if (err) {
             console.error("Could not fetch user from db.");
             callback(err);
@@ -145,7 +153,9 @@ exports.deleteUser = (username, callback) => {
     }
 
     //Remove from db
-    User.deleteOne({username}, (err, user) => {
+    User.deleteOne({
+        username
+    }, (err, user) => {
         if (err) {
             console.error("Could not delete user");
             callback(err);

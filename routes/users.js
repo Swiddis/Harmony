@@ -1,6 +1,8 @@
 // User POST endpoint
 
-const {response} = require("express");
+const {
+    response
+} = require("express");
 const db = require("../db/userdb");
 const roomdb = require("../db/roomdb");
 

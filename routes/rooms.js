@@ -43,7 +43,10 @@ exports.sendToRoom = (req, res) => {
     let room_id = req.params.room_id;
     let message = req.body.message;
 
-    db.sendMessage({room_id, message},
+    db.sendMessage({
+            room_id,
+            message
+        },
         (err, message) => buildResponse(res, err, message));
 };
 

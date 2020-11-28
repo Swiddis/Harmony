@@ -1,5 +1,7 @@
 const config = require("../config.json");
-const {User} = require('../conf/mongo_conf');
+const {
+    User
+} = require('../conf/mongo_conf');
 const userdb = require('../db/userdb');
 
 var allowed;
@@ -26,16 +28,18 @@ exports.signUp = (req, res) => {
 }
 
 exports.rooms = (req, res) => {
-    if(!req.session.user) {
+    if (!req.session.user) {
         res.redirect("/login");
         return;
     }
-    User.findOne({username: req.session.user.username}, (err, user) => {
-        if(err) {
+    User.findOne({
+        username: req.session.user.username
+    }, (err, user) => {
+        if (err) {
             res.json(err);
             return;
         }
-        if(!user) {
+        if (!user) {
             res.redirect("/login");
             return;
         }
