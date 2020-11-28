@@ -22,7 +22,8 @@ exports.createRoom = (req, res) => {
         room_id: req.body.room_id,
         room_title: req.body.room_title,
         password: req.body.password,
-        nicknames: req.body.nicknames
+        nicknames: req.body.nicknames,
+        roomAvatar: "./images/room.png"
     };
 
     db.createRoom(room, (err, room) => buildCreationResponse(res, err, room));

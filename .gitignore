@@ -203,4 +203,4 @@ dist
 
 # End of https://www.toptal.com/developers/gitignore/api/node,vscode,jetbrains
 
-public/uploads
+public/uploads/

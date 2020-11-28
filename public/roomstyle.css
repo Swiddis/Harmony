@@ -62,12 +62,13 @@ body{
 
 .avatar{
     margin: 10px 50px;
-    border-radius: 50px;
+    border-radius: 90px;
     display: inline-flex;
     float: left;
     width: 100px;
     height: 100px;
 }
+
 .message_name{
     padding: 2em;
     border-bottom: 2px solid white;
@@ -79,7 +80,36 @@ body{
     font-size: 18px;
 }
 
+/* change avatar */
+#changeAvatar {
+    width: 80px;
+    height: 80px;
+}
 
+#avatarSelection {
+    position: relative;
+    font-family: Arial;
+    font-size: 20px;
+    width: 150px;
+    height: 50px;
+}
+
+#avatarSelection select {
+    display: none; 
+    width: 150px;
+    height: 50px;
+}
+
+#avatarSelection {
+    background-color: rgb(120, 134, 146);
+}
+
+#tryAvatar {
+    background-color:  rgb(120, 134, 146);
+    width: 150px;
+    height: 50px;
+    font-size: 20px;
+}
 
 /* Input Stuff*/
 textarea{

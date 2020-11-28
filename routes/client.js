@@ -53,7 +53,7 @@ function Client(io, socket) {
             room: message.room_id,
             content: message.message,
             sender: socket.username,
-            is_file: false,
+            is_file: message.is_file,
             timestamp: new Date()
         }
         //We might need to actually call this on the rooms.js script if needed.
@@ -75,14 +75,16 @@ function Client(io, socket) {
                     room_id: message.room_id,
                     username: socket.username,
                     nickname, //If null, this just won't show up.
-                    message: message.message
+                    message: message.message,
+                    is_file: message.is_file
                 })
             });
         } else { //If not, just forward the message along
             io.emit('message', {
                 room_id: message.room_id,
                 username: socket.username,
-                message: message.message
+                message: message.message,
+                is_file: message.is_file
             });
         }
     };

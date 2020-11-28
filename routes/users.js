@@ -10,11 +10,13 @@ exports.createUser = (req, res) => {
     let user = {
         username: req.body.username,
         password: req.body.password,
-        avatar: `https://ui-avatars.com/api/size=256&name=${username}`
+        avatar: `https://ui-avatars.com/api/size=256&name=${req.body.username}`
     };
 
     db.createUser(user, (err, user) => buildCreationResponse(res, err, user));
-    roomdb.authorizeRoomAccess(user.username, 'public', '', buildAuthResponse);
+    roomdb.authorizeRoomAccess(user.username, 'public', '',
+        (err, authorities) => buildAuthResponse(res, err, authorities));
+    res.redirect("/login");
 };
 
 // User GET API endpoint

@@ -1,8 +1,16 @@
 /*
     FOR GENERIC JAVASCRIPT (NOT TO CONNECT TO BACKEND OR USE SOCKETS)
 */
+
+
 //For Modal Displays (Popup Windows)
+const displayNicknameModal = () => {
+    closeModals();
+    nickname_modal.style.display = "block";
+};
+
 const displayModal = () => {
+    closeModals();
     modal.style.display = "block";
 };
 const displayCreateModal = () => {
@@ -15,6 +23,7 @@ const closeModals = () => {
     modal.style.display = "none";
     create_modal.style.display = "none";
     join_modal.style.display = "none";
+    nickname_modal.style.display = "none";
     
     //EMPTIES INPUT FIELDS (TODO REDUNDANT)
     let elements = create_modal.getElementsByTagName("input");
@@ -40,6 +49,7 @@ function submitOnEnter(evt){
 document.getElementById("new_room").addEventListener("click", displayModal);
 document.getElementById("create_room_option").addEventListener("click", displayCreateModal);
 document.getElementById("join_room_option").addEventListener("click", displayJoinModal);
+document.getElementById("nickname_button").addEventListener("click", displayNicknameModal);
 var closeButtons = document.getElementsByClassName("close");
 for(var i = 0; i < closeButtons.length; i++){
     closeButtons[i].addEventListener("click", closeModals, false);
