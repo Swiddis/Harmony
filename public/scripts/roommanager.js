@@ -164,7 +164,7 @@ const formatRoomMessage = (avatar, username, message, isFile) => {
         //If message is an image (render it inline)
         if(isFileImage(message)){
             let fileStr = splitFileString(message);
-            formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'><img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}'/></a>`
+            formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'><img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/></a>`
         }else{
             let fileStr = splitFileString(message);
             //TODO downloaded files (only tested txt files) are not downloading with the correct name and instead id
@@ -219,8 +219,8 @@ const makeRoomClickable = (roomElementId) => {
 
 //Helper Functions
 const isFileImage = (content) => {
-    let imageRegex = /\.(gif|jpg|png)/;
-    return /\.(gif|jpg|jpeg|png)/.test(content);
+    let imageRegex = /.+\.(gif|jpg|jpeg|png)/i;
+    return imageRegex.test(content);
 };
 
 const splitFileString = (content) => {

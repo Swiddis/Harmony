@@ -80,6 +80,11 @@ body{
     font-size: 18px;
 }
 
+.message_image {
+    max-width: 450px;
+    max-height: 450px;
+}
+
 /* change avatar */
 #changeAvatar {
     width: 80px;

@@ -26,7 +26,6 @@ function Client(io, socket) {
 
     socket.on('disconnect', this.disconnect);
 
-
     //If there is no supplied username, don't do anything else!
     if (!socket.handshake.query.username) {
         console.error("User connected without a username!");

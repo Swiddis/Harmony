@@ -45,7 +45,6 @@ function submitOnEnter(evt){
     }
 }
 
-
 document.getElementById("new_room").addEventListener("click", displayModal);
 document.getElementById("create_room_option").addEventListener("click", displayCreateModal);
 document.getElementById("join_room_option").addEventListener("click", displayJoinModal);
