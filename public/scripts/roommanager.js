@@ -43,7 +43,9 @@ window.onload = function () {
     });
 };
 
-const socket = io.connect(document.location.host, {query: `username=${username}`});
+const socket = io.connect(document.location.host, {
+    query: `username=${username}`
+});
 
 //Standard Communication Functions
 const sendMessage = () => {
@@ -53,13 +55,17 @@ const sendMessage = () => {
         return;
     }
     console.log("Sending message: " + message_box.value);
-    socket.emit('message', {username: username, message: message_box.value, room_id: currentRoomId});
+    socket.emit('message', {
+        username: username,
+        message: message_box.value,
+        room_id: currentRoomId
+    });
     message_box.value = "";
     return false;
 };
 
 const sendFile = () => {
-    
+
     var form = document.forms.namedItem("send_media");
     var formData = new FormData(form);
 
@@ -68,9 +74,9 @@ const sendFile = () => {
 
     var request = new XMLHttpRequest();
     request.open('POST', "/media")
-    request.onload = function(){
+    request.onload = function () {
         console.log(request.status);
-        if(request.status === 200){
+        if (request.status === 200) {
             console.log(request.response);
 
             socket.emit('message', {
@@ -89,7 +95,7 @@ socket.on('message', msg => {
     //for now if msg recieved is from currentroomid display
     if (msg.room_id === currentRoomId) {
         messages_container.innerHTML += formatRoomMessage("NO_AVATAR_YET", msg.username, msg.message, msg.is_file);
-        
+
         //TODO make scroll to bottom every message only when already scrolled down 
         messages_container.scrollTop = messages_container.scrollHeight;
     }
@@ -105,17 +111,20 @@ const createRoom = () => {
         room_id: room_id,
         room_title: room_title,
         password: password,
-        nicknames: [{name: username, nick: nickname}],
+        nicknames: [{
+            name: username,
+            nick: nickname
+        }],
         roomAvatar: "./images/room.png"
     };
 
     fetch('/room', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(room)
-    })
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(room)
+        })
         .then(response => {
             console.log(response.status);
             if (response.status === 204) {
@@ -134,10 +143,10 @@ const joinRoom = () => {
     const password = document.getElementById("join_password").value;
 
     fetch(`/room/authorize/${room_id}`, {
-        headers: new Headers({
-            "Authorization": "Basic " + btoa(username + ":" + password)
-        }),
-    })
+            headers: new Headers({
+                "Authorization": "Basic " + btoa(username + ":" + password)
+            }),
+        })
         .then(response => {
             if (response.status === 200) {
                 console.log("JOINED ROOM: " + room_id);
@@ -154,32 +163,32 @@ const formatRoomMessage = (avatar, username, message, isFile) => {
     let formattedMessage = "";
 
     //If Message is a file
-    if(isFile){ 
-        formattedMessage = 
+    if (isFile) {
+        formattedMessage =
             "<span class='message_box'>" +
-                "<span class='avatar'></span>" +
-                "<span class='name'>" + username + "</span>" +
-                "<span class='message'>";
+            "<span class='avatar'></span>" +
+            "<span class='name'>" + username + "</span>" +
+            "<span class='message'>";
 
         //If message is an image (render it inline)
-        if(isFileImage(message)){
+        if (isFileImage(message)) {
             let fileStr = splitFileString(message);
-            formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'><img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}'/></a>`
-        }else{
+            formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'><img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/></a>`
+        } else {
             let fileStr = splitFileString(message);
             //TODO downloaded files (only tested txt files) are not downloading with the correct name and instead id
             formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'>${fileStr[1]}</a>`;
         }
-        
+
         formattedMessage += "</span></span>";
-        
-    }else{
-        formattedMessage = 
-        "<span class='message_box'>" +
+
+    } else {
+        formattedMessage =
+            "<span class='message_box'>" +
             "<span class='avatar'></span>" +
             "<span class='name'>" + username + "</span>" +
             "<span class='message'>" + message + "</span>" +
-        "</span>";
+            "</span>";
     }
 
     return formattedMessage;
@@ -208,7 +217,7 @@ const renderRoomList = () => {
 
     fetchUser(username).then(function (user) {
         console.log(user);
-        for (let i = 0; i < user.joined_rooms.length; i++) {//${user.joined_rooms[i]}
+        for (let i = 0; i < user.joined_rooms.length; i++) { //${user.joined_rooms[i]}
             rooms_container.innerHTML += `<span class='room' id='${user.joined_rooms[i]}' style='text-align:center' onclick='renderRoomContent("${user.joined_rooms[i]}");'><img src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>"</span>`;
         }
     });
@@ -219,8 +228,8 @@ const makeRoomClickable = (roomElementId) => {
 
 //Helper Functions
 const isFileImage = (content) => {
-    let imageRegex = /\.(gif|jpg|png)/;
-    return /\.(gif|jpg|jpeg|png)/.test(content);
+    let imageRegex = /.+\.(gif|jpg|jpeg|png)/i;
+    return imageRegex.test(content);
 };
 
 const splitFileString = (content) => {
@@ -240,7 +249,7 @@ const myAvatars = () => {
 }
 
 const tryAvatarBtn = document.getElementById("tryAvatar");
-tryAvatarBtn.addEventListener("click", function(evt) {
+tryAvatarBtn.addEventListener("click", function (evt) {
     evt.preventDefault();
     const avatar = document.getElementById("changeAvatar");
     const url = `./images/${myAvatars()}.jpg`;

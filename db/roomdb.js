@@ -1,5 +1,9 @@
 const bcrypt = require('bcryptjs');
-const {User, Room, Message} = require('../conf/mongo_conf');
+const {
+    User,
+    Room,
+    Message
+} = require('../conf/mongo_conf');
 const userdb = require('./userdb');
 let room_cache = [];
 
@@ -16,7 +20,9 @@ let room_cache = [];
  * @param callback - The callback function taking in (err, room)
  */
 exports.createRoom = (room, callback) => {
-    Room.findOne({room_id: room.room_id}, (err, rm) => {
+    Room.findOne({
+        room_id: room.room_id
+    }, (err, rm) => {
         if (err) {
             console.error("Could not fetch room from DB");
             console.error(err);
@@ -100,18 +106,24 @@ exports.getRoom = (id, callback) => {
         }
     }
 
-    Room.findOne({room_id: id}, (err, room) => {
+    Room.findOne({
+        room_id: id
+    }, (err, room) => {
         if (err) { //This is only thrown if there is a problem finding a room.
             console.error("Could not load room by id '" + room + "'");
             console.error(err);
-            callback(err, {room_id: id});
+            callback(err, {
+                room_id: id
+            });
             return;
         }
         if (room) {
             room_cache.push(room);
             callback(undefined, room);
         } else {
-            callback(new Error("Room not found"), {room_id: id});
+            callback(new Error("Room not found"), {
+                room_id: id
+            });
         }
     });
 };

@@ -21,11 +21,13 @@ function Client(io, socket) {
         if (!socket.username || socket.username == "") {
             return;
         }
-        io.emit('message', {username: socket.username, message: "disconnected."});
+        io.emit('message', {
+            username: socket.username,
+            message: "disconnected."
+        });
     }
 
     socket.on('disconnect', this.disconnect);
-
 
     //If there is no supplied username, don't do anything else!
     if (!socket.handshake.query.username) {
@@ -36,7 +38,10 @@ function Client(io, socket) {
     }
     //We probably don't need to send this message every time the page is refreshed.
     // Just need it when they first join a room.
-    io.emit('message', {username: socket.username, message: "connected!"});
+    io.emit('message', {
+        username: socket.username,
+        message: "connected!"
+    });
     console.log(socket.username + " connected.");
 
     this.sendMessage = (message) => { //Sends a message specifically to the client.
@@ -57,8 +62,7 @@ function Client(io, socket) {
             timestamp: new Date()
         }
         //We might need to actually call this on the rooms.js script if needed.
-        db.sendMessage(db_message, (err, msg) => {
-        });
+        db.sendMessage(db_message, (err, msg) => {});
 
         if (message.room_id) { // Should always be sent with a room.
             db.getRoom(message.room_id, (err, room) => {
