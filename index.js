@@ -67,6 +67,7 @@ app.get('/room/:room_id', rooms.getRoom);
 app.get('/messages/:room_id', rooms.getMessages); // Possibly add authentication here so no anons can get the message history.
 app.post('/room/:room_id', urlencodedParser, rooms.sendToRoom);
 app.get('/room/authorize/:room_id', rooms.authorizeRoomAccess);
+app.patch('/room/nick/:room_id', urlencodedParser, rooms.updateUserNickname);
 
 app.post('/user', urlencodedParser, users.createUser);
 app.get('/user/:username', users.getUser);

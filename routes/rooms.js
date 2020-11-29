@@ -70,6 +70,18 @@ exports.establishUserDMs = (req, res) => {
     // TODO
 };
 
+// User PATCH endpoint for nicknames
+// Patch to /room/nick/:room_id
+exports.updateUserNickname = (req, res) => {
+    let data = {
+        room_id: req.params.room_id,
+        username: req.body.username,
+        nickname: req.body.nickname
+    };
+
+    db.updateUserNickname(username, data, buildResponse, (err, room) => buildResponse(res, err, room));
+}
+
 const buildCreationResponse = (res, err, room) => {
     buildResponse(res, err, room, true);
 }
