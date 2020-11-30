@@ -67,7 +67,9 @@ exports.authorizeRoomAccess = (req, res) => {
 };
 
 exports.establishUserDMs = (req, res) => {
-    // TODO
+    let user1 = req.params.user1;
+    let user2 = req.params.user2;
+    db.establishUserDMs(user1, user2, (err, room) => buildResponse(res, err, room, room != undefined));
 };
 
 // User PATCH endpoint for nicknames

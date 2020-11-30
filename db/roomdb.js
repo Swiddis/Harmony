@@ -264,7 +264,7 @@ exports.authorizeRoomAccess = (username, room_id, password, callback) => {
     });
 };
 
-exports.establishUserDMs = (user1, user2) => {
+exports.establishUserDMs = (user1, user2, callback) => {
     /*
     TODO Create a new room with a random id.
      Add each user to the room (add to joined_rooms)
@@ -272,6 +272,49 @@ exports.establishUserDMs = (user1, user2) => {
     randoms join the room. The clients likely won't even be aware of
     what the password even is.
      */
+    console.log(user1, user2);
+    User.findOne({username: user1}, (err, us1) => {
+        if (err) {
+            callback(err);
+            return;
+        }
+        if (!us1) {
+            callback(new Error("User not found: '" + user1 + "'"));
+            return;
+        }
+        User.findOne({username: user2}, (err, us2) => {
+            if (err) {
+                callback(err)
+                return;
+            }
+            if (!us2) {
+                callback(new Error("User not found: '" + user2 + "'"));
+                return;
+            }
+
+            let room = {
+                room_id: "this_must_be_unique2",
+                room_title: `DM - ${user1} & ${user2}`,
+                password: "generate_random_password",
+                roomAvatar: "./images/user_icon_blue.png"
+            };
+
+            this.createRoom(room, (err, room) => {
+                if(err) {
+                    callback(err, room);
+                    return;
+                }
+                us1.joined_rooms.push(room.room_id);
+                us2.joined_rooms.push(room.room_id);
+                us1.password = undefined;
+                us2.password = undefined;
+                userdb.updateUser(us1, () => {});
+                userdb.updateUser(us2, () => {});
+                callback(err, room);
+            });
+
+        });
+    })
 
 };
 

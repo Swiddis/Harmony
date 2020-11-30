@@ -93,6 +93,7 @@ app.get('/testsocket', (req, res) => {
         title: "Test Socket"
     });
 });
+app.post("/establishDMs/:user1/:user2", rooms.establishUserDMs);
 
 app.get("/logout", render.logout);
 
