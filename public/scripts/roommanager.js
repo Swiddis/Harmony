@@ -10,6 +10,7 @@ const create_modal = document.getElementById("create_room_modal");
 const join_modal = document.getElementById("join_room_modal");
 
 let username = document.getElementById("username_label").innerText;
+let nicknames;
 let currentRoomId; //Is assigned whenever in renderRoomContent() is called (meaning onLoad or when clicking on bubble) 
 
 async function fetchUser(username) {
@@ -22,7 +23,7 @@ async function fetchUser(username) {
 async function fetchRoomData(roomid) {
     let response = await fetch(`/room/${roomid}`);
     let data = await response.text();
-    console.log(JSON.parse(data));
+    return JSON.parse(data);
 };
 
 async function fetchRoomMessages(roomid) {
@@ -161,13 +162,20 @@ const joinRoom = () => {
 //Render Functions
 const formatRoomMessage = (avatar, username, message, isFile) => {
     let formattedMessage = "";
+    let name = username;
+
+    for(let i = 0; i < nicknames.length; i++){
+        if(username === nicknames[i].name){
+            name = nicknames[i].nick;
+        }
+    }
 
     //If Message is a file
     if (isFile) {
         formattedMessage =
             "<span class='message_box'>" +
             "<span class='avatar'></span>" +
-            "<span class='name'>" + username + "</span>" +
+            "<span class='name'>" + name + "</span>" +
             "<span class='message'>";
 
         //If message is an image (render it inline)
@@ -186,7 +194,7 @@ const formatRoomMessage = (avatar, username, message, isFile) => {
         formattedMessage =
             "<span class='message_box'>" +
             "<span class='avatar'></span>" +
-            "<span class='name'>" + username + "</span>" +
+            "<span class='name'>" + name + "</span>" +
             "<span class='message'>" + message + "</span>" +
             "</span>";
     }
@@ -203,12 +211,16 @@ const renderRoomContent = (roomid) => {
     console.log("RENDERING ROOM: " + roomid);
     messages_container.innerHTML = "";
 
-    fetchRoomMessages(roomid).then(function (messages) {
-        currentRoomId = roomid;
-        //Currently the messages array is backwards so will do it this way
-        for (let i = messages.length - 1; i >= 0; i--) {
-            messages_container.innerHTML += formatRoomMessage("NO_AVATAR_YET", messages[i].sender, messages[i].content, messages[i].is_file);
-        }
+    fetchRoomData(roomid).then(function (room){
+        nicknames = room.data.nicknames;
+
+        fetchRoomMessages(roomid).then(function (messages) {
+            currentRoomId = roomid;
+            //Currently the messages array is backwards so will do it this way
+            for (let i = messages.length - 1; i >= 0; i--) {
+                messages_container.innerHTML += formatRoomMessage("NO_AVATAR_YET", messages[i].sender, messages[i].content, messages[i].is_file);
+            }
+        });
     });
 };
 
@@ -224,6 +236,32 @@ const renderRoomList = () => {
 };
 const makeRoomClickable = (roomElementId) => {
     document.getElementById(roomElementId).addEventListener("click", console.log(roomElementId));
+};
+
+const updateNickname = () => {
+    let name = document.getElementById("change_nickname");
+    
+    const data = {
+        room_id: currentRoomId,
+        username: username,
+        nickname: name
+    };
+
+    fetch(`/room/nick/${currentRoomId}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        console.log(response.status);
+        //TODO
+        if (response.status === 204) {
+            console.log("CHANGED NICKNAME SUCCESSFULLY!");
+            renderRoomContent(currentRoomId);
+        }
+    });
 };
 
 //Helper Functions
@@ -262,3 +300,4 @@ document.getElementById("send_message_button").addEventListener("click", sendMes
 document.getElementById("create_room_button").addEventListener("click", createRoom);
 document.getElementById("join_room_button").addEventListener("click", joinRoom);
 document.getElementById("submit_file_button").addEventListener("click", sendFile);
+document.getElementById("change_nickname_button").addEventListener("click", addNickname);

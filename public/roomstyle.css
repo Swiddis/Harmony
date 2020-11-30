@@ -22,6 +22,13 @@ body{
     background-color: gray;
 }
 
+/* logout */
+#logout {
+    background-color: white;
+    font-size: 20px;
+    text-align: center;
+}
+
 
 /*Room (Icon) Styles*/
 .room, #new_room{

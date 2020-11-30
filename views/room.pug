@@ -25,10 +25,12 @@ html
             div(id="right_content")
                 img(class="avatar" id="avatarImg" src=avatar)
                 div(id="username_label")=username
-                div(id="logout") 
-                    a(href="/logout") 
                 //TODO: Nickname Modal Popup from this button's click
                 span(id="nickname_button" class="button") Change Nickname
+                br
+                div(id="logout") 
+                    a(href="/logout") Log Out
+
 
         div(id="room_modal" class="modal")
             div(class="modal_content")
@@ -45,9 +47,7 @@ html
                 p Room Name:
                     input(type="text" id="create_title")
                 p Password:
-                    input(type="password" id="create_password")
-                p Nicknames
-                    input(type="text" id="create_nicknames")                    
+                    input(type="password" id="create_password")               
                 span(id="create_room_button" class="button") Create Room
         div(id="join_room_modal" class="modal")
             div(class="modal_content")
