@@ -94,6 +94,18 @@ const sendFile = () => {
 socket.on('message', msg => {
     console.log(msg);
     //for now if msg recieved is from currentroomid display
+    if(msg.nickname) {
+        let set = false;
+        for (let obj of nicknames) {
+            if (obj.name == msg.username) {
+                obj.nick = msg.nickname;
+                set = true;
+            }
+        }
+        if (!set) {
+            nicknames.push({name: msg.username, nick: msg.nickname});
+        }
+    }
     if (msg.room_id === currentRoomId) {
         messages_container.innerHTML += formatRoomMessage("NO_AVATAR_YET", msg.username, msg.message, msg.is_file);
 
@@ -120,12 +132,12 @@ const createRoom = () => {
     };
 
     fetch('/room', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(room)
-        })
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(room)
+    })
         .then(response => {
             console.log(response.status);
             if (response.status === 204) {
@@ -144,10 +156,10 @@ const joinRoom = () => {
     const password = document.getElementById("join_password").value;
 
     fetch(`/room/authorize/${room_id}`, {
-            headers: new Headers({
-                "Authorization": "Basic " + btoa(username + ":" + password)
-            }),
-        })
+        headers: new Headers({
+            "Authorization": "Basic " + btoa(username + ":" + password)
+        }),
+    })
         .then(response => {
             if (response.status === 200) {
                 console.log("JOINED ROOM: " + room_id);
@@ -164,8 +176,8 @@ const formatRoomMessage = (avatar, username, message, isFile) => {
     let formattedMessage = "";
     let name = username;
 
-    for(let i = 0; i < nicknames.length; i++){
-        if(username === nicknames[i].name){
+    for (let i = 0; i < nicknames.length; i++) {
+        if (username === nicknames[i].name) {
             name = nicknames[i].nick;
         }
     }
@@ -211,7 +223,7 @@ const renderRoomContent = (roomid) => {
     console.log("RENDERING ROOM: " + roomid);
     messages_container.innerHTML = "";
 
-    fetchRoomData(roomid).then(function (room){
+    fetchRoomData(roomid).then(function (room) {
         nicknames = room.data.nicknames;
 
         fetchRoomMessages(roomid).then(function (messages) {
@@ -240,7 +252,7 @@ const makeRoomClickable = (roomElementId) => {
 
 const updateNickname = () => {
     let name = document.getElementById("change_nickname");
-    
+
     const data = {
         room_id: currentRoomId,
         username: username,
@@ -254,14 +266,14 @@ const updateNickname = () => {
         },
         body: JSON.stringify(data)
     })
-    .then(response => {
-        console.log(response.status);
-        //TODO
-        if (response.status === 204) {
-            console.log("CHANGED NICKNAME SUCCESSFULLY!");
-            renderRoomContent(currentRoomId);
-        }
-    });
+        .then(response => {
+            console.log(response.status);
+            //TODO
+            if (response.status === 204 || response.status === 200) {
+                console.log("CHANGED NICKNAME SUCCESSFULLY!");
+                renderRoomContent(currentRoomId);
+            }
+        });
 };
 
 //Helper Functions
@@ -293,6 +305,22 @@ tryAvatarBtn.addEventListener("click", function (evt) {
     const url = `./images/${myAvatars()}.jpg`;
     console.log("Avatar: " + url);
     avatar.src = url;
+
+    let data = {
+        avatar: url,
+        test: "This is dummy data"
+    };
+    console.log(data);
+    fetch(`/user/${username}`, {
+        method: "PATCH",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }).then(response => {
+        console.log(response);
+        //TODO Tell the user it was a success
+    });
 })
 
 //Assign Buttons Functions

@@ -79,7 +79,11 @@ exports.updateUserNickname = (req, res) => {
         nickname: req.body.nickname
     };
 
-    db.updateUserNickname(username, data, buildResponse, (err, room) => buildResponse(res, err, room));
+    if (data.nickname) {
+        db.updateUserNickname(data, (err, room) => buildResponse(res, err, room));
+    } else {
+        buildResponse(res, new Error("No nickname supplied"), {room_id: data.room_id});
+    }
 }
 
 const buildCreationResponse = (res, err, room) => {
@@ -100,6 +104,8 @@ const buildResponse = (res, err, room, created = false) => {
             response.status = 404;
         } else if (err.message == "Room already exists") {
             response.status = 403;
+        } else if (err.message == "No nickname supplied") {
+            response.status = 400;
         } else {
             response.status = 500;
         }

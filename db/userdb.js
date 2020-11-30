@@ -101,7 +101,7 @@ const updateAndSaveUser = (us, user) => {
 
     new User(us).save((err, user) => {
         if (err) {
-            console.error("Could not update user '" + username + "'");
+            console.error("Could not update user '" + user.username + "'");
             return;
         }
     });

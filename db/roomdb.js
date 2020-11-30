@@ -274,13 +274,17 @@ exports.establishUserDMs = (user1, user2) => {
  *  room_id,  -- Room in which to update nickname
  *  nickname  -- New nickname
  * }
- * @param data - Data containing update info. Needs 
- * @param callback 
+ * @param data - Data containing update info. Needs
+ * @param callback
  */
 exports.updateUserNickname = (data, callback) => {
     Room.findOne({room_id: data.room_id}, (err, room) => {
-        if (err) callback(err, {room_id: room_id});
+        if (err) callback(err, {room_id: data.room_id});
 
-        // TODO update user nickname in room document's nicknames list
-    })
+        console.log(room);
+        if (room)
+            this.setNickname(data.room_id, data.username, data.nickname, callback);
+        else
+            callback(new Error("Room not found"));
+    });
 };
