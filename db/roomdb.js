@@ -73,11 +73,15 @@ exports.setNickname = (room_id, username, nickname, callback) => {
         }
     }
 
-    Room.findOne({room_id}, (err, room) => {
+    Room.findOne({
+        room_id
+    }, (err, room) => {
         if (err) { //This is only thrown if there is a problem finding a room.
             console.error("Could not load room by id '" + room + "'");
             console.error(err);
-            callback(err, {room_id: id});
+            callback(err, {
+                room_id: id
+            });
             return;
         }
         if (room) {
@@ -135,11 +139,15 @@ exports.getRoom = (id, callback) => {
  * @param callback - The callback function.
  */
 exports.getMessages = (room, callback) => {
-    Room.findOne({room_id: room}, (err, room) => {
+    Room.findOne({
+        room_id: room
+    }, (err, room) => {
         if (err) { //This is only thrown if there is a problem finding a room.
             console.error("Could not load room by id '" + room + "'");
             console.error(err);
-            callback(err, {room_id: id});
+            callback(err, {
+                room_id: id
+            });
             return;
         }
         if (room) {
@@ -288,3 +296,43 @@ exports.updateUserNickname = (data, callback) => {
             callback(new Error("Room not found"));
     });
 };
+//     Room.findOne({
+//         room_id: data.room_id
+//     }, (err, room) => {
+//         if (err) callback(err, {
+//             room_id: room_id
+//         });
+//         if (room) {
+//             let nicks = room.nicknames;
+//             let updated = false;
+//             for (let nick of nicks) {
+//                 if (nick.name == data.username) {
+//                     nick.nick = data.nickname;
+//                     updated = true;
+//                     break;
+//                 }
+//             }
+//
+//             if (!updated) {
+//                 nicks.push({
+//                     name: data.username,
+//                     nick: data.nickname
+//                 });
+//             }
+//
+//             Room.updateOne({
+//                 room_id: data.room_id
+//             }, {
+//                 $set: {
+//                     nicknames: nicks
+//                 }
+//             });
+//
+//             room.nicknames = nicks;
+//
+//             callback(undefined, room);
+//         } else {
+//             callback(new Error('Could not find room ' + room_id));
+//         }
+//     })
+// };
