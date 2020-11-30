@@ -176,9 +176,11 @@ const formatRoomMessage = (avatar, username, message, isFile) => {
     let formattedMessage = "";
     let name = username;
 
-    for (let i = 0; i < nicknames.length; i++) {
-        if (username === nicknames[i].name) {
-            name = nicknames[i].nick;
+    if(nicknames) {
+        for (let i = 0; i < nicknames.length; i++) {
+            if (username === nicknames[i].name) {
+                name = nicknames[i].nick;
+            }
         }
     }
 
@@ -251,7 +253,7 @@ const makeRoomClickable = (roomElementId) => {
 };
 
 const updateNickname = () => {
-    let name = document.getElementById("change_nickname");
+    let name = document.getElementById("change_nickname").value;
 
     const data = {
         room_id: currentRoomId,
@@ -328,4 +330,4 @@ document.getElementById("send_message_button").addEventListener("click", sendMes
 document.getElementById("create_room_button").addEventListener("click", createRoom);
 document.getElementById("join_room_button").addEventListener("click", joinRoom);
 document.getElementById("submit_file_button").addEventListener("click", sendFile);
-document.getElementById("change_nickname_button").addEventListener("click", addNickname);
+document.getElementById("change_nickname_button").addEventListener("click", updateNickname);

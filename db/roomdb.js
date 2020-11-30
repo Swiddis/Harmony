@@ -289,7 +289,7 @@ exports.updateUserNickname = (data, callback) => {
     Room.findOne({room_id: data.room_id}, (err, room) => {
         if (err) callback(err, {room_id: data.room_id});
 
-        console.log(room);
+        console.log(data);
         if (room)
             this.setNickname(data.room_id, data.username, data.nickname, callback);
         else
