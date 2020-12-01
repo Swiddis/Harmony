@@ -92,25 +92,39 @@ roomSchema.methods.getMessages = async function (callback) {
           return;
         }
         let tmp = [];
-        if (messages) {
-          for (let mess of messages) {
-            let tmpMessage = {
-              room: mess.room,
-              content: mess.content,
-              sender: mess.sender,
-              avatar: mess.avatar,
-              is_file: mess.is_file,
-              timestamp: mess.timestamp,
-            };
-            let user = mess.sender;
-            let nick = this.getNickname(user);
-            if (nick) {
-              tmpMessage.nickname = nick;
-            }
-            tmp.push(tmpMessage);
+        mongoose.model("users").find({}, (err, users) => {
+          if (err) {
+            console.error("Could not get users from database!");
+            return;
           }
-        }
-        callback(err, tmp);
+
+          let getUser = (username) => {
+            for (let user of users) {
+              if (user.username == username) return user;
+            }
+            return {};
+          };
+
+          if (messages) {
+            for (let mess of messages) {
+              let tmpMessage = {
+                room: mess.room,
+                content: mess.content,
+                sender: mess.sender,
+                avatar: getUser(mess.sender).avatar,
+                is_file: mess.is_file,
+                timestamp: mess.timestamp,
+              };
+              let user = mess.sender;
+              let nick = this.getNickname(user);
+              if (nick) {
+                tmpMessage.nickname = nick;
+              }
+              tmp.push(tmpMessage);
+            }
+          }
+          callback(err, tmp);
+        });
       }
     );
 };
@@ -119,7 +133,6 @@ let messageSchema = mongoose.Schema({
   room: String,
   content: String,
   sender: String,
-  avatar: String,
   is_file: Boolean,
   timestamp: Date,
 });
