@@ -6,6 +6,7 @@
  */
 
 const db = require('../db/roomdb');
+const crypto = require('crypto');
 
 const btoa = (string) => {
     return Buffer.from(string, 'binary').toString('base64');
@@ -67,7 +68,23 @@ exports.authorizeRoomAccess = (req, res) => {
 };
 
 exports.establishUserDMs = (req, res) => {
-    // TODO
+    let user1 = req.body.user1;
+    let user2 = req.body.user2;
+    let room = {
+        room_id: crypto.randomBytes(20).toString('hex'),
+        room_title: `Direct ${user1}-${user2}`,
+        password: crypto.randomBytes(20).toString('hex')
+    };
+
+    db.createRoom(room, (err, room) => {
+        if (err) buildCreationResponse(res, err, room);
+        db.authorizeRoomAccess(user1, room.room_id, room.password, (err, auths) => {
+            if (err) buildCreationResponse(res, err, room);
+            db.authorizeRoomAccess(user2, room.room_id, room.password, (err, auths) => {
+                buildCreationResponse(res, err, room);
+            })
+        })
+    });
 };
 
 // User PATCH endpoint for nicknames

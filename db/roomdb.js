@@ -264,17 +264,6 @@ exports.authorizeRoomAccess = (username, room_id, password, callback) => {
     });
 };
 
-exports.establishUserDMs = (user1, user2) => {
-    /*
-    TODO Create a new room with a random id.
-     Add each user to the room (add to joined_rooms)
-    These rooms should be given a password to ensure that no
-    randoms join the room. The clients likely won't even be aware of
-    what the password even is.
-     */
-
-};
-
 /**
  * Update nickname of user given data as object:
  * {
