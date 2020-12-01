@@ -73,7 +73,7 @@ roomSchema.methods.setNickname = function (username, nickname, callback) {
  * Attempts to get the messages for the room.
  * @param callback - callback(err, messages)
  */
-roomSchema.methods.getMessages = function (callback) {
+roomSchema.methods.getMessages = async function (callback) {
     mongoose.model('message').find({room: this.room_id}, null, {sort: {timestamp: -1}}, (err, messages) => {
         if (err) {
             console.error("Could not find messages for room '" + room + "'");
@@ -88,6 +88,7 @@ roomSchema.methods.getMessages = function (callback) {
                     room: mess.room,
                     content: mess.content,
                     sender: mess.sender,
+                    avatar: mess.avatar,
                     is_file: mess.is_file,
                     timestamp: mess.timestamp
                 };
@@ -107,6 +108,7 @@ let messageSchema = mongoose.Schema({
     room: String,
     content: String,
     sender: String,
+    avatar: String,
     is_file: Boolean,
     timestamp: Date
 });
