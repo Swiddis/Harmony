@@ -130,6 +130,7 @@ body{
 .message{
     display: block;
     font-size: 18px;
+    white-space: pre-wrap;
 }
 
 .message_image {
