@@ -21,104 +21,115 @@ new User({
 });
  */
 
-
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 
-mongoose.connect('mongodb+srv://admin:Ydp4ZCmttqp2zPj@harmony-main.784cu.mongodb.net/data?retryWrites=true&w=majority', {
+mongoose.connect(
+  "mongodb+srv://admin:Ydp4ZCmttqp2zPj@harmony-main.784cu.mongodb.net/data?retryWrites=true&w=majority",
+  {
     useUnifiedTopology: true,
-    useNewUrlParser: true
-});
+    useNewUrlParser: true,
+  }
+);
 
 let userSchema = mongoose.Schema({
-    username: String,
-    password: String,
-    joined_rooms: [String],
-    avatar: String
+  username: String,
+  password: String,
+  joined_rooms: [String],
+  avatar: String,
 });
 
 let roomSchema = mongoose.Schema({
-    room_id: String,
-    room_title: String,
-    password: String,
-    nicknames: [{
-        name: String,
-        nick: String
-    }],
-    roomAvatar: String
+  room_id: String,
+  room_title: String,
+  password: String,
+  nicknames: [
+    {
+      name: String,
+      nick: String,
+    },
+  ],
+  roomAvatar: String,
 });
 
 roomSchema.methods.getNickname = function (username) {
-    for (let obj of this.nicknames) {
-        if (obj.name == username) {
-            return obj.nick;
-        }
+  for (let obj of this.nicknames) {
+    if (obj.name == username) {
+      return obj.nick;
     }
-    return;
-}
+  }
+  return;
+};
 roomSchema.methods.setNickname = function (username, nickname, callback) {
-    let set = false;
-    for (let obj of this.nicknames) {
-        if (obj.name == username) {
-            obj.nick = nickname;
-            set = true;
-        }
+  let set = false;
+  for (let obj of this.nicknames) {
+    if (obj.name == username) {
+      obj.nick = nickname;
+      set = true;
     }
-    if (!set) {
-        this.nicknames.push({name: username, nick: nickname});
-    }
-    this.save(callback);
-}
+  }
+  if (!set) {
+    this.nicknames.push({ name: username, nick: nickname });
+  }
+  this.save(callback);
+};
 /**
  * Attempts to get the messages for the room.
  * @param callback - callback(err, messages)
  */
 roomSchema.methods.getMessages = async function (callback) {
-    mongoose.model('message').find({room: this.room_id}, null, {sort: {timestamp: -1}}, (err, messages) => {
+  mongoose
+    .model("message")
+    .find(
+      { room: this.room_id },
+      null,
+      { sort: { timestamp: -1 } },
+      (err, messages) => {
         if (err) {
-            console.error("Could not find messages for room '" + room + "'");
-            console.error(err);
-            callback(err);
-            return;
+          console.error("Could not find messages for room '" + room + "'");
+          console.error(err);
+          callback(err);
+          return;
         }
         let tmp = [];
         if (messages) {
-            for (let mess of messages) {
-                let tmpMessage = {
-                    room: mess.room,
-                    content: mess.content,
-                    sender: mess.sender,
-                    avatar: mess.avatar,
-                    is_file: mess.is_file,
-                    timestamp: mess.timestamp
-                };
-                let user = mess.sender;
-                let nick = this.getNickname(user);
-                if (nick) {
-                    tmpMessage.nickname = nick;
-                }
-                tmp.push(tmpMessage);
+          for (let mess of messages) {
+            let tmpMessage = {
+              room: mess.room,
+              content: mess.content,
+              sender: mess.sender,
+              avatar: mess.avatar,
+              is_file: mess.is_file,
+              timestamp: mess.timestamp,
+            };
+            let user = mess.sender;
+            let nick = this.getNickname(user);
+            if (nick) {
+              tmpMessage.nickname = nick;
             }
+            tmp.push(tmpMessage);
+          }
         }
         callback(err, tmp);
-    });
+      }
+    );
 };
 
 let messageSchema = mongoose.Schema({
-    room: String,
-    content: String,
-    sender: String,
-    avatar: String,
-    is_file: Boolean,
-    timestamp: Date
+  room: String,
+  content: String,
+  sender: String,
+  avatar: String,
+  is_file: Boolean,
+  timestamp: Date,
 });
 
-exports.User = mongoose.model('users', userSchema);
-exports.Room = mongoose.model('rooms', roomSchema);
-exports.Message = mongoose.model('message', messageSchema);
+exports.User = mongoose.model("users", userSchema);
+exports.Room = mongoose.model("rooms", roomSchema);
+exports.Message = mongoose.model("message", messageSchema);
 
 let mdb = mongoose.connection;
-mdb.on('error', console.error.bind(console, 'connection error'));
-mdb.once('open', callback => {
-    console.log("Connected to Mongo!");
+mdb.on("error", console.error.bind(console, "connection error"));
+mdb.once("open", (callback) => {
+  console.log("Connected to Mongo!");
 });

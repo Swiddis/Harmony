@@ -1,4 +1,6 @@
-const socket = io.connect(document.location.host, {query: `username=${document.getElementById("username").innerText}`}); // <-- The client should connect to the server by passing in its username like this!
+const socket = io.connect(document.location.host, {
+  query: `username=${document.getElementById("username").innerText}`,
+}); // <-- The client should connect to the server by passing in its username like this!
 const messages = document.getElementById("messages");
 const form = document.getElementById("sendMessage");
 const messageBox = document.getElementById("message");
@@ -18,19 +20,23 @@ const username = document.getElementById("username");
 // };
 
 form.onsubmit = () => {
-    // We should be connecting with a username now.
+  // We should be connecting with a username now.
 
-    // if (username.value == "") {
-    //     alert("Please enter a username!");
-    //     return false;
-    // }
-    console.log("Sending message: " + messageBox.value);
-    socket.emit('message', {username: username.value, message: messageBox.value});
-    messageBox.value = "";
-    return false;
+  // if (username.value == "") {
+  //     alert("Please enter a username!");
+  //     return false;
+  // }
+  console.log("Sending message: " + messageBox.value);
+  socket.emit("message", {
+    username: username.value,
+    message: messageBox.value,
+  });
+  messageBox.value = "";
+  return false;
 };
 
-socket.on('message', msg => {
-    console.log(msg);
-    messages.innerHTML += "<div class='message'>" + msg.username + ": " + msg.message + "</div>";
+socket.on("message", (msg) => {
+  console.log(msg);
+  messages.innerHTML +=
+    "<div class='message'>" + msg.username + ": " + msg.message + "</div>";
 });

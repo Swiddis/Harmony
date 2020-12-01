@@ -1,94 +1,98 @@
 const config = require("../config.json");
-const {
-    User
-} = require('../conf/mongo_conf');
-const userdb = require('../db/userdb');
+const { User } = require("../conf/mongo_conf");
+const userdb = require("../db/userdb");
 
 var allowed;
 
 exports.index = (req, res) => {
-    res.render('index', {
-        title: 'Home',
-        config: config
-    });
+  res.render("index", {
+    title: "Home",
+    config: config,
+  });
 };
 
 exports.login = (req, res) => {
-    res.render("login", {
-        title: "Login",
-        config: config
-    });
-}
+  res.render("login", {
+    title: "Login",
+    config: config,
+  });
+};
 
 exports.signUp = (req, res) => {
-    res.render("create", {
-        title: "Sign Up",
-        config: config
-    });
-}
+  res.render("create", {
+    title: "Sign Up",
+    config: config,
+  });
+};
 
 exports.rooms = (req, res) => {
-    if (!req.session.user) {
+  if (!req.session.user) {
+    res.redirect("/login");
+    return;
+  }
+  User.findOne(
+    {
+      username: req.session.user.username,
+    },
+    (err, user) => {
+      if (err) {
+        res.json(err);
+        return;
+      }
+      if (!user) {
         res.redirect("/login");
         return;
+      }
+      res.render("room", {
+        title: "Room",
+        users: user,
+        //The user should exist and be passed into the render
+        // Since this should be an authenticated end-point, this works.
+        // TestUser1's password is testing123
+        // Other accounts should be able to be created using the sign up page.
+        username: user.username,
+        avatar: user.avatar,
+      });
     }
-    User.findOne({
-        username: req.session.user.username
-    }, (err, user) => {
-        if (err) {
-            res.json(err);
-            return;
-        }
-        if (!user) {
-            res.redirect("/login");
-            return;
-        }
-        res.render("room", {
-            'title': "Room",
-            users: user,
-            //The user should exist and be passed into the render
-            // Since this should be an authenticated end-point, this works.
-            // TestUser1's password is testing123
-            // Other accounts should be able to be created using the sign up page.
-            username: user.username,
-            avatar: user.avatar
-        });
-    })
-}
+  );
+};
 
 exports.checkAccess = (req, res) => {
-    if (req.body.username == "" || req.body.password == null) {
+  if (req.body.username == "" || req.body.password == null) {
+    res.redirect("/login");
+  }
+
+  let userName = req.body.username;
+  let userPassword = req.body.password;
+  console.log("Attempting to authenticate user " + userName);
+
+  userdb.authenticateUser(userName, userPassword, (err, user) => {
+    if (err) {
+      if (
+        err.message == "Invalid credentials" ||
+        err.message == "User not found"
+      ) {
         res.redirect("/login");
+        return;
+      }
     }
 
-    let userName = req.body.username;
-    let userPassword = req.body.password;
-    console.log("Attempting to authenticate user " + userName);
-
-    userdb.authenticateUser(userName, userPassword, (err, user) => {
-        if (err) {
-            if (err.message == "Invalid credentials" || err.message == "User not found") {
-                res.redirect("/login");
-                return;
-            }
-        }
-
-        console.log("User authenticated!");
-        req.session.user = {
-            isAuthenticated: true,
-            username: req.body.username
-        };
-        allowed = userName;
-        res.redirect("/room");
-    });
-}
+    console.log("User authenticated!");
+    req.session.user = {
+      isAuthenticated: true,
+      username: req.body.username,
+    };
+    allowed = userName;
+    res.redirect("/room");
+  });
+};
 
 exports.logout = (req, res) => {
-    req.session.destroy(err => {
-        if (err) {
-            console.log(err);
-        } else {
-            res.redirect("/");
-        }
-    });
-}
+  req.session.destroy((err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.redirect("/");
+    }
+  });
+};
