@@ -203,9 +203,9 @@ const formatRoomMessage = (avatar, username, message, isFile) => {
     return formattedMessage;
 };
 
-const renderRoomContent = (roomid) => {
+const renderRoomContent = (roomid, forceRender = false) => {
     //So the room doesn't rerender the same room if clicked again
-    if (currentRoomId === roomid) {
+    if (currentRoomId === roomid && !forceRender) {
         return;
     }
 
@@ -219,7 +219,7 @@ const renderRoomContent = (roomid) => {
         //Nickname User Label (Right bar)
         let nickname = getNickname(username);
         if(nickname !== username){
-            document.getElementById("username_label").innerHTML = username + `("${nickname}")`;
+            document.getElementById("username_label").innerHTML = username + ` ("${nickname}")`;
         }else{
             document.getElementById("username_label").innerHTML = username;
         }
@@ -256,7 +256,14 @@ const makeRoomClickable = (roomElementId) => {
 };
 
 const updateNickname = () => {
+    //TODO need to make if insert "" sets back to default username (but need an endpoint to delete room nicks)
+    //Or could just set nick to username
     let name = document.getElementById("change_nickname").value;
+    if(name.length > 20){
+        //TODO Display Nickname too long
+        console.log("Nickname too long!");
+        return;
+    }
 
     const data = {
         room_id: currentRoomId,
@@ -276,7 +283,7 @@ const updateNickname = () => {
             //TODO
             if (response.status === 204 || response.status === 200) {
                 console.log("CHANGED NICKNAME SUCCESSFULLY!");
-                renderRoomContent(currentRoomId);
+                renderRoomContent(currentRoomId, true);
                 closeModals();
             }
         });
@@ -343,7 +350,6 @@ tryAvatarBtn.addEventListener("click", function (evt) {
 })
 
 //Assign Buttons Functions
-document.getElementById("send_message_button").addEventListener("click", sendMessage);
 document.getElementById("create_room_button").addEventListener("click", createRoom);
 document.getElementById("join_room_button").addEventListener("click", joinRoom);
 document.getElementById("submit_file_button").addEventListener("click", sendFile);
