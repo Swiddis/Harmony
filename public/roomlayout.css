@@ -13,7 +13,7 @@
 #left_content, #rooms_container{
     width: 6em;
     height: 100%;
-    background-color: var(--therd-bgColor);
+    background-color: var(--secondary-bgColor);
     display:flex;
     flex-direction: column;
     /*overflow: auto;*/
@@ -38,7 +38,7 @@
     overflow: auto;
 }
 #input_message_container{
-    background-color: #3f444b;
+    background-color: var(--secondary-bgColor);
     flex-grow: 1;
     padding: 1em;
     display: flex;
@@ -48,7 +48,7 @@
 #right_content{
     width: 15em;
     height: 100%;
-    background-color: #202225;
+    background-color: var(--secondary-bgColor);
     display:flex;
     flex-direction: column;
     overflow:auto;

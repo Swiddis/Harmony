@@ -1,34 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;1,400;1,600&family=Sansita+Swashed:wght@600&display=swap');
 
 :root {
-    --primary-color: #302AE6;
     --font-color: black;
-    --secondary-bgColor: #fff;
-    --therd-bgColor: #fff;
     --bg-color: #fff;
-    --heading-color: #292922;
+    --secondary-bgColor: #F4F6F7; 
+    --therd-bgColor: #57595e;
 }
 
 [data-theme="dark"] {
-    
-    --primary-color: white;
     --font-color: #fff;
     --bg-color: #36393f;
-    --secondary-bgColor: #222;
-    --therd-bgColor: #202225;
-    --hv-bgColor: gray;
-    --border-color: black;
+    --secondary-bgColor: #202225;
+    --therd-bgColor: #F4F6F7;
 }
 
 /* General Styles*/
 body{
     margin: 0;
     overflow: hidden;
-    background-color: #fff;
+    background-color: var(--bg-color);
 }
 
 .button{
-    background-color: white;
+    background-color: #fff;
     padding: 12px 20px;
     border: 2px solid black;
     border-radius: 8px;
@@ -42,16 +36,17 @@ body{
 
 /* logout */
 #logout {
-    background-color: white;
+    background-color: #F4F6F7;
     font-size: 20px;
     text-align: center;
     margin: 20px;
+    color: var(--font-color);
 }
 
 
 /*Room (Icon) Styles*/
 .room, #new_room{
-    background-color:white;
+    background-color: white;
     border: 2px solid black;
     border-radius: 30px;
     height: 3em;
@@ -70,7 +65,7 @@ body{
     background-color: #0f0;
 }
 #new_room:hover{
-    background-color: #0a0;
+    background-color: #0f0;
     border-radius: 15px;
     transition: border-radius 0.2s;
 }
@@ -84,7 +79,7 @@ body{
   visibility: hidden;
   width: 120px;
   background-color: black;
-  color: #fff;
+  color: var(--bg-color);
   text-align: center;
   border-radius: 6px;
   padding: 10px 0;
@@ -112,21 +107,21 @@ body{
 /* Right Side Labels*/
 
 #roomname_label{
-    color: #fff;
+    color: var(--font-color);
     text-align: center;
     font-size: 24px;
 }
 #username_label{
-    color: #fff;
+    color: var(--font-color);
     text-align: center;
     font-size: 20px;
 }
 
 /* Displayed Messages (MessageBox, Name, Avatar, Message)*/
-.message_box{
-    color: black;
+.message_box {
+    color: var(--bg-color);
     margin: 1em 2em;
-    background-color: white;
+    background-color: var(--therd-bgColor);
     width: 90%;
     padding: 1em;
 }
@@ -143,12 +138,12 @@ body{
     max-width: 100%;
     max-height: 100%;
     border-radius: 90px;
-    border: #fff 2px solid;
+    border: var(--bg-color) 2px solid;
 }
 
 .message_name{
     padding: 2em;
-    border-bottom: 2px solid white;
+    border-bottom: 2px solid var(--bg-color);
     display: block;
     font-size: 20px;
 }
@@ -255,7 +250,7 @@ background: #111;
 em {
     margin-left: 10px;
     font-size: 1rem;
-    color: white;
+    color: var(--font-color);
 }
 
 .theme-switch {
