@@ -74,7 +74,7 @@ const sendFile = () => {
     formData.append("room_id", currentRoomId);
 
     var request = new XMLHttpRequest();
-    request.open('POST', "/media")
+    request.open('POST', "/media");
     request.onload = function () {
         console.log(request.status);
         if (request.status === 200) {
@@ -94,7 +94,7 @@ const sendFile = () => {
 socket.on('message', msg => {
     console.log(msg);
     //for now if msg recieved is from currentroomid display
-    if(msg.nickname) {
+    if (msg.nickname) {
         let set = false;
         for (let obj of nicknames) {
             if (obj.name == msg.username) {
@@ -218,12 +218,12 @@ const renderRoomContent = (roomid, forceRender = false) => {
         document.getElementById("roomname_label").innerHTML = room.room_title;
         //Nickname User Label (Right bar)
         let nickname = getNickname(username);
-        if(nickname !== username){
+        if (nickname !== username) {
             document.getElementById("username_label").innerHTML = username + ` ("${nickname}")`;
-        }else{
+        } else {
             document.getElementById("username_label").innerHTML = username;
         }
-        
+
 
         fetchRoomMessages(roomid).then(function (messages) {
             currentRoomId = roomid;
@@ -242,12 +242,12 @@ const renderRoomList = () => {
         console.log(user);
         for (let i = 0; i < user.joined_rooms.length; i++) { //${user.joined_rooms[i]}
             fetchRoomData(user.joined_rooms[i]).then(function (room) {
-                rooms_container.innerHTML += 
-                `<span class='room tooltip' id='${user.joined_rooms[i]}' style='text-align:center' onclick='renderRoomContent("${user.joined_rooms[i]}");'>` + 
-                    `<img src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>` + 
+                rooms_container.innerHTML +=
+                    `<span class='room tooltip' id='${user.joined_rooms[i]}' style='text-align:center' onclick='renderRoomContent("${user.joined_rooms[i]}");'>` +
+                    `<img src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>` +
                     `<span class='tooltiptext'>${room.room_title}</span>` +
-                `</span>`;
-            });    
+                    `</span>`;
+            });
         }
     });
 };
@@ -259,7 +259,7 @@ const updateNickname = () => {
     //TODO need to make if insert "" sets back to default username (but need an endpoint to delete room nicks)
     //Or could just set nick to username
     let name = document.getElementById("change_nickname").value;
-    if(name.length > 20){
+    if (name.length > 20) {
         //TODO Display Nickname too long
         console.log("Nickname too long!");
         return;
@@ -292,8 +292,8 @@ const updateNickname = () => {
 //Helper Functions
 const getNickname = (username) => {
     //Checks if nickname array 
-        // Returns either nickname for user or just username if no nickname
-    if(nicknames) {
+    // Returns either nickname for user or just username if no nickname
+    if (nicknames) {
         for (let i = 0; i < nicknames.length; i++) {
             if (username === nicknames[i].name) {
                 return nicknames[i].nick;
@@ -333,8 +333,7 @@ tryAvatarBtn.addEventListener("click", function (evt) {
     avatar.src = url;
 
     let data = {
-        avatar: url,
-        test: "This is dummy data"
+        avatar: url
     };
     console.log(data);
     fetch(`/user/${username}`, {
@@ -347,7 +346,60 @@ tryAvatarBtn.addEventListener("click", function (evt) {
         console.log(response);
         //TODO Tell the user it was a success
     });
-})
+});
+
+const uploadAvatar = () => {
+    let form = document.forms.namedItem("choose_avatar");
+    let formData = new FormData(form);
+
+    formData.append("sender", username);
+
+    let request = new XMLHttpRequest();
+    request.open('POST', "/media");
+    request.onload = function () {
+        console.log(request.status);
+        if (request.status === 200) {
+            console.log(request.response);
+
+            let data = JSON.parse(request.response);
+            let avatarDisplay = document.getElementById("avatarImg");
+            let avatar = document.getElementById("changeAvatar");
+            let url = data.path.split("::")[0];
+            console.log("Avatar: " + url);
+            avatar.src = url;
+            avatarDisplay.src = url;
+
+            fetch(`/user/${username}`, {
+                method: "PATCH",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    avatar: url
+                })
+            }).then(response => {
+                closeModals();
+            })
+        }
+    }
+    request.send(formData);
+    return false;
+};
+
+const validateFileSize = evt => {
+    let elm = evt.target; //This should be the <input type="file"> element
+    console.log(elm.files);
+    let file = elm.files[0];
+    if(file) {
+        if(file.size >= 104857600) {
+            elm.value = "";
+            alert("That file is too large (>100MB)");
+        }
+    }
+}
+
+document.getElementById("useAvatar").onclick = uploadAvatar;
+document.getElementById("avatar_upload").onchange = validateFileSize;
 
 //Assign Buttons Functions
 document.getElementById("create_room_button").addEventListener("click", createRoom);

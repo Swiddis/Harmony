@@ -84,7 +84,7 @@ const fid_magnitude = 10;
 const randomFileName = (ext) => {
     let fname;
     do {
-        let id = crypto.randomInt(Math.pow(10, fid_magnitude));
+        let id = crypto.randomBytes(10).toString("hex");
         fname = ('0'.repeat(fid_magnitude) + id).substr(-fid_magnitude) + fid_magnitude;
     } while (fs.existsSync('/public/uploads/' + fname));
     return fname + ext;

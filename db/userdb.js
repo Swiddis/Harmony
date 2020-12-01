@@ -99,7 +99,7 @@ const updateAndSaveUser = (us, user) => {
         us.joined_rooms = user.joined_rooms;
     }
 
-    new User(us).save((err, user) => {
+    new User(us).save((err, us) => {
         if (err) {
             console.error("Could not update user '" + user.username + "'");
             return;
