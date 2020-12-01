@@ -56,7 +56,52 @@ body{
     transition: border-radius 0.2s;
 }
 
+.tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+  }
+.tooltip .tooltiptext{
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 10px 0;
+  position: absolute;
+  z-index: 1;
+  top: 7px;
+  left: 120%;
+}
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent black transparent transparent;
+  }
+.tooltip:hover .tooltiptext{
+    visibility: visible;
+}
 
+
+
+/* Right Side Labels*/
+
+#roomname_label{
+    color: #fff;
+    text-align: center;
+    font-size: 24px;
+}
+#username_label{
+    color: #fff;
+    text-align: center;
+    font-size: 20px;
+}
 
 /* Displayed Messages (MessageBox, Name, Avatar, Message)*/
 .message_box{

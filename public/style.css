@@ -1,6 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;1,400;1,600&family=Sansita+Swashed:wght@600&display=swap');
+
 /* Style */
 html {
-    background-color: rgba(239, 243, 243, 0.712);
+    background-color: rgba(244, 247, 247, 0.548);
 }
 
 body {
@@ -9,53 +11,63 @@ body {
     height: fit-content;
 }
 
+#titleB {
+    font-family: 'Merriweather', serif;
+    font-size: 50px;
+    margin-top: 10px;
+}
+
+#welcome {
+    font-family: 'Sansita Swashed', cursive;
+    font-size: 35px;
+}
+
 /* navbar */
 nav {
     border: 1px solid white;
     display: flex;
-    background: rgb(121, 118, 115);
+    background: #34495E;
     color: whitesmoke;
+    font-family: 'Merriweather', serif;
 }
 
 ul {
     list-style-type: none;
-    margin: 0;
-    padding: 0;
     overflow: hidden;
 }
 
 li {
-    float: left;
-    margin-top: 16px;
-
+    margin-top: 10px;
+    margin-left: 70px;
 }
 
 li, a {
     display: inline-block;
-    padding: 7px 9px;
-    font-size: large;
+    padding: 7px 50px;
+    font-size: 30px;
     color: whitesmoke;
 }
 
 a:hover {
-    background-color: #658882;
+    background-color: #283747;
 }
 
 /* login Form */
 #LoginPage {
     width: 100%;
     float: left;
-    padding-top: 0px;
     justify-content: center;
     display: flex;
 }
 
 #loginForm {
-    background-color: rgba(113, 119, 119, 0.788);
+    background-color: #ABB2B9;
     width: 50%;
     height: auto;
     position: absolute;
-    margin: 50px 36px;
+    margin: 100px 36px;
+    color: black;
+    
 }
 
 #userNameBox, #passcode {
@@ -67,7 +79,7 @@ a:hover {
     display: inline-flex;
 }
 
-#submitButton, #signUpButton {
+#submitButton {
     padding: 12px 30px;
     margin: auto;
     width: 70%;
@@ -75,11 +87,20 @@ a:hover {
     display: flex;
     justify-content: center;
 }
-#loginSubmit {
-    margin: 10px 0;
-    cursor: pointer;
-    justify-content: center;
+
+#signUpHref {
+    color: black;
+    background-color: #ABB2B9;
 }
+
+#loginSubmit {
+    cursor: pointer;
+    height: 59px;
+    justify-content: center;
+    font-family: 'Indie Flower', cursive;
+    font-size: 35px;
+}
+
 input {
     width: 30%;
     box-sizing : border-box;
@@ -89,13 +110,14 @@ input {
 
 label {
     padding: 0px 8px;
+    font-size: 25px;
+    font-family: 'Indie Flower', cursive;
 }
 
 /*Create Account Form*/
 #SignUpPage{
     width: 100%;
     float: left;
-    padding-top: 0px;
     justify-content: center;
     display: flex;
 }
@@ -105,7 +127,7 @@ label {
     width: 50%;
     height: auto;
     position: absolute;
-    margin: 50px 36px;
+    margin: 140px 36px;
 }
 
 #username, #password {
@@ -133,4 +155,5 @@ label {
 #logo {
     width: 90px;
     height: 80px;
+    margin-left: 70px;
 }

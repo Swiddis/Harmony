@@ -35,12 +35,12 @@ exports.updateUser = (req, res) => {
     let username = req.params.username;
     let updates = {
         avatar: req.body.avatar,
-        username: req.body.username,
+        username,
         password: req.body.password,
         joined_rooms: req.body.joined_rooms
     };
 
-    db.updateUser(username, updates, (err, user) => buildResponse(res, err, user));
+    db.updateUser(updates, (err, user) => buildResponse(res, err, user));
 };
 
 // User DELETE endpoint

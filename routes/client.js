@@ -66,22 +66,24 @@ function Client(io, socket) {
 
         if (message.room_id) { // Should always be sent with a room.
             db.getRoom(message.room_id, (err, room) => {
-                let nickname;
+                let nickname = room.getNickname(socket.username);
                 // Find the user's nickname (if applicable) and send it along with the message
-                if (room.nicknames) {
-                    for (let arr of room.nicknames) {
-                        if (arr[0] == message.username)
-                            nickname = arr[1];
-                    }
-                }
+                // if (room.nicknames) {
+                //     for (let arr of room.nicknames) {
+                //         if (arr[0] == message.username)
+                //             nickname = arr[1];
+                //     }
+                // }
 
-                io.emit('message', {
+                let msg = {
                     room_id: message.room_id,
                     username: socket.username,
                     nickname, //If null, this just won't show up.
                     message: message.message,
                     is_file: message.is_file
-                })
+                };
+
+                io.emit('message', msg);
             });
         } else { //If not, just forward the message along
             io.emit('message', {

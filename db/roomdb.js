@@ -271,47 +271,57 @@ exports.authorizeRoomAccess = (username, room_id, password, callback) => {
  *  room_id,  -- Room in which to update nickname
  *  nickname  -- New nickname
  * }
- * @param data - Data containing update info. Needs 
- * @param callback 
+ * @param data - Data containing update info. Needs
+ * @param callback
  */
 exports.updateUserNickname = (data, callback) => {
-    Room.findOne({
-        room_id: data.room_id
-    }, (err, room) => {
-        if (err) callback(err, {
-            room_id: room_id
-        });
-        if (room) {
-            let nicks = room.nicknames;
-            let updated = false;
-            for (let nick of nicks) {
-                if (nick.name == data.username) {
-                    nick.nick = data.nickname;
-                    updated = true;
-                    break;
-                }
-            }
+    Room.findOne({room_id: data.room_id}, (err, room) => {
+        if (err) callback(err, {room_id: data.room_id});
 
-            if (!updated) {
-                nicks.push({
-                    name: data.username,
-                    nick: data.nickname
-                });
-            }
-
-            Room.updateOne({
-                room_id: data.room_id
-            }, {
-                $set: {
-                    nicknames: nicks
-                }
-            });
-
-            room.nicknames = nicks;
-
-            callback(undefined, room);
-        } else {
-            callback(new Error('Could not find room ' + room_id));
-        }
-    })
+        console.log(data);
+        if (room)
+            this.setNickname(data.room_id, data.username, data.nickname, callback);
+        else
+            callback(new Error("Room not found"));
+    });
 };
+//     Room.findOne({
+//         room_id: data.room_id
+//     }, (err, room) => {
+//         if (err) callback(err, {
+//             room_id: room_id
+//         });
+//         if (room) {
+//             let nicks = room.nicknames;
+//             let updated = false;
+//             for (let nick of nicks) {
+//                 if (nick.name == data.username) {
+//                     nick.nick = data.nickname;
+//                     updated = true;
+//                     break;
+//                 }
+//             }
+//
+//             if (!updated) {
+//                 nicks.push({
+//                     name: data.username,
+//                     nick: data.nickname
+//                 });
+//             }
+//
+//             Room.updateOne({
+//                 room_id: data.room_id
+//             }, {
+//                 $set: {
+//                     nicknames: nicks
+//                 }
+//             });
+//
+//             room.nicknames = nicks;
+//
+//             callback(undefined, room);
+//         } else {
+//             callback(new Error('Could not find room ' + room_id));
+//         }
+//     })
+// };

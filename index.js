@@ -38,6 +38,8 @@ const urlencodedParser = bodyParser.urlencoded({
     extended: true
 });
 
+const jsonParser = bodyParser.json();
+
 const checkAuth = (req, res, next) => {
     if (req.session.user && req.session.user.isAuthenticated) {
         next();
@@ -62,16 +64,16 @@ app.get("/room", checkAuth, render.rooms);
 app.get("/login", render.login);
 app.post("/login", urlencodedParser, render.checkAccess);
 
-app.post('/room', bodyParser.json(), rooms.createRoom);
+app.post('/room', jsonParser, rooms.createRoom);
 app.get('/room/:room_id', rooms.getRoom);
 app.get('/messages/:room_id', rooms.getMessages); // Possibly add authentication here so no anons can get the message history.
 app.post('/room/:room_id', urlencodedParser, rooms.sendToRoom);
 app.get('/room/authorize/:room_id', rooms.authorizeRoomAccess);
-app.patch('/room/nick/:room_id', urlencodedParser, rooms.updateUserNickname);
+app.patch('/room/nick/:room_id', urlencodedParser, jsonParser, rooms.updateUserNickname);
 
 app.post('/user', urlencodedParser, users.createUser);
 app.get('/user/:username', users.getUser);
-app.patch('/user/:username', urlencodedParser, users.updateUser);
+app.patch('/user/:username', urlencodedParser, jsonParser, users.updateUser);
 app.get('/user/authenticate', users.authenticateUser);
 app.post('/dm/:user1/:user2', rooms.establishUserDMs);
 

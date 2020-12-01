@@ -2,6 +2,7 @@ doctype html
 html
     head
         link(rel="stylesheet", href="/style.css")
+        link(rel="icon", type="image/png", href="/images/harmony_logo.png")
         block head
     body
         header
@@ -16,6 +17,6 @@ html
                 
         section
             div(id=`${title.replace(" ", "")}Page`)
-                h1 #{title}
+                h1(id="titleB") #{title}
                 block content
         footer
