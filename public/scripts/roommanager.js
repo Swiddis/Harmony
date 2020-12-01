@@ -23,7 +23,7 @@ async function fetchUser(username) {
 async function fetchRoomData(roomid) {
     let response = await fetch(`/room/${roomid}`);
     let data = await response.text();
-    return JSON.parse(data);
+    return JSON.parse(data).data;
 };
 
 async function fetchRoomMessages(roomid) {
@@ -118,16 +118,11 @@ const createRoom = () => {
     const room_id = document.getElementById("create_id").value;
     const room_title = document.getElementById("create_title").value;
     const password = document.getElementById("create_password").value;
-    const nickname = document.getElementById("create_nicknames").value;
 
     const room = {
         room_id: room_id,
         room_title: room_title,
         password: password,
-        nicknames: [{
-            name: username,
-            nick: nickname
-        }],
         roomAvatar: "./images/room.png"
     };
 
@@ -174,15 +169,7 @@ const joinRoom = () => {
 //Render Functions
 const formatRoomMessage = (avatar, username, message, isFile) => {
     let formattedMessage = "";
-    let name = username;
-
-    if(nicknames) {
-        for (let i = 0; i < nicknames.length; i++) {
-            if (username === nicknames[i].name) {
-                name = nicknames[i].nick;
-            }
-        }
-    }
+    let name = getNickname(username);
 
     //If Message is a file
     if (isFile) {
@@ -226,7 +213,17 @@ const renderRoomContent = (roomid) => {
     messages_container.innerHTML = "";
 
     fetchRoomData(roomid).then(function (room) {
-        nicknames = room.data.nicknames;
+        nicknames = room.nicknames;
+        //RoomName Label (Right bar)
+        document.getElementById("roomname_label").innerHTML = room.room_title;
+        //Nickname User Label (Right bar)
+        let nickname = getNickname(username);
+        if(nickname !== username){
+            document.getElementById("username_label").innerHTML = username + `("${nickname}")`;
+        }else{
+            document.getElementById("username_label").innerHTML = username;
+        }
+        
 
         fetchRoomMessages(roomid).then(function (messages) {
             currentRoomId = roomid;
@@ -244,7 +241,13 @@ const renderRoomList = () => {
     fetchUser(username).then(function (user) {
         console.log(user);
         for (let i = 0; i < user.joined_rooms.length; i++) { //${user.joined_rooms[i]}
-            rooms_container.innerHTML += `<span class='room' id='${user.joined_rooms[i]}' style='text-align:center' onclick='renderRoomContent("${user.joined_rooms[i]}");'><img src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>"</span>`;
+            fetchRoomData(user.joined_rooms[i]).then(function (room) {
+                rooms_container.innerHTML += 
+                `<span class='room tooltip' id='${user.joined_rooms[i]}' style='text-align:center' onclick='renderRoomContent("${user.joined_rooms[i]}");'>` + 
+                    `<img src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>` + 
+                    `<span class='tooltiptext'>${room.room_title}</span>` +
+                `</span>`;
+            });    
         }
     });
 };
@@ -274,11 +277,25 @@ const updateNickname = () => {
             if (response.status === 204 || response.status === 200) {
                 console.log("CHANGED NICKNAME SUCCESSFULLY!");
                 renderRoomContent(currentRoomId);
+                closeModals();
             }
         });
 };
 
 //Helper Functions
+const getNickname = (username) => {
+    //Checks if nickname array 
+        // Returns either nickname for user or just username if no nickname
+    if(nicknames) {
+        for (let i = 0; i < nicknames.length; i++) {
+            if (username === nicknames[i].name) {
+                return nicknames[i].nick;
+            }
+        }
+    }
+    return username;
+}
+
 const isFileImage = (content) => {
     let imageRegex = /.+\.(gif|jpg|jpeg|png)/i;
     return imageRegex.test(content);

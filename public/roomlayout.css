@@ -14,8 +14,12 @@
     background-color: #202225;
     display:flex;
     flex-direction: column;
-    overflow:auto;
+    /*overflow: auto;*/
 }
+#rooms_container{
+    overflow-x: visible;
+}
+
 
 /* Center (Messages Display and Input Message) Container*/
 #middle_content{
