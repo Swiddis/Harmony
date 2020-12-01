@@ -67,7 +67,6 @@ a:hover {
     position: absolute;
     margin: 100px 36px;
     color: black;
-    
 }
 
 #userNameBox, #passcode {
@@ -123,11 +122,12 @@ label {
 }
 
 #createAccount {
-    background-color: rgba(113, 119, 119, 0.788);
+    background-color: #ABB2B9;
     width: 50%;
     height: auto;
     position: absolute;
-    margin: 140px 36px;
+    margin: 100px 36px;
+    color: black;
 }
 
 #username, #password {
@@ -139,11 +139,14 @@ label {
     display: inline-flex;
 }
 
-#createSubmit{
+#createSubmit {
     cursor: pointer;
-    margin: 10px 0;
+    margin: auto;
+    width: 30%;
+    height: 55px;
+    font-size: 30px;
+    font-family: 'Indie Flower', cursive;
     justify-content: center;
-    display: inline-flex;
 }
 
 /* Images */

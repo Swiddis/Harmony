@@ -2,14 +2,12 @@ extends navBar
 
 block content    
     form(id="createAccount" action="/signup" method="post")
-        p 
-        |Username: 
+        label(for="username") Username: 
         br
         input(type="text", name="username", id="username")
         br
         br
-        p 
-        |Password: 
+        label(for="password") Password: 
         br
         input(type="password", name="password", id="password")
         br

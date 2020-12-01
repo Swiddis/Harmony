@@ -23,6 +23,13 @@ html
                     //TODO have a modal popup after choosing a file instead of submit button
                     textarea(id="my_message" placeholder="Message" onkeypress="return submitOnEnter(event);")
             div(id="right_content")
+                div(class="theme-switch-wrapper")
+                    label(class="theme-switch" for="checkbox")
+                        input(type="checkbox" id="checkbox")
+                        div(class="slider round")
+                    em Dark Mode!
+                br 
+                br 
                 div(id="roomname_label")
                 img(class="avatar" id="avatarImg" src=avatar)
                 div(id="username_label")=username
