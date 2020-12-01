@@ -5,6 +5,7 @@ const {
 } = require("express");
 const db = require("../db/userdb");
 const roomdb = require("../db/roomdb");
+const io = require('../io-manager');
 
 // Post to /user, accepts input in JSON format
 exports.createUser = (req, res) => {
@@ -39,6 +40,13 @@ exports.updateUser = (req, res) => {
         password: req.body.password,
         joined_rooms: req.body.joined_rooms
     };
+    if (updates.avatar) {
+        //Get applicable socket for the user and update the socket's avatar.
+        let client = io.getClientByUsername(username);
+        if (client) {
+            client.getSocket().avatar = updates.avatar;
+        }
+    }
 
     db.updateUser(updates, (err, user) => buildResponse(res, err, user));
 };

@@ -1,4 +1,5 @@
 const db = require('../db/roomdb');
+const userdb = require('../db/userdb');
 const ioManager = require('../io-manager');
 
 function Client(io, socket) {
@@ -15,6 +16,10 @@ function Client(io, socket) {
 
     this.getSocket = () => socket;
     this.getUsername = () => socket.username;
+    this.getAvatar = () => {
+        if (socket.avatar)
+            return socket.avatar;
+    }
 
     this.disconnect = () => {
         ioManager.removeClient(this);
@@ -38,11 +43,27 @@ function Client(io, socket) {
     }
     //We probably don't need to send this message every time the page is refreshed.
     // Just need it when they first join a room.
-    io.emit('message', {
-        username: socket.username,
-        message: "connected!"
+    let connect = () => {
+        io.emit('message', {
+            username: socket.username,
+            avatar: socket.avatar,
+            message: "connected!"
+        });
+        console.log(socket.username + " connected.");
+    };
+
+    userdb.getUser(socket.username, (err, user) => {
+        if (err) {
+            console.log("A user attempted to connect by username '" + socket.username + "' but we couldn't fetch data for them.");
+            return;
+        }
+        if (user) {
+            socket.avatar = user.avatar;
+            connect();
+        } else {
+            console.log("Could not find user by the name of '" + socket.username + "' on the database.");
+        }
     });
-    console.log(socket.username + " connected.");
 
     this.sendMessage = (message) => { //Sends a message specifically to the client.
         socket.emit('message', message);
@@ -58,11 +79,13 @@ function Client(io, socket) {
             room: message.room_id,
             content: message.message,
             sender: socket.username,
+            avatar: socket.avatar,
             is_file: message.is_file,
             timestamp: new Date()
         }
         //We might need to actually call this on the rooms.js script if needed.
-        db.sendMessage(db_message, (err, msg) => {});
+        db.sendMessage(db_message, (err, msg) => {
+        });
 
         if (message.room_id) { // Should always be sent with a room.
             db.getRoom(message.room_id, (err, room) => {
@@ -79,6 +102,7 @@ function Client(io, socket) {
                     room_id: message.room_id,
                     username: socket.username,
                     nickname, //If null, this just won't show up.
+                    avatar: socket.avatar,
                     message: message.message,
                     is_file: message.is_file
                 };
@@ -89,6 +113,7 @@ function Client(io, socket) {
             io.emit('message', {
                 room_id: message.room_id,
                 username: socket.username,
+                avatar: socket.avatar,
                 message: message.message,
                 is_file: message.is_file
             });
