@@ -109,7 +109,7 @@ socket.on("message", (msg) => {
   }
   if (msg.room_id === currentRoomId) {
     messages_container.innerHTML += formatRoomMessage(
-      "NO_AVATAR_YET",
+      msg.avatar,
       msg.username,
       msg.message,
       msg.is_file
@@ -178,7 +178,7 @@ const formatRoomMessage = (avatar, username, message, isFile) => {
   if (isFile) {
     formattedMessage =
       "<span class='message_box'>" +
-      "<span class='avatar'></span>" +
+      `<span class='avatar'><img src="${avatar}" alt="${username}_avatar"/></span>` +
       "<span class='name'>" +
       name +
       "</span>" +
@@ -198,7 +198,7 @@ const formatRoomMessage = (avatar, username, message, isFile) => {
   } else {
     formattedMessage =
       "<span class='message_box'>" +
-      "<span class='avatar'></span>" +
+      `<span class='avatar'><img src="${avatar}" alt="${username}_avatar"/></span>` +
       "<span class='name'>" +
       name +
       "</span>" +
@@ -238,7 +238,7 @@ const renderRoomContent = (roomid, forceRender = false) => {
       //Currently the messages array is backwards so will do it this way
       for (let i = messages.length - 1; i >= 0; i--) {
         messages_container.innerHTML += formatRoomMessage(
-          "NO_AVATAR_YET",
+          messages[i].avatar,
           messages[i].sender,
           messages[i].content,
           messages[i].is_file

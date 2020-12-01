@@ -37,7 +37,6 @@ const closeModals = () => {
 
 //On Enter Submit Message
 function submitOnEnter(evt) {
-  console.log(evt);
   if (evt.key === "Enter" && evt.shiftKey === false) {
     sendMessage();
     message_box.value = "";
