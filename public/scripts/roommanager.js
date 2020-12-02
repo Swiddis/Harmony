@@ -196,7 +196,7 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
     if (isFile) {
         formattedMessage =
             "<span class='message_box'>" +
-            `<span class='avatar'><img onerror="loadDefault(this)" src="${avatar}" alt="${username}_avatar"/></span>` +
+            `<div class='msgAvatar'><span class='avatar'><img onerror="loadDefault(this)" src="${avatar}" alt="${username}_avatar"/></span></div>` +
             "<span class='name'>" +
             name +
             "</span>" +
