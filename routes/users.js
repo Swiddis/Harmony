@@ -37,7 +37,7 @@ exports.updateUser = (req, res) => {
     avatar: req.body.avatar,
     username,
     password: req.body.password,
-    joined_rooms: req.body.joined_rooms,
+    // joined_rooms: req.body.joined_rooms, // Joined rooms will all be handled from the server. The client shouldn't be allowed to change these values.
   };
   if (updates.avatar) {
     //Get applicable socket for the user and update the socket's avatar.

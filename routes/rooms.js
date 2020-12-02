@@ -79,22 +79,36 @@ exports.establishUserDMs = (req, res) => {
     let masterRoom = {
         room_id: crypto.randomBytes(20).toString("hex"),
         room_title: `Direct ${user1}-${user2}`,
-        password
+        password,
+        is_dm: true
     };
 
-    db.createRoom(masterRoom, (err, room) => {
-        if (err) return buildCreationResponse(res, err, room);
-        db.authorizeRoomAccess(user1, room.room_id, password, (err, auths) => {
-            if (err) return buildCreationResponse(res, err, room);
-            db.authorizeRoomAccess(
-                user2,
-                room.room_id,
-                password,
-                (err, auths) => {
-                    buildCreationResponse(res, err, room);
-                }
-            );
-        });
+    db.findDM(user1, user2, (err, room) => {
+        if (err && err.message != "Room not found") return buildResponse(res, err, room);
+        if (room) { //We've got to make sure a DM does not already exist!
+            console.log("Found DM between " + user1 + " and " + user2);
+            buildResponse(res, undefined, room);
+        } else {
+            console.log("DM not found for " + user1 + " and " + user2 + ". Creating one.");
+            db.createRoom(masterRoom, (err, room) => {
+                if (err) return buildCreationResponse(res, err, room);
+                db.authorizeRoomAccess(
+                    user1,
+                    room.room_id,
+                    password,
+                    (err, auths) => {
+                        if (err) return buildCreationResponse(res, err, room);
+                        db.authorizeRoomAccess(
+                            user2,
+                            room.room_id,
+                            password,
+                            (err, auths) => {
+                                buildCreationResponse(res, err, room);
+                            }
+                        );
+                    }, false);
+            });
+        }
     });
 };
 
@@ -163,7 +177,17 @@ const buildResponse = (res, err, room, created = false) => {
             status: 200,
             path: room_path,
         };
-        if (room) response.data = room;
+        if (room) {
+            let tempRoom = { // We have to sanitize and not send the password back
+                room_id: room.room_id,
+                room_title: room.room_title,
+                nicknames: room.nicknames,
+                roomAvatar: room.roomAvatar,
+                members: room.members,
+                is_dm: room.is_dm
+            }
+            response.data = tempRoom;
+        }
         if (created) response.status = 201;
     }
 

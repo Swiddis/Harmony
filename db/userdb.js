@@ -103,9 +103,9 @@ const updateAndSaveUser = (us, user) => {
     us.password = user.password;
   }
 
-  if (user.joined_rooms) {
-    us.joined_rooms = user.joined_rooms;
-  }
+  // if (user.joined_rooms) {
+  //   us.joined_rooms = user.joined_rooms;
+  // }
 
   new User(us).save((err, user) => {
     if (err) {

@@ -1,5 +1,3 @@
-@import url("../public/roomstyle.css"); 
-
 /* Container Holding all Page Containers*/
 #page_container{
     display: flex;

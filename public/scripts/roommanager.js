@@ -120,20 +120,27 @@ const openUserInfo = user => {
     name.innerHTML = user;
     content.append(name);
 
-    let dmButton = document.createElement("button");
-    dmButton.innerText = "Start DM";
-    dmButton.onclick = evt => {
-        fetch(`/dm/${username}/${user}`,
-            {
-                method: "POST"
-            })
-            .then(response => {console.log(response); return response.json();})
-            .then(data => {
-                console.log(data);
-                renderRoomList();
-            });
-    };
-    content.append(dmButton);
+    if(user != username) {
+        //Only display DM button if it's not YOU.
+        let dmButton = document.createElement("button");
+        dmButton.innerText = "Start DM";
+        dmButton.onclick = evt => {
+            fetch(`/dm/${username}/${user}`,
+                {
+                    method: "POST"
+                })
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    closeModals();
+                    renderRoomList();
+                    renderRoomContent(data.data.room_id);
+                });
+        };
+        content.append(dmButton);
+    }
 
     modal.style.display = "block";
     document.body.append(modal);
@@ -353,6 +360,7 @@ const renderRoomContent = (roomid, forceRender = false) => {
     messages_container.innerHTML = "";
 
     fetchRoomData(roomid).then(function (room) {
+        if(!room) return;
         nicknames = room.nicknames;
         //RoomName Label (Right bar)
         document.getElementById("roomname_label").innerHTML = room.room_title;
@@ -383,6 +391,7 @@ const renderRoomList = () => {
         for (let i = 0; i < user.joined_rooms.length; i++) {
             //${user.joined_rooms[i]}
             fetchRoomData(user.joined_rooms[i]).then(function (room) {
+                if(!room) return;
                 rooms_container.innerHTML +=
                     `<span class='room tooltip' id='${user.joined_rooms[i]}' style='text-align:center' onclick='renderRoomContent("${user.joined_rooms[i]}");'>` +
                     `<img onerror="loadDefaultRoom(this)" src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>` +

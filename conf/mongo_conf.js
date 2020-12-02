@@ -51,6 +51,8 @@ let roomSchema = mongoose.Schema({
         },
     ],
     roomAvatar: String,
+    members: Array,
+    is_dm: Boolean
 });
 
 roomSchema.methods.getNickname = function (username) {

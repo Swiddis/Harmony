@@ -234,8 +234,10 @@ exports.sendMessage = (message, callback) => {
  * @param room_id - The room_id to authorize to.
  * @param password - The plain text password to check against the database.
  * @param callback - Callback formatted as callback(err, success) where success is a boolean.
+ * @param save - Whether or not to save the room immediately. If you intend to authorize
+ * another user to the room or do something else with the room data right away, the save will cause conflicts.
  */
-exports.authorizeRoomAccess = (username, room_id, password, callback) => {
+exports.authorizeRoomAccess = (username, room_id, password, callback, save = true) => {
     /*
       Maybe move this to userdb.js?
       UNTESTED!
@@ -265,9 +267,13 @@ exports.authorizeRoomAccess = (username, room_id, password, callback) => {
 
             if (!room.password || bcrypt.compareSync(password, room.password)) {
                 //Authenticated!
+                if (!room.members.includes(user.username))
+                    room.members.push(user.username);
                 if (!user.joined_rooms.includes(room.room_id))
                     user.joined_rooms.push(room.room_id);
                 callback(undefined, ["USER", "ADMIN"]);
+                if (save)
+                    room.save();
                 new User(user).save();
             } else {
                 //Not authenticated.
@@ -336,3 +342,23 @@ exports.updateUserNickname = (data, callback) => {
 //         }
 //     })
 // };
+
+exports.findDM = (user1, user2, callback) => {
+    Room.findOne(
+        {
+            members: {
+                $all: [user1, user2],
+                $size: 2
+            },
+            is_dm: true
+        },
+        (err, room) => {
+            if (err) {
+                return callback(err, room);
+            }
+            if (room)
+                callback(err, room);
+            else
+                callback(new Error("Room not found"), room);
+        });
+};
