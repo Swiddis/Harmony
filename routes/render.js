@@ -54,6 +54,7 @@ exports.rooms = (req, res) => {
                 // Other accounts should be able to be created using the sign up page.
                 username: user.username,
                 avatar: user.avatar,
+                theme: user.theme
             });
         }
     );
@@ -83,6 +84,7 @@ exports.checkAccess = (req, res) => {
         req.session.user = {
             isAuthenticated: true,
             username: req.body.username,
+            theme: req.body.theme
         };
         allowed = userName;
         res.redirect("/room");

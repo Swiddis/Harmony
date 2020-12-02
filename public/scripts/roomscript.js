@@ -4,14 +4,16 @@
 
 const toggleDarkMode = () => {
     let theme = document.body.getAttribute("data-theme");
-    console.log(theme);
     if (theme == "dark") {
         //Set the theme to light
         document.body.setAttribute("data-theme", "light");
+        theme = "light";
     } else {
         //Set the theme to dark
         document.body.setAttribute("data-theme", "dark");
+        theme = "dark";
     }
+    sendToggle(username, theme);
 };
 document.getElementById("dark_toggle").onclick = toggleDarkMode;
 

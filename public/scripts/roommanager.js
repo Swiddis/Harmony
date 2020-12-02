@@ -495,6 +495,12 @@ const validateFileSize = evt => {
             alert("That file is too large (>100MB)");
         }
     }
+};
+
+const sendToggle = (username, theme) => {
+    fetch(`/settheme/${username}/${theme}`, {
+        method: "POST"
+    }).then();
 }
 
 document.getElementById("useAvatar").onclick = uploadAvatar;

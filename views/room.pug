@@ -5,7 +5,7 @@ html
         link(rel="stylesheet", href="/roomstyle.css")
         link(rel="icon", type="image/png", href="/images/harmony_logo.png")
         script(src="/scripts/socket.io.js")
-    body
+    body(data-theme=theme ? theme : "dark")
         div(id="page_container")
             div(id="left_content")
                 div(id="rooms_container")
@@ -25,7 +25,7 @@ html
             div(id="right_content")
                 div(class="theme-switch-wrapper")
                     label(class="theme-switch" for="dark_toggle")
-                        input(type="checkbox" id="dark_toggle")
+                        input(type="checkbox" id="dark_toggle" checked=(!theme || theme=="dark"))
                         div(class="slider round")
                     em Dark Mode!
                 br 
