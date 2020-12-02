@@ -4,12 +4,44 @@ html
     head
         link(rel="stylesheet" href="/editLayout.css")
     body
+        br
+        br
+        div(id="logout")
+            input(type="button", value="Logout")
         div(id="buttons")
             input(type="button" value="Edit Profile Picture" id="edit_picture")
-            input(type="button" value="Edit Username" id="edit_username")
+            br
+            br
+            br
+            form(action="/user/oldUsername" method="get")
+                label(for="oldUsernameInput") Username:
+                br
+                input(type="text" name="oldUsername" id="oldUsername")
+                br
+            br
+            br
             input(type="button" value="Edit Password" id="edit_password")
+            br
         div(id="display")
+        //user can put in they're own image but not sure how to do that right now
             img(src="database image")
+            input(type="image" src="" alt="")
+            br
+            br
+            br
+            br
             //current/old username shown
-            //current/old password shown
+            form(action="/user/oldUsername" method="PUT")
+                label(for="newUsername") New Username: 
+                input(type="text" name="newUsername" id="newName")
+                br
+                br
+                input(type="submit" value="Change Username" id="username-submit")
+            //ask for old password to change the password
+            br
+            br
+            form(action="/user/username" method="PUT")
+                input(type="password" name="oldPassword" id="oldPassword")
+                input(type="submit" value="Confirm Password")
+        
         
