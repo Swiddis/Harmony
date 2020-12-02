@@ -70,6 +70,7 @@ app.get('/messages/:room_id', rooms.getMessages); // Possibly add authentication
 app.post('/room/:room_id', urlencodedParser, rooms.sendToRoom);
 app.get('/room/authorize/:room_id', rooms.authorizeRoomAccess);
 app.patch('/room/nick/:room_id', urlencodedParser, jsonParser, rooms.updateUserNickname);
+app.delete('/room/nick/:room_id/:user', rooms.deleteNickname)
 
 app.post('/user', urlencodedParser, users.createUser);
 app.get('/user/:username', users.getUser);

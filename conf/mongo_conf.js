@@ -61,18 +61,30 @@ roomSchema.methods.getNickname = function (username) {
   return;
 };
 roomSchema.methods.setNickname = function (username, nickname, callback) {
-  let set = false;
-  for (let obj of this.nicknames) {
-    if (obj.name == username) {
-      obj.nick = nickname;
-      set = true;
+    if(nickname) {
+        let set = false;
+        for (let obj of this.nicknames) {
+            if (obj.name == username) {
+                obj.nick = nickname;
+                set = true;
+            }
+        }
+        if (!set) {
+            this.nicknames.push({name: username, nick: nickname});
+        }
+    } else {
+        let index = 0;
+        for (let i = 0; i < this.nicknames.length; i++) {
+            let user = this.nicknames[i];
+            if (user.name == username) {
+                index = i;
+                break;
+            }
+        }
+        this.nicknames.splice(index, 1);
     }
-  }
-  if (!set) {
-    this.nicknames.push({ name: username, nick: nickname });
-  }
-  this.save(callback);
-};
+    this.save(callback);
+}
 /**
  * Attempts to get the messages for the room.
  * @param callback - callback(err, messages)

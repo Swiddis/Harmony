@@ -115,6 +115,23 @@ exports.updateUserNickname = (req, res) => {
   }
 };
 
+// To be used with the DELETE endpoint
+// /room/nick/:room_id/:user
+exports.deleteNickname = (req, res) => {
+    let room_id = req.params.room_id;
+    let username = req.params.user;
+    let data = {
+        room_id,
+        username
+    }
+
+    if(room_id && username) {
+        db.updateUserNickname(data, (err, room) => buildResponse(res, err, room));
+    } else {
+        buildResponse(res, new Error("Invalid room id or username"), {room_id});
+    }
+}
+
 const buildCreationResponse = (res, err, room) => {
   buildResponse(res, err, room, true);
 };
