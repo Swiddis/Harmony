@@ -33,7 +33,6 @@ html
                 div(id="roomname_label")
                 img(class="avatar" id="avatarImg" src=avatar)
                 div(id="username_label")=username
-                //TODO: Nickname Modal Popup from this button's click
                 span(id="nickname_button" class="button") Change Nickname
                 br
                 div(id="logout") 
@@ -87,13 +86,14 @@ html
                     option(value="avatar8") Avatar 8
                     option(value="avatar9") Avatar 9
                     option(value="avatar10") Avatar 10
-                //- br
-                //- br
-                //- form(id="chose_avatar" enctype="multipart/form-data")
-                //-         input(type="file" id="my_file" name="avatar")
                 br
                 br
                 button(id="tryAvatar") Try avatar!
+                form(id="choose_avatar" enctype="multipart/form-data")
+                    input(type="file" accept="image/*" id="avatar_upload" name="media")
+                    button(id="useAvatar") Use Avatar
+                br
+                br
                 br
                 br
                 span(id="change_nickname_button" class="button") Change
