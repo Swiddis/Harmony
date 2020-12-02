@@ -14,6 +14,9 @@ const join_modal = document.getElementById("join_room_modal");
 let username = document.getElementById("username_label").innerText;
 let nicknames;
 let currentRoomId; //Is assigned whenever in renderRoomContent() is called (meaning onLoad or when clicking on bubble)
+let prev_sender = undefined;
+let prev_timestamp = -1000;
+const FIVE_MINS = 5 * 60 * 1000;
 
 async function fetchUser(username) {
     let response = await fetch(`/user/${username}`);
@@ -55,6 +58,7 @@ const sendMessage = () => {
     if (message_box.value.length > 2000) {
         //TODO: Display to user message is to long!
         console.log("Message To Long!");
+        alert("You're message is too long! Max of 2000 characters");
         return;
     }
     console.log("Sending message: " + message_box.value);
@@ -107,13 +111,16 @@ socket.on("message", (msg) => {
             nicknames.push({name: msg.username, nick: msg.nickname});
         }
     }
+
     if (msg.room_id === currentRoomId) {
-        messages_container.innerHTML += formatRoomMessage(
-            msg.avatar,
-            msg.username,
-            msg.message,
-            msg.is_file
-        );
+        // messages_container.innerHTML += formatRoomMessage(
+        //     msg.avatar,
+        //     msg.username,
+        //     msg.message,
+        //     msg.is_file,
+        //     msg.timestamp
+        // );
+        renderGroupedMessages(msg);
 
         //TODO make scroll to bottom every message only when already scrolled down
         messages_container.scrollTop = messages_container.scrollHeight;
@@ -259,6 +266,31 @@ const formatRoomMessagePartial = (message, isFile, timestamp) => {
     return formattedMessage;
 };
 
+const renderGroupedMessages = msg => {
+    if (!msg.sender && msg.username)
+        msg.sender = msg.username;
+    if (!messages_container.lastChild || msg.sender != prev_sender || Math.abs(new Date(msg.timestamp) - prev_timestamp) > FIVE_MINS) {
+        prev_sender = msg.sender;
+        messages_container.innerHTML += formatRoomMessage(
+            msg.avatar,
+            msg.sender,
+            msg.content ? msg.content : msg.message,
+            msg.is_file,
+            msg.timestamp
+        );
+    } else {
+        //Let's double up messages a bit so it's not as spread out.
+        // Just with an extra line break between.
+        let prev_message = messages_container.lastChild;
+        prev_message.innerHTML += formatRoomMessagePartial(
+            msg.content ? msg.content : msg.message,
+            msg.is_file,
+            msg.timestamp
+        );
+    }
+    prev_timestamp = new Date(msg.timestamp);
+};
+
 const renderRoomContent = (roomid, forceRender = false) => {
     //So the room doesn't rerender the same room if clicked again
     if (currentRoomId === roomid && !forceRender) {
@@ -282,29 +314,10 @@ const renderRoomContent = (roomid, forceRender = false) => {
 
         fetchRoomMessages(roomid).then(function (messages) {
             currentRoomId = roomid;
-            let prev_sender = undefined;
-            let prev_timestamp = -1000;
-            const FIVE_MINS = 5 * 60 * 1000;
             //Currently the messages array is backwards so will do it this way
             for (let i = messages.length - 1; i >= 0; i--) {
                 let msg = messages[i];
-                if (msg.sender != prev_sender || Math.abs(new Date(msg.timestamp) - prev_timestamp) > FIVE_MINS) {
-                    prev_sender = msg.sender;
-                    messages_container.innerHTML += formatRoomMessage(
-                        msg.avatar,
-                        msg.sender,
-                        msg.content,
-                        msg.is_file,
-                        msg.timestamp
-                    );
-                } else {
-                    //Let's double up messages a bit so it's not as spread out.
-                    // Just with an extra line break between.
-                    console.log(msg);
-                    let prev_message = messages_container.lastChild;
-                    prev_message.innerHTML += formatRoomMessagePartial(msg.content, msg.is_file, msg.timestamp);
-                }
-                prev_timestamp = new Date(msg.timestamp);
+                renderGroupedMessages(msg);
             }
         });
     });
