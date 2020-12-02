@@ -176,6 +176,15 @@ const joinRoom = () => {
     });
 };
 
+const loadDefault = img => {
+    if(img.target)
+        img = img.target;
+    img.src = "/images/user_icon_blue.png";
+};
+const loadDefaultRoom = img => {
+
+};
+
 //Render Functions
 const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
     let formattedMessage = "";
@@ -187,7 +196,7 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
     if (isFile) {
         formattedMessage =
             "<span class='message_box'>" +
-            `<span class='avatar'><img src="${avatar}" alt="${username}_avatar"/></span>` +
+            `<span class='avatar'><img onerror="loadDefault(this)" src="${avatar}" alt="${username}_avatar"/></span>` +
             "<span class='name'>" +
             name +
             "</span>" +
@@ -211,7 +220,7 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
     } else {
         formattedMessage =
             "<span class='message_box'>" +
-            `<div class='msgAvatar'><span class='avatar'><img src="${avatar}" alt="${username}_avatar"/></span></div>` +
+            `<div class='msgAvatar'><span class='avatar'><img onerror="loadDefault(this)" src="${avatar}" alt="${username}_avatar"/></span></div>` +
             "<span class='name'>" +
             name +
             "</span>" +
@@ -333,7 +342,7 @@ const renderRoomList = () => {
             fetchRoomData(user.joined_rooms[i]).then(function (room) {
                 rooms_container.innerHTML +=
                     `<span class='room tooltip' id='${user.joined_rooms[i]}' style='text-align:center' onclick='renderRoomContent("${user.joined_rooms[i]}");'>` +
-                    `<img src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>` +
+                    `<img onerror="loadDefaultRoom(this)" src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>` +
                     `<span class='tooltiptext'>${room.room_title}</span>` +
                     `</span>`;
             });
@@ -490,6 +499,9 @@ const validateFileSize = evt => {
 
 document.getElementById("useAvatar").onclick = uploadAvatar;
 document.getElementById("avatar_upload").onchange = validateFileSize;
+
+document.getElementById("avatarImg").onerror = loadDefault;
+document.getElementById("changeAvatar").onerror = loadDefault;
 
 //Assign Buttons Functions
 document
