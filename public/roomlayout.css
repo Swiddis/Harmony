@@ -22,7 +22,6 @@
     overflow-x: visible;
 }
 
-
 /* Center (Messages Display and Input Message) Container*/
 #middle_content{
     display: flex;
@@ -57,7 +56,7 @@
 }
 
 /* Modals */
- .modal{
+.modal{
     display: none;
     position: fixed;
     z-index: 1;
@@ -70,7 +69,7 @@
 .modal_content{
   margin: 15% auto; /* 15% from the top and centered */
   padding: 20px;
-  border: 1px solid #888;
+  border: 1px solid var(--borderModal-color);
   width: 80%; /* Could be more or less, depending on screen size */
-  background-color: #555;
+  background-color: var(--modal-color);
 }

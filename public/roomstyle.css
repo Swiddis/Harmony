@@ -6,6 +6,10 @@
     --secondary-bgColor: #F4F6F7;
     --therd-bgColor: #57595e;
     --msgBox-color: #ababab;
+    --button-color: rgb(179, 183, 185);
+    --modal-color: #888;
+    --closeModal-color: #555;
+    --borderModal-color: rgb(68, 68, 68);
 }
 
 [data-theme="dark"] {
@@ -14,6 +18,10 @@
     --secondary-bgColor: #202225;
     --therd-bgColor: #F4F6F7;
     --msgBox-color: #54545d;
+    --button-color: rgb(120, 134, 146);
+    --modal-color: #555;
+    --closeModal-color: #aaa;
+    --borderModal-color: #888;
 }
 
 /* General Styles*/
@@ -44,7 +52,6 @@ body {
     margin: 20px;
     color: var(--font-color);
 }
-
 
 /*Room (Icon) Styles*/
 .room, #new_room {
@@ -111,7 +118,6 @@ body {
 
 
 /* Right Side Labels*/
-
 #roomname_label {
     color: var(--font-color);
     text-align: center;
@@ -229,11 +235,11 @@ body {
 }
 
 #avatarSelection {
-    background-color: rgb(120, 134, 146);
+    background-color: var(--button-color);
 }
 
 #tryAvatar {
-    background-color: rgb(120, 134, 146);
+    background-color: var(--button-color);
     width: 150px;
     height: 50px;
     font-size: 20px;
@@ -252,10 +258,9 @@ textarea {
     resize: none;
 }
 
-
 /* Extra Modal Stuff */
 .close {
-    color: #aaa;
+    color: var(--closeModal-color);
     float: right;
     font-size: 28px;
     font-weight: bold;
@@ -290,7 +295,7 @@ textarea {
 }
 
 
-/*Simple css to style it like a toggle switch*/
+/* Toggle switch*/
 .theme-switch-wrapper {
     display: flex;
     align-items: center;
