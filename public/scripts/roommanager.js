@@ -170,9 +170,11 @@ const joinRoom = () => {
 };
 
 //Render Functions
-const formatRoomMessage = (avatar, username, message, isFile) => {
+const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
     let formattedMessage = "";
     let name = getNickname(username);
+    let date = new Date(timestamp);
+    let now = new Date();
 
     //If Message is a file
     if (isFile) {
@@ -194,17 +196,63 @@ const formatRoomMessage = (avatar, username, message, isFile) => {
             formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'>${fileStr[1]}</a>`;
         }
 
-        formattedMessage += "</span></span>";
+        formattedMessage += "<div class='timestamp'>" +
+            (now.toLocaleDateString() != date.toLocaleDateString() ? date.toLocaleDateString() + "<br>" : "") +
+            date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) +
+            "</div>" +
+            "</span></span>";
     } else {
         formattedMessage =
             "<span class='message_box'>" +
-            `<span class='avatar'><img src="${avatar}" alt="${username}_avatar"/></span>` +
+            `<div class='msgAvatar'><span class='avatar'><img src="${avatar}" alt="${username}_avatar"/></span></div>` +
             "<span class='name'>" +
             name +
             "</span>" +
             "<span class='message'>" +
             message +
+            "<div class='timestamp'>" +
+            (now.toLocaleDateString() != date.toLocaleDateString() ? date.toLocaleDateString() + "<br>" : "") +
+            date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) +
+            "</div>" +
             "</span>" +
+            "</span>";
+    }
+
+    return formattedMessage;
+};
+
+const formatRoomMessagePartial = (message, isFile, timestamp) => {
+    let formattedMessage = "";
+    let date = new Date(timestamp);
+    let now = new Date();
+
+    //If Message is a file
+    if (isFile) {
+        formattedMessage +=
+            "<span class='message'>";
+
+        //If message is an image (render it inline)
+        if (isFileImage(message)) {
+            let fileStr = splitFileString(message);
+            formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'><img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/></a>`;
+        } else {
+            let fileStr = splitFileString(message);
+            formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'>${fileStr[1]}</a>`;
+        }
+
+        formattedMessage += "<div class='timestamp'>" +
+            (now.toLocaleDateString() != date.toLocaleDateString() ? date.toLocaleDateString() + "<br>" : "") +
+            date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) +
+            "</div>" +
+            "</span>";
+    } else {
+        formattedMessage +=
+            "<span class='message'>" +
+            message +
+            "<div class='timestamp'>" +
+            (now.toLocaleDateString() != date.toLocaleDateString() ? date.toLocaleDateString() + "<br>" : "")
+            + date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) +
+            "</div>" +
             "</span>";
     }
 
@@ -234,14 +282,29 @@ const renderRoomContent = (roomid, forceRender = false) => {
 
         fetchRoomMessages(roomid).then(function (messages) {
             currentRoomId = roomid;
+            let prev_sender = undefined;
+            let prev_timestamp = -1000;
+            const FIVE_MINS = 5 * 60 * 1000;
             //Currently the messages array is backwards so will do it this way
             for (let i = messages.length - 1; i >= 0; i--) {
-                messages_container.innerHTML += formatRoomMessage(
-                    messages[i].avatar,
-                    messages[i].sender,
-                    messages[i].content,
-                    messages[i].is_file
-                );
+                let msg = messages[i];
+                if (msg.sender != prev_sender || Math.abs(new Date(msg.timestamp) - prev_timestamp) > FIVE_MINS) {
+                    prev_sender = msg.sender;
+                    messages_container.innerHTML += formatRoomMessage(
+                        msg.avatar,
+                        msg.sender,
+                        msg.content,
+                        msg.is_file,
+                        msg.timestamp
+                    );
+                } else {
+                    //Let's double up messages a bit so it's not as spread out.
+                    // Just with an extra line break between.
+                    console.log(msg);
+                    let prev_message = messages_container.lastChild;
+                    prev_message.innerHTML += formatRoomMessagePartial(msg.content, msg.is_file, msg.timestamp);
+                }
+                prev_timestamp = new Date(msg.timestamp);
             }
         });
     });
