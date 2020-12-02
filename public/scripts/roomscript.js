@@ -34,10 +34,14 @@ const displayJoinModal = () => {
     join_modal.style.display = "block";
 };
 const closeModals = () => {
-    modal.style.display = "none";
-    create_modal.style.display = "none";
-    join_modal.style.display = "none";
-    nickname_modal.style.display = "none";
+    let modals = document.getElementsByClassName("modal");
+    for (let modal of modals) {
+        modal.style.display = "none";
+    }
+    // modal.style.display = "none";
+    // create_modal.style.display = "none";
+    // join_modal.style.display = "none";
+    // nickname_modal.style.display = "none";
 
     //EMPTIES INPUT FIELDS (TODO REDUNDANT)
     let elements = create_modal.getElementsByTagName("input");

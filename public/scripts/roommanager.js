@@ -96,6 +96,49 @@ const sendFile = () => {
     request.send(formData);
 };
 
+const openUserInfo = user => {
+    closeModals();
+    console.log("Opening user info for " + user);
+    let modal = document.createElement("div");
+    modal.id = "user_modal";
+    modal.classList = ["modal"];
+
+    let content = document.createElement("div");
+    content.classList = ["modal_content"];
+    modal.append(content);
+
+    let close = document.createElement("span");
+    close.classList = ["close"];
+    close.onclick = evt => {
+        modal.remove();
+    };
+    close.innerHTML = "&times;"
+    content.append(close);
+    //TODO Load in user info like avatar.
+
+    let name = document.createElement("div");
+    name.innerHTML = user;
+    content.append(name);
+
+    let dmButton = document.createElement("button");
+    dmButton.innerText = "Start DM";
+    dmButton.onclick = evt => {
+        fetch(`/dm/${username}/${user}`,
+            {
+                method: "POST"
+            })
+            .then(response => {console.log(response); return response.json();})
+            .then(data => {
+                console.log(data);
+                renderRoomList();
+            });
+    };
+    content.append(dmButton);
+
+    modal.style.display = "block";
+    document.body.append(modal);
+};
+
 socket.on("message", (msg) => {
     console.log(msg);
     //for now if msg recieved is from currentroomid display
@@ -147,7 +190,7 @@ const createRoom = () => {
         body: JSON.stringify(room),
     }).then((response) => {
         console.log(response.status);
-        if (response.status === 204) {
+        if (response.status === 201) {
             console.log("CREATED ROOM SUCCESSFULLy!");
             //TODO Quick Fix so you don't have to manually join the room after making it
             document.getElementById("join_id").value = room_id;
@@ -177,7 +220,7 @@ const joinRoom = () => {
 };
 
 const loadDefault = img => {
-    if(img.target)
+    if (img.target)
         img = img.target;
     img.src = "/images/user_icon_blue.png";
 };
@@ -196,8 +239,8 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
     if (isFile) {
         formattedMessage =
             "<span class='message_box'>" +
-            `<div class='msgAvatar'><span class='avatar'><img onerror="loadDefault(this)" src="${avatar}" alt="${username}_avatar"/></span></div>` +
-            "<span class='name'>" +
+            `<div onclick='openUserInfo("${username}")' class='msgAvatar'><span class='avatar'><img onerror="loadDefault(this)" src="${avatar}" alt="${username}_avatar"/></span></div>` +
+            `<span onclick='openUserInfo("${username}")' class='name'>` +
             name +
             "</span>" +
             "<span class='message'>";
@@ -220,8 +263,8 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
     } else {
         formattedMessage =
             "<span class='message_box'>" +
-            `<div class='msgAvatar'><span class='avatar'><img onerror="loadDefault(this)" src="${avatar}" alt="${username}_avatar"/></span></div>` +
-            "<span class='name'>" +
+            `<div onclick='openUserInfo("${username}")' class='msgAvatar'><span class='avatar'><img onerror="loadDefault(this)" src="${avatar}" alt="${username}_avatar"/></span></div>` +
+            `<span onclick='openUserInfo("${username}")' class='name'>` +
             name +
             "</span>" +
             "<span class='message'>" +
@@ -380,7 +423,7 @@ const updateNickname = () => {
     }).then((response) => {
         console.log(response.status);
         //TODO
-        if (response.status === 204 || response.status === 200) {
+        if (response.status === 201 || response.status === 200) {
             console.log("CHANGED NICKNAME SUCCESSFULLY!");
             renderRoomContent(currentRoomId, true);
             closeModals();
