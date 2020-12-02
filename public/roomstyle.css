@@ -177,6 +177,7 @@ body {
     object-fit: cover;
     border-radius: 50%;
     border: var(--bg-color) 2px solid;
+    box-sizing: border-box;
 }
 
 .name {

@@ -160,3 +160,8 @@ label {
     height: 80px;
     margin-left: 70px;
 }
+
+.error {
+    color: #d00;
+    margin-top: 1em;
+}
