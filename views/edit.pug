@@ -31,7 +31,7 @@ html
             br
             br
             //current/old username shown
-            form(action="/user/oldUsername" method="PUT")
+            form(action="/user/:username" method="PATCH")
                 label(for="newUsername") New Username: 
                 input(type="text" name="newUsername" id="newName")
                 br
@@ -40,7 +40,7 @@ html
             //ask for old password to change the password
             br
             br
-            form(action="/user/username" method="PUT")
+            form(action="/user/username" method="PATCH")
                 input(type="password" name="oldPassword" id="oldPassword")
                 input(type="submit" value="Confirm Password")
         
