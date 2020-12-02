@@ -3,7 +3,7 @@
 :root {
     --font-color: black;
     --bg-color: #fff;
-    --secondary-bgColor: #F4F6F7; 
+    --secondary-bgColor: #F4F6F7;
     --therd-bgColor: #57595e;
 }
 
@@ -15,13 +15,13 @@
 }
 
 /* General Styles*/
-body{
+body {
     margin: 0;
     overflow: hidden;
     background-color: var(--bg-color);
 }
 
-.button{
+.button {
     background-color: #fff;
     padding: 12px 20px;
     border: 2px solid black;
@@ -30,7 +30,7 @@ body{
     margin: 0;
 }
 
-.button:hover{
+.button:hover {
     background-color: gray;
 }
 
@@ -45,7 +45,7 @@ body{
 
 
 /*Room (Icon) Styles*/
-.room, #new_room{
+.room, #new_room {
     background-color: white;
     border: 2px solid black;
     border-radius: 30px;
@@ -55,16 +55,18 @@ body{
     cursor: pointer;
     transition: border-radius 0.2s;
 }
-.room:hover{
+
+.room:hover {
     /* background-color:gray; */
     border-radius: 15px;
     transition: border-radius 0.2s;
 }
 
-#new_room{
+#new_room {
     background-color: #0f0;
 }
-#new_room:hover{
+
+#new_room:hover {
     background-color: #0f0;
     border-radius: 15px;
     transition: border-radius 0.2s;
@@ -74,20 +76,22 @@ body{
     position: relative;
     display: inline-block;
     border-bottom: 1px dotted black;
-  }
-.tooltip .tooltiptext{
-  visibility: hidden;
-  width: 120px;
-  background-color: black;
-  color: var(--bg-color);
-  text-align: center;
-  border-radius: 6px;
-  padding: 10px 0;
-  position: absolute;
-  z-index: 1;
-  top: 7px;
-  left: 120%;
 }
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: black;
+    color: var(--bg-color);
+    text-align: center;
+    border-radius: 6px;
+    padding: 10px 0;
+    position: absolute;
+    z-index: 1;
+    top: 7px;
+    left: 120%;
+}
+
 .tooltip .tooltiptext::after {
     content: "";
     position: absolute;
@@ -97,21 +101,22 @@ body{
     border-width: 5px;
     border-style: solid;
     border-color: transparent black transparent transparent;
-  }
-.tooltip:hover .tooltiptext{
+}
+
+.tooltip:hover .tooltiptext {
     visibility: visible;
 }
 
 
-
 /* Right Side Labels*/
 
-#roomname_label{
+#roomname_label {
     color: var(--font-color);
     text-align: center;
     font-size: 24px;
 }
-#username_label{
+
+#username_label {
     color: var(--font-color);
     text-align: center;
     font-size: 20px;
@@ -126,29 +131,47 @@ body{
     padding: 1em;
 }
 
-.avatar{
+.avatar {
     margin: 10px 50px;
     display: block;
     float: left;
     width: 100px;
     height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
     object-fit: cover;
 }
 
-.avatar img{
-    max-width: 100%;
-    max-height: 100%;
-    border-radius: 90px;
+.message_box .avatar {
+    width: 60px;
+    height: 60px;
+    margin: 10px 20px 10px 10px;
+    position: relative;
+}
+
+.avatar img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    /*border-radius: 50%;*/
     border: var(--bg-color) 2px solid;
 }
 
-.message_name{
+.name {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.message_name {
     padding: 2em;
     border-bottom: 2px solid var(--bg-color);
     display: block;
     font-size: 20px;
 }
-.message{
+
+.message {
     display: block;
     font-size: 18px;
     white-space: pre-wrap;
@@ -175,7 +198,7 @@ body{
 }
 
 #avatarSelection select {
-    display: none; 
+    display: none;
     width: 150px;
     height: 50px;
 }
@@ -185,14 +208,14 @@ body{
 }
 
 #tryAvatar {
-    background-color:  rgb(120, 134, 146);
+    background-color: rgb(120, 134, 146);
     width: 150px;
     height: 50px;
     font-size: 20px;
 }
 
 /* Input Stuff*/
-textarea{
+textarea {
     border: 2px solid black;
     border-radius: 8px;
     width: 90%;
@@ -205,19 +228,19 @@ textarea{
 }
 
 
-
 /* Extra Modal Stuff */
-.close{
+.close {
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
 }
+
 .close:hover,
 .close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }
 
 
@@ -225,20 +248,20 @@ textarea{
 ::-webkit-scrollbar {
     width: 12px;
 }
-  
+
 /* Track 
 ::-webkit-scrollbar-track {
 }*/
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-    background-color: #222; 
+    background-color: #222;
     border-radius: 10px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-background: #111; 
+    background: #111;
 }
 
 
@@ -260,11 +283,11 @@ em {
     position: relative;
     width: 60px;
 }
-  
+
 .theme-switch input {
-    display:none;
+    display: none;
 }
-  
+
 .slider {
     background-color: #ccc;
     bottom: 0;
@@ -275,7 +298,7 @@ em {
     top: 0;
     transition: .4s;
 }
-  
+
 .slider:before {
     background-color: #fff;
     bottom: 4px;
@@ -286,19 +309,19 @@ em {
     transition: .4s;
     width: 26px;
 }
-  
+
 input:checked + .slider {
     background-color: #2bd834;
 }
-  
+
 input:checked + .slider:before {
     transform: translateX(26px);
 }
-  
+
 .slider.round {
     border-radius: 34px;
 }
-  
+
 .slider.round:before {
     border-radius: 50%;
 }
