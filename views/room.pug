@@ -18,6 +18,7 @@ html
                         //span(class="name")
                         //span(class="message") 
                 div(id="input_message_container")
+                    div(id="img_preview")
                     div(id="bottom_input")
                         label(id="file_icon_container" for="my_file")
                             img(id="file_icon" src="/images/download.png")
@@ -120,7 +121,8 @@ html
                     div(class="modal_footer")
             div(id="view_image_modal" class="modal")
                 div(id="special_modal_content")
-
+        div(id="drop_overlay")
+            div Drop files to upload them
  
         script(src="/scripts/roommanager.js")
         script(src="/scripts/roomscript.js")
