@@ -55,23 +55,41 @@ const socket = io.connect(document.location.host, {
 
 //Standard Communication Functions
 const sendMessage = () => {
-    if (message_box.value.length > 2000) {
-        //TODO: Display to user message is to long!
-        console.log("Message To Long!");
-        alert("You're message is too long! Max of 2000 characters");
-        return;
-    }
-    console.log("Sending message: " + message_box.value);
-    socket.emit("message", {
-        username: username,
-        message: message_box.value,
-        room_id: currentRoomId,
-    });
-    message_box.value = "";
+    const processFile = () => {
+        // Check if they have a pending file upload and send it.
+        let upload = document.getElementById("my_file");
+        if (upload.files.length > 0) {
+            console.log("Uploading file.");
+            sendFile();
+        }
+    };
+
+    const processMessage = () => {
+        if (message_box.innerText.length == 0) {
+            //The message doesn't have any contents
+            return;
+        }
+        if (message_box.innerText.length > 2000) {
+            //TODO: Display to user message is to long!
+            console.log("Message To Long!");
+            alert("You're message is too long! Max of 2000 characters");
+            return;
+        }
+        console.log("Sending message: " + message_box.innerText);
+        socket.emit("message", {
+            username: username,
+            message: message_box.innerText,
+            room_id: currentRoomId,
+        });
+        message_box.innerText = "";
+    };
+
+    processMessage();
+    processFile();
     return false;
 };
 
-const sendFile = () => {
+const sendFile = (callback) => {
     var form = document.forms.namedItem("send_media");
     var formData = new FormData(form);
 
@@ -91,6 +109,9 @@ const sendFile = () => {
                 room_id: currentRoomId,
                 is_file: true,
             });
+            document.getElementById("img_preview").innerHTML = "";
+            document.getElementById("my_file").value = "";
+            callback();
         }
     };
     request.send(formData);
@@ -120,7 +141,7 @@ const openUserInfo = user => {
     name.innerHTML = user;
     content.append(name);
 
-    if(user != username) {
+    if (user != username) {
         //Only display DM button if it's not YOU.
         let dmButton = document.createElement("button");
         dmButton.innerText = "Start DM";
@@ -235,6 +256,13 @@ const loadDefaultRoom = img => {
 
 };
 
+const formatImage = message => {
+    //If message is an image (render it inline)
+    let isImage = isFileImage(message);
+    let fileStr = splitFileString(message);
+    return `<a href='${fileStr[0]}' download='${fileStr[1]}'><img src='${isImage ? fileStr[0] : '/images/media.png'}' alt='${fileStr[1]}' title='${fileStr[1]}'class='message_image'/>${!isImage ? "<div>" + fileStr[1] + "</div>" : ""}</a>`;
+};
+
 //Render Functions
 const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
     let formattedMessage = "";
@@ -252,15 +280,7 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
             "</span>" +
             "<span class='message'>";
 
-        //If message is an image (render it inline)
-        if (isFileImage(message)) {
-            let fileStr = splitFileString(message);
-            formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'><img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/></a>`;
-        } else {
-            let fileStr = splitFileString(message);
-            //TODO downloaded files (only tested txt files) are not downloading with the correct name and instead id
-            formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'>${fileStr[1]}</a>`;
-        }
+        formattedMessage += formatImage(message);
 
         formattedMessage += "<div class='timestamp'>" +
             (now.toLocaleDateString() != date.toLocaleDateString() ? date.toLocaleDateString() + "<br>" : "") +
@@ -297,14 +317,7 @@ const formatRoomMessagePartial = (message, isFile, timestamp) => {
         formattedMessage +=
             "<span class='message'>";
 
-        //If message is an image (render it inline)
-        if (isFileImage(message)) {
-            let fileStr = splitFileString(message);
-            formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'><img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/></a>`;
-        } else {
-            let fileStr = splitFileString(message);
-            formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'>${fileStr[1]}</a>`;
-        }
+        formattedMessage += formatImage(message);
 
         formattedMessage += "<div class='timestamp'>" +
             (now.toLocaleDateString() != date.toLocaleDateString() ? date.toLocaleDateString() + "<br>" : "") +
@@ -360,7 +373,7 @@ const renderRoomContent = (roomid, forceRender = false) => {
     messages_container.innerHTML = "";
 
     fetchRoomData(roomid).then(function (room) {
-        if(!room) return;
+        if (!room) return;
         nicknames = room.nicknames;
         //RoomName Label (Right bar)
         document.getElementById("roomname_label").innerHTML = room.room_title;
@@ -391,7 +404,7 @@ const renderRoomList = () => {
         for (let i = 0; i < user.joined_rooms.length; i++) {
             //${user.joined_rooms[i]}
             fetchRoomData(user.joined_rooms[i]).then(function (room) {
-                if(!room) return;
+                if (!room) return;
                 rooms_container.innerHTML +=
                     `<span class='room tooltip' id='${user.joined_rooms[i]}' style='text-align:center' onclick='renderRoomContent("${user.joined_rooms[i]}");'>` +
                     `<img onerror="loadDefaultRoom(this)" src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>` +
@@ -568,7 +581,9 @@ document
 document.getElementById("join_room_button").addEventListener("click", joinRoom);
 document
     .getElementById("submit_file_button")
-    .addEventListener("click", sendFile);
+    .addEventListener("click",
+        evt => document.getElementById("my_file").click()
+    );
 document
     .getElementById("change_nickname_button")
     .addEventListener("click", updateNickname);

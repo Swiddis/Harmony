@@ -17,11 +17,14 @@ html
                         //span(class="name")
                         //span(class="message") 
                 div(id="input_message_container")
-                    form(id="send_media" enctype="multipart/form-data")
-                        input(type="file" id="my_file" name="media")
-                    span(id="submit_file_button" class="button") Submit File
+                    div(id="file_section")
+                        form(id="send_media" enctype="multipart/form-data")
+                            input(type="file" id="my_file" name="media")
+                        span(id="submit_file_button" class="button") Upload File
                     //TODO have a modal popup after choosing a file instead of submit button
-                    textarea(id="my_message" placeholder="Message" onkeypress="return submitOnEnter(event);")
+                    div(id="message_section")
+                        div(id="img_preview")
+                        span(class="textarea" contenteditable=true id="my_message" onkeypress="return submitOnEnter(event);")
             div(id="right_content")
                 div(class="theme-switch-wrapper")
                     label(class="theme-switch" for="dark_toggle")
@@ -97,5 +100,8 @@ html
                 br
                 br
                 span(id="change_nickname_button" class="button") Change
+        div(id="drop_overlay")
+            div Drop files to upload them
         script(src="/scripts/roommanager.js")
         script(src="/scripts/roomscript.js")
+        script(src="/scripts/dragdropuploader.js")
