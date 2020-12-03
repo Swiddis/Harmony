@@ -263,7 +263,7 @@ const formatImage = message => {
         ret += `<a href='${fileStr[0]}' download='${fileStr[1]}'>`;
     }
     if(isImage) {
-        ret += `<img src='${isImage ? fileStr[0] : '/images/media.png'}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image' ${isImage ? onclick = "displayViewImageModal('" + fileStr[0] + "', '" + fileStr[1] + "')" : ""}/>${!isImage ? "<div>" + fileStr[1] + "</div>" : ""}`;
+        ret += `<img src='${isImage ? fileStr[0] : '/images/media.png'}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image' onclick="displayViewImageModal('${fileStr[0]}', '${fileStr[1]}')"/>${!isImage ? "<div>" + fileStr[1] + "</div>" : ""}`;
     }
     if(!isImage) {
         ret += `</a>`;
