@@ -389,3 +389,22 @@ input:checked + .slider:before {
     color: var(--font-color);
     transition: color 0.5s;
 }
+
+.circle-button {
+    position: absolute;
+    font-family: sans-serif;
+    top: 0;
+    right: 0;
+    background-color: var(--bg-color);
+    color: var(--font-color);
+    border: 2px solid var(--borderModal-color);
+    border-radius: 50%;
+    width: 1.5em;
+    height: 1.5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.circle-button:hover {
+    cursor: pointer;
+}

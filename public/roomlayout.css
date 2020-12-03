@@ -114,7 +114,9 @@
 }
 
 #img_preview {
-    padding: 5px 40px;
+    margin: 5px 40px;
+    position: relative;
+    display: inline-block;
     max-height: 230px;
 }
 

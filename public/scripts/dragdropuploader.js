@@ -42,6 +42,15 @@ renderFile = evt => {
                 title.innerText = evt.target.files[0].name;
                 prev.append(title);
             }
+
+            let removeBtn = document.createElement("div");
+            removeBtn.classList = "circle-button";
+            removeBtn.innerText = "X";
+            removeBtn.onclick = evt => {
+                prev.innerHTML = "";
+                file_upload.value = "";
+            };
+            prev.append(removeBtn);
         };
 
         // read the image file as a data URL.
