@@ -5,6 +5,11 @@
     --bg-color: #fff;
     --secondary-bgColor: #F4F6F7;
     --therd-bgColor: #57595e;
+    --msgBox-color: #ababab;
+    --button-color: rgb(179, 183, 185);
+    --modal-color: #888;
+    --closeModal-color: #555;
+    --borderModal-color: rgb(68, 68, 68);
 }
 
 [data-theme="dark"] {
@@ -12,6 +17,11 @@
     --bg-color: #36393f;
     --secondary-bgColor: #202225;
     --therd-bgColor: #F4F6F7;
+    --msgBox-color: #54545d;
+    --button-color: rgb(120, 134, 146);
+    --modal-color: #555;
+    --closeModal-color: #aaa;
+    --borderModal-color: #888;
 }
 
 /* General Styles*/
@@ -43,12 +53,10 @@ body {
     color: var(--font-color);
 }
 
-
 /*Room (Icon) Styles*/
 .room, #new_room {
     background-color: white;
-    border: 2px solid black;
-    border-radius: 30px;
+    border-radius: 50%;
     height: 3em;
     width: 3em;
     margin: .75em;
@@ -63,7 +71,14 @@ body {
 }
 
 #new_room {
-    background-color: #0f0;
+    background-color: var(--button-color);
+}
+
+#new_room_icon{
+    margin-top: 4px;
+    margin-left: 4px;
+    width: 80%;
+    height: 80%;
 }
 
 #new_room:hover {
@@ -72,7 +87,11 @@ body {
     transition: border-radius 0.2s;
 }
 
-.tooltip {
+
+.tooltiptext{
+    display: none;
+}
+/*.tooltip {
     position: relative;
     display: inline-block;
     border-bottom: 1px dotted black;
@@ -105,11 +124,10 @@ body {
 
 .tooltip:hover .tooltiptext {
     visibility: visible;
-}
+}*/
 
 
 /* Right Side Labels*/
-
 #roomname_label {
     color: var(--font-color);
     text-align: center;
@@ -124,15 +142,35 @@ body {
 
 /* Displayed Messages (MessageBox, Name, Avatar, Message)*/
 .message_box {
-    color: var(--bg-color);
+    color: var(--therd-bgColor);
     margin: 1em 2em;
-    background-color: var(--therd-bgColor);
-    width: 90%;
+    background-color: var(--msgBox-color);
+    /*width: 90%;*/
     padding: 1em;
+    border-radius: 15px;
+}
+
+.timestamp {
+    display: none;
+    float: right;
+    font-size: 0.75em;
+    position: relative;
+    top: -10px;
+    text-align: right;
+}
+
+.message:hover .timestamp {
+    display: inline-block;
+}
+
+.msgAvatar {
+    height: 100%;
+    display: inline-block;
+    float: left;
 }
 
 .avatar {
-    margin: 10px 50px;
+    margin: 10px auto;
     display: block;
     float: left;
     width: 100px;
@@ -153,8 +191,8 @@ body {
     height: 100%;
     width: 100%;
     object-fit: cover;
-    /*border-radius: 50%;*/
-    border: var(--bg-color) 2px solid;
+    border-radius: 50%;
+    box-sizing: border-box;
 }
 
 .name {
@@ -175,15 +213,22 @@ body {
     display: block;
     font-size: 18px;
     white-space: pre-wrap;
+    padding: 5px 0px 20px 0px;
+    margin-left: 90px;
 }
 
 .message_image {
-    max-width: 800px;
+    max-width: 100%;
     max-height: 450px;
     border-radius: 12px;
 }
 
 /* change avatar */
+#avatarImg{
+    cursor: pointer;
+    border-radius: 4px;
+}
+
 #changeAvatar {
     width: 80px;
     height: 80px;
@@ -204,20 +249,27 @@ body {
 }
 
 #avatarSelection {
-    background-color: rgb(120, 134, 146);
+    background-color: var(--button-color);
 }
 
 #tryAvatar {
-    background-color: rgb(120, 134, 146);
+    background-color: var(--button-color);
     width: 150px;
     height: 50px;
     font-size: 20px;
 }
 
 /* Input Stuff*/
-textarea {
-    border: 2px solid black;
+#bottom_input{
+    background-color: var(--msgBox-color);
     border-radius: 8px;
+    width: 100%;
+    display: flex;
+    padding: 0.2em;
+    align-items: center;
+}
+
+textarea {
     width: 90%;
     height: 90%;
     margin: 0 1em;
@@ -225,12 +277,69 @@ textarea {
     font-size: 18px;
     outline: none;
     resize: none;
+    background-color: rgba(0,0,0,0);
+    border: 0;
+    color: var(--font-color);
+    vertical-align: center;
 }
 
+#file_icon_container{
+    display: block;
+    margin-left: 10px;
+    width: 2.5em;
+    height: 2.5em;
+    background-color: var(--button-color);
+    border-radius: 24px;
+    text-align:center;
+    top: 50%;
+}
+#file_icon_container:hover,
+#file_icon_container:focus{
+    cursor: pointer;
+    background-color: lightgray;
+}
+#file_icon{
+    padding-top: 5px;
+    width: 65%;
+    height: 65%;
+}
+
+#my_file{
+    display: none;
+}
 
 /* Extra Modal Stuff */
+.view_image{
+    position: absolute;
+    left: 45%;
+    top: 45%;
+    transform: translate(-50%, -50%);
+}
+
+.image_link{
+    position: absolute;
+    left: 45%;
+    top: 80%;
+    transform: translate(-50%, -50%);
+}
+
+#username_label:hover,
+#username_label:focus {
+    cursor: pointer;
+}
+
+.modal_body > .button{
+    text-align:center;
+    width: 50%;
+}
+
+.back_modal:hover,
+.back_modal:focus {
+    cursor: pointer;
+}
+
 .close {
-    color: #aaa;
+    color: var(--closeModal-color);
     float: right;
     font-size: 28px;
     font-weight: bold;
@@ -265,7 +374,7 @@ textarea {
 }
 
 
-/*Simple css to style it like a toggle switch*/
+/* Toggle switch*/
 .theme-switch-wrapper {
     display: flex;
     align-items: center;

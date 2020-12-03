@@ -58,6 +58,13 @@ exports.deleteUser = (req, res) => {
   db.deleteUser(username, (err, user) => buildResponse(res, err, user));
 };
 
+exports.setTheme = (req, res) => {
+  let username = req.params.username;
+  let theme = req.params.theme;
+
+  db.updateUser({username, theme}, (err, user) => buildResponse(res, err, user));
+};
+
 // User GET authentication endpoint
 // Authenticate /user/authenticate
 exports.authenticateUser = (req, res) => {
@@ -102,6 +109,7 @@ const buildResponse = (res, err, user, created = false) => {
         username: user.username,
         joined_rooms: user.joined_rooms,
         avatar: user.avatar,
+        theme: user.theme
       }; //Make sure not to send back the password!
       response.data = tempUser;
     }

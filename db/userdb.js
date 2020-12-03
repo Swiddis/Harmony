@@ -83,13 +83,17 @@ exports.getUser = (username, callback) => {
         callback(new Error("User not found"));
       }
     }
-  );
+  ).select("-__v");
 };
 
 //Simply updates the user and saves them to the db.
 const updateAndSaveUser = (us, user) => {
   if (user.avatar) {
     us.avatar = user.avatar;
+  }
+
+  if(user.theme) {
+    us.theme = user.theme;
   }
 
   if (user.password) {
@@ -105,7 +109,9 @@ const updateAndSaveUser = (us, user) => {
 
   new User(us).save((err, user) => {
     if (err) {
-      console.error("Could not update user '" + user.username + "'");
+      console.log(us);
+      console.error("Could not update user '" + us.username + "'");
+      console.error(err);
       return;
     }
   });

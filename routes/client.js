@@ -112,6 +112,7 @@ function Client(io, socket) {
           avatar: socket.avatar,
           message: message.message,
           is_file: message.is_file,
+          timestamp: new Date()
         };
 
         io.emit("message", msg);
@@ -124,6 +125,7 @@ function Client(io, socket) {
         avatar: socket.avatar,
         message: message.message,
         is_file: message.is_file,
+        timestamp: new Date()
       });
     }
   };

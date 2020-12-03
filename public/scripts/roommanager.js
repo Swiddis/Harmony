@@ -6,14 +6,13 @@ const messages_container = document.getElementById(
     "display_messages_container"
 );
 const message_box = document.getElementById("my_message");
-const modal = document.getElementById("room_modal");
-const nickname_modal = document.getElementById("nickname_modal");
-const create_modal = document.getElementById("create_room_modal");
-const join_modal = document.getElementById("join_room_modal");
 
 let username = document.getElementById("username_label").innerText;
 let nicknames;
 let currentRoomId; //Is assigned whenever in renderRoomContent() is called (meaning onLoad or when clicking on bubble)
+let prev_sender = undefined;
+let prev_timestamp = -1000;
+const FIVE_MINS = 5 * 60 * 1000;
 
 async function fetchUser(username) {
     let response = await fetch(`/user/${username}`);
@@ -55,6 +54,7 @@ const sendMessage = () => {
     if (message_box.value.length > 2000) {
         //TODO: Display to user message is to long!
         console.log("Message To Long!");
+        alert("You're message is too long! Max of 2000 characters");
         return;
     }
     console.log("Sending message: " + message_box.value);
@@ -87,6 +87,8 @@ const sendFile = () => {
                 room_id: currentRoomId,
                 is_file: true,
             });
+
+            closeModals();
         }
     };
     request.send(formData);
@@ -107,13 +109,16 @@ socket.on("message", (msg) => {
             nicknames.push({name: msg.username, nick: msg.nickname});
         }
     }
+
     if (msg.room_id === currentRoomId) {
-        messages_container.innerHTML += formatRoomMessage(
-            msg.avatar,
-            msg.username,
-            msg.message,
-            msg.is_file
-        );
+        // messages_container.innerHTML += formatRoomMessage(
+        //     msg.avatar,
+        //     msg.username,
+        //     msg.message,
+        //     msg.is_file,
+        //     msg.timestamp
+        // );
+        renderGroupedMessages(msg);
 
         //TODO make scroll to bottom every message only when already scrolled down
         messages_container.scrollTop = messages_container.scrollHeight;
@@ -169,16 +174,27 @@ const joinRoom = () => {
     });
 };
 
+const loadDefault = img => {
+    if(img.target)
+        img = img.target;
+    img.src = "/images/user_icon_blue.png";
+};
+const loadDefaultRoom = img => {
+
+};
+
 //Render Functions
-const formatRoomMessage = (avatar, username, message, isFile) => {
+const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
     let formattedMessage = "";
     let name = getNickname(username);
+    let date = new Date(timestamp);
+    let now = new Date();
 
     //If Message is a file
     if (isFile) {
         formattedMessage =
             "<span class='message_box'>" +
-            `<span class='avatar'><img src="${avatar}" alt="${username}_avatar"/></span>` +
+            `<div class='msgAvatar'><span class='avatar'><img onerror="loadDefault(this)" src="${avatar}" alt="${username}_avatar"/></span></div>` +
             "<span class='name'>" +
             name +
             "</span>" +
@@ -187,28 +203,101 @@ const formatRoomMessage = (avatar, username, message, isFile) => {
         //If message is an image (render it inline)
         if (isFileImage(message)) {
             let fileStr = splitFileString(message);
-            formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'><img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/></a>`;
+            //formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'><img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/></a>`;
+            formattedMessage += `<img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image' onclick="displayViewImageModal('${fileStr[0]}', '${fileStr[1]}')"/>`;
         } else {
             let fileStr = splitFileString(message);
             //TODO downloaded files (only tested txt files) are not downloading with the correct name and instead id
             formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'>${fileStr[1]}</a>`;
         }
 
-        formattedMessage += "</span></span>";
+        formattedMessage += "<div class='timestamp'>" +
+            (now.toLocaleDateString() != date.toLocaleDateString() ? date.toLocaleDateString() + "<br>" : "") +
+            date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) +
+            "</div>" +
+            "</span></span>";
     } else {
         formattedMessage =
             "<span class='message_box'>" +
-            `<span class='avatar'><img src="${avatar}" alt="${username}_avatar"/></span>` +
+            `<div class='msgAvatar'><span class='avatar'><img onerror="loadDefault(this)" src="${avatar}" alt="${username}_avatar"/></span></div>` +
             "<span class='name'>" +
             name +
             "</span>" +
             "<span class='message'>" +
             message +
+            "<div class='timestamp'>" +
+            (now.toLocaleDateString() != date.toLocaleDateString() ? date.toLocaleDateString() + "<br>" : "") +
+            date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) +
+            "</div>" +
             "</span>" +
             "</span>";
     }
 
     return formattedMessage;
+};
+
+const formatRoomMessagePartial = (message, isFile, timestamp) => {
+    let formattedMessage = "";
+    let date = new Date(timestamp);
+    let now = new Date();
+
+    //If Message is a file
+    if (isFile) {
+        formattedMessage +=
+            "<span class='message'>";
+
+        //If message is an image (render it inline)
+        if (isFileImage(message)) {
+            let fileStr = splitFileString(message);
+            //formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'><img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/></a>`;
+            formattedMessage += `<img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image' onclick="displayViewImageModal('${fileStr[0]}', '${fileStr[1]}')"/>`;
+        } else {
+            let fileStr = splitFileString(message);
+            formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'>${fileStr[1]}</a>`;
+        }
+
+        formattedMessage += "<div class='timestamp'>" +
+            (now.toLocaleDateString() != date.toLocaleDateString() ? date.toLocaleDateString() + "<br>" : "") +
+            date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) +
+            "</div>" +
+            "</span>";
+    } else {
+        formattedMessage +=
+            "<span class='message'>" +
+            message +
+            "<div class='timestamp'>" +
+            (now.toLocaleDateString() != date.toLocaleDateString() ? date.toLocaleDateString() + "<br>" : "")
+            + date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) +
+            "</div>" +
+            "</span>";
+    }
+
+    return formattedMessage;
+};
+
+const renderGroupedMessages = msg => {
+    if (!msg.sender && msg.username)
+        msg.sender = msg.username;
+    if (!messages_container.lastChild || msg.sender != prev_sender || Math.abs(new Date(msg.timestamp) - prev_timestamp) > FIVE_MINS) {
+        prev_sender = msg.sender;
+        messages_container.innerHTML += formatRoomMessage(
+            msg.avatar,
+            msg.sender,
+            msg.content ? msg.content : msg.message,
+            msg.is_file,
+            msg.timestamp
+        );
+    } else {
+        //Let's double up messages a bit so it's not as spread out.
+        // Just with an extra line break between.
+        let prev_message = messages_container.lastChild;
+        prev_message.innerHTML += formatRoomMessagePartial(
+            msg.content ? msg.content : msg.message,
+            msg.is_file,
+            msg.timestamp
+        );
+    }
+    prev_timestamp = new Date(msg.timestamp);
 };
 
 const renderRoomContent = (roomid, forceRender = false) => {
@@ -236,12 +325,8 @@ const renderRoomContent = (roomid, forceRender = false) => {
             currentRoomId = roomid;
             //Currently the messages array is backwards so will do it this way
             for (let i = messages.length - 1; i >= 0; i--) {
-                messages_container.innerHTML += formatRoomMessage(
-                    messages[i].avatar,
-                    messages[i].sender,
-                    messages[i].content,
-                    messages[i].is_file
-                );
+                let msg = messages[i];
+                renderGroupedMessages(msg);
             }
         });
     });
@@ -256,8 +341,8 @@ const renderRoomList = () => {
             //${user.joined_rooms[i]}
             fetchRoomData(user.joined_rooms[i]).then(function (room) {
                 rooms_container.innerHTML +=
-                    `<span class='room tooltip' id='${user.joined_rooms[i]}' style='text-align:center' onclick='renderRoomContent("${user.joined_rooms[i]}");'>` +
-                    `<img src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>` +
+                    `<span class='room tooltip' id='${user.joined_rooms[i]}' onclick='renderRoomContent("${user.joined_rooms[i]}");'>` +
+                    `<img onerror="loadDefaultRoom(this)" src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>` +
                     `<span class='tooltiptext'>${room.room_title}</span>` +
                     `</span>`;
             });
@@ -410,10 +495,19 @@ const validateFileSize = evt => {
             alert("That file is too large (>100MB)");
         }
     }
+};
+
+const sendToggle = (username, theme) => {
+    fetch(`/settheme/${username}/${theme}`, {
+        method: "POST"
+    }).then();
 }
 
 document.getElementById("useAvatar").onclick = uploadAvatar;
 document.getElementById("avatar_upload").onchange = validateFileSize;
+
+document.getElementById("avatarImg").onerror = loadDefault;
+document.getElementById("changeAvatar").onerror = loadDefault;
 
 //Assign Buttons Functions
 document
