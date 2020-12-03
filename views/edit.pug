@@ -23,25 +23,24 @@ html
             input(type="button" value="Edit Password" id="edit_password")
             br
         div(id="display")
-        //user can put in they're own image but not sure how to do that right now
-            img(src="database image")
+        // user can put in they're own image but not sure how to do that right now
+            img(src="")
             input(type="image" src="" alt="")
             br
             br
             br
             br
-            //current/old username shown
+            // current/old username shown
             form(action="/user/:username" method="PATCH")
                 label(for="newUsername") New Username: 
                 input(type="text" name="newUsername" id="newName")
                 br
                 br
                 input(type="submit" value="Change Username" id="username-submit")
-            //ask for old password to change the password
+            // ask for old password to change the password
             br
             br
             form(action="/user/username" method="PATCH")
                 input(type="password" name="oldPassword" id="oldPassword")
                 input(type="submit" value="Confirm Password")
-        
-        
+        script(src='/scripts/edit.js')
