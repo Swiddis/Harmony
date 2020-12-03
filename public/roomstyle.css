@@ -58,7 +58,6 @@ body {
 /*Room (Icon) Styles*/
 .room, #new_room {
     background-color: white;
-    border: 2px solid black;
     border-radius: 50%;
     height: 3em;
     width: 3em;
@@ -74,7 +73,14 @@ body {
 }
 
 #new_room {
-    background-color: #0f0;
+    background-color: var(--button-color);
+}
+
+#new_room_icon{
+    margin-top: 4px;
+    margin-left: 4px;
+    width: 80%;
+    height: 80%;
 }
 
 #new_room:hover {
@@ -83,7 +89,11 @@ body {
     transition: border-radius 0.2s;
 }
 
-.tooltip {
+
+.tooltiptext{
+    display: none;
+}
+/*.tooltip {
     position: relative;
     display: inline-block;
     border-bottom: 1px dotted black;
@@ -116,7 +126,7 @@ body {
 
 .tooltip:hover .tooltiptext {
     visibility: visible;
-}
+}*/
 
 
 /* Right Side Labels*/
@@ -232,6 +242,11 @@ body {
 }
 
 /* change avatar */
+#avatarImg{
+    cursor: pointer;
+    border-radius: 4px;
+}
+
 #changeAvatar {
     width: 80px;
     height: 80px;
@@ -269,23 +284,88 @@ span.textarea:empty::before {
     content: "Message";
 }
 span.textarea {
-    display: block;
-    background-color: #fff;
-    border: 2px solid black;
+    display: flex;
+    background-color: var(--msgBox-color);
     border-radius: 8px;
-    /*width: 90%;*/
     min-height: 55px;
     max-height: 25vh;
     overflow-y: scroll;
-    margin: 0 1em;
-    padding: 5px 10px 0;
-    font-size: 18px;
-    outline: none;
-    resize: none;
+    width: 90%;
+    height: 90%;
     box-sizing: border-box;
+    color: var(--font-color);
+    transition: background-color 0.5s, color 0.5s;
+    padding: 5px;
+}
+
+span.textarea:hover, span.textarea:focus {
+    outline: none;
+}
+
+#bottom_input {
+    background-color: var(--msgBox-color);
+    border-radius: 8px;
+    width: 100%;
+    display: flex;
+    padding: 0.2em;
+    align-items: center;
+}
+
+#file_icon_container{
+    display: block;
+    margin: 0 10px;
+    width: 2.5em;
+    height: 2.5em;
+    background-color: var(--button-color);
+    border-radius: 24px;
+    text-align:center;
+    top: 50%;
+}
+#file_icon_container:hover,
+#file_icon_container:focus{
+    cursor: pointer;
+    background-color: lightgray;
+}
+#file_icon{
+    padding-top: 5px;
+    width: 65%;
+    height: 65%;
+}
+
+#my_file{
+    display: none;
 }
 
 /* Extra Modal Stuff */
+.view_image{
+    position: absolute;
+    left: 45%;
+    top: 45%;
+    transform: translate(-50%, -50%);
+}
+
+.image_link{
+    position: absolute;
+    left: 45%;
+    top: 80%;
+    transform: translate(-50%, -50%);
+}
+
+#username_label:hover,
+#username_label:focus {
+    cursor: pointer;
+}
+
+.modal_body > .button{
+    text-align:center;
+    width: 50%;
+}
+
+.back_modal:hover,
+.back_modal:focus {
+    cursor: pointer;
+}
+
 .close {
     color: var(--closeModal-color);
     transition: color 0.5s;

@@ -6,10 +6,6 @@ const messages_container = document.getElementById(
     "display_messages_container"
 );
 const message_box = document.getElementById("my_message");
-const modal = document.getElementById("room_modal");
-const nickname_modal = document.getElementById("nickname_modal");
-const create_modal = document.getElementById("create_room_modal");
-const join_modal = document.getElementById("join_room_modal");
 
 let username = document.getElementById("username_label").innerText;
 let nicknames;
@@ -111,7 +107,9 @@ const sendFile = (callback) => {
             });
             document.getElementById("img_preview").innerHTML = "";
             document.getElementById("my_file").value = "";
-            callback();
+            closeModals();
+            if (callback)
+                callback();
         }
     };
     request.send(formData);
@@ -260,7 +258,17 @@ const formatImage = message => {
     //If message is an image (render it inline)
     let isImage = isFileImage(message);
     let fileStr = splitFileString(message);
-    return `<a href='${fileStr[0]}' download='${fileStr[1]}'><img src='${isImage ? fileStr[0] : '/images/media.png'}' alt='${fileStr[1]}' title='${fileStr[1]}'class='message_image'/>${!isImage ? "<div>" + fileStr[1] + "</div>" : ""}</a>`;
+    let ret = "";
+    if(!isImage) {
+        ret += `<a href='${fileStr[0]}' download='${fileStr[1]}'>`;
+    }
+    if(isImage) {
+        ret += `<img src='${isImage ? fileStr[0] : '/images/media.png'}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image' ${isImage ? onclick = "displayViewImageModal('" + fileStr[0] + "', '" + fileStr[1] + "')" : ""}/>${!isImage ? "<div>" + fileStr[1] + "</div>" : ""}`;
+    }
+    if(!isImage) {
+        ret += `</a>`;
+    }
+    return ret;
 };
 
 //Render Functions
@@ -406,7 +414,7 @@ const renderRoomList = () => {
             fetchRoomData(user.joined_rooms[i]).then(function (room) {
                 if (!room) return;
                 rooms_container.innerHTML +=
-                    `<span class='room tooltip' id='${user.joined_rooms[i]}' style='text-align:center' onclick='renderRoomContent("${user.joined_rooms[i]}");'>` +
+                    `<span class='room tooltip' style='text-align:center' id='${user.joined_rooms[i]}' onclick='renderRoomContent("${user.joined_rooms[i]}");'>` +
                     `<img onerror="loadDefaultRoom(this)" src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>` +
                     `<span class='tooltiptext'>${room.room_title}</span>` +
                     `</span>`;
