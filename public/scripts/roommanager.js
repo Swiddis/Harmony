@@ -191,6 +191,11 @@ socket.on("message", (msg) => {
         // );
         renderGroupedMessages(msg);
 
+        if(msg.username != username) {
+            let notif = document.getElementById("notif");
+            notif.volume = 0.5;
+            notif.play();
+        }
         //TODO make scroll to bottom every message only when already scrolled down
         messages_container.scrollTop = messages_container.scrollHeight;
     }
