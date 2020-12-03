@@ -398,6 +398,7 @@ input:checked + .slider:before {
     background-color: var(--bg-color);
     color: var(--font-color);
     border: 2px solid var(--borderModal-color);
+    transition: background-color 0.5s, color 0.5s, border 0.5s;
     border-radius: 50%;
     width: 1.5em;
     height: 1.5em;
