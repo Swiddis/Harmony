@@ -16,10 +16,8 @@
     background-color: var(--secondary-bgColor);
     display:flex;
     flex-direction: column;
+    overflow-y: hidden scroll;
     /*overflow: auto;*/
-}
-#rooms_container{
-    overflow-x: visible;
 }
 
 /* Center (Messages Display and Input Message) Container*/
@@ -38,7 +36,7 @@
     overflow: auto;
 }
 #input_message_container{
-    background-color: var(--secondary-bgColor);
+    background-color: var(--bg-color);
     flex-grow: 1;
     padding: 1em;
     display: flex;
@@ -55,21 +53,84 @@
     overflow:auto;
 }
 
-/* Modals */
-.modal{
+
+/* ===================
+    Modals 
+   =================== */
+#modal_background{
     display: none;
     position: fixed;
     z-index: 1;
-    left: 25%;
-    top: 25%;
-    width: 30%;
+    left: 0;
+    top: 0;
+    width: 100%;
     height: 100%;
+
+    -webkit-animation-name: animatebackground;
+    -webkit-animation-duration: 0.4s;
+    animation-name: animatebackground;
+    animation-duration: 0.4s;
+    background-color: rgba(0,0,0,0.6);
+}/* Will transition to black opacity*/
+@-webkit-keyframes animatebackground{
+    from {background-color: rgba(0,0,0,0);} 
+    to {background-color: rgba(0,0,0,0.6);}
+}
+@keyframes animatebackground{
+    from {background-color: rgba(0,0,0,0);}
+    to {background-color: rgba(0,0,0,0.6);}
 }
 
-.modal_content{
-  margin: 15% auto; /* 15% from the top and centered */
-  padding: 20px;
-  border: 1px solid var(--borderModal-color);
-  width: 80%; /* Could be more or less, depending on screen size */
-  background-color: var(--modal-color);
+
+.modal_content{ 
+    position: absolute;
+    left: 50%;
+    top: 40%;
+    transform: translate(-50%, -50%);
+
+    padding: 0;
+    width: 20em;
+    height: 24em;
+    background-color: var(--modal-color); 
+    border: 1px solid var(--borderModal-color);
+    border-radius: 10px;
+
+    -webkit-animation-name: modalpop;
+    -webkit-animation-duration: 0.2s;
+    animation-name: modalpop;
+    animation-duration: 0.2s;
+}/* transition getting smaller to bigger*/
+@-webkit-keyframes modalpop{
+    from {width:15em; height: 18em;} 
+    to {width: 20em;
+        height: 24em;}
+}
+@keyframes modalpop{
+    from {width: 15em;
+        height: 18em}
+    to {width: 20em;
+        height: 24em;}
+}
+
+.modal{
+    display: none;
+}
+
+.modal_header{
+    padding: 2px 16px;
+    text-align: center;
+    /*background-color: white;*/
+    color: black;
+}
+.modal_body{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 75%;
+}
+
+.modal_footer{
+    padding: 2px 16px;
 }

@@ -6,10 +6,6 @@ const messages_container = document.getElementById(
     "display_messages_container"
 );
 const message_box = document.getElementById("my_message");
-const modal = document.getElementById("room_modal");
-const nickname_modal = document.getElementById("nickname_modal");
-const create_modal = document.getElementById("create_room_modal");
-const join_modal = document.getElementById("join_room_modal");
 
 let username = document.getElementById("username_label").innerText;
 let nicknames;
@@ -91,6 +87,8 @@ const sendFile = () => {
                 room_id: currentRoomId,
                 is_file: true,
             });
+
+            closeModals();
         }
     };
     request.send(formData);
@@ -205,7 +203,8 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
         //If message is an image (render it inline)
         if (isFileImage(message)) {
             let fileStr = splitFileString(message);
-            formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'><img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/></a>`;
+            //formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'><img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/></a>`;
+            formattedMessage += `<img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image' onclick="displayViewImageModal('${fileStr[0]}', '${fileStr[1]}')"/>`;
         } else {
             let fileStr = splitFileString(message);
             //TODO downloaded files (only tested txt files) are not downloading with the correct name and instead id
@@ -250,7 +249,8 @@ const formatRoomMessagePartial = (message, isFile, timestamp) => {
         //If message is an image (render it inline)
         if (isFileImage(message)) {
             let fileStr = splitFileString(message);
-            formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'><img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/></a>`;
+            //formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'><img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/></a>`;
+            formattedMessage += `<img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image' onclick="displayViewImageModal('${fileStr[0]}', '${fileStr[1]}')"/>`;
         } else {
             let fileStr = splitFileString(message);
             formattedMessage += `<a href='${fileStr[0]}' download='${fileStr[1]}'>${fileStr[1]}</a>`;
@@ -341,7 +341,7 @@ const renderRoomList = () => {
             //${user.joined_rooms[i]}
             fetchRoomData(user.joined_rooms[i]).then(function (room) {
                 rooms_container.innerHTML +=
-                    `<span class='room tooltip' id='${user.joined_rooms[i]}' style='text-align:center' onclick='renderRoomContent("${user.joined_rooms[i]}");'>` +
+                    `<span class='room tooltip' id='${user.joined_rooms[i]}' onclick='renderRoomContent("${user.joined_rooms[i]}");'>` +
                     `<img onerror="loadDefaultRoom(this)" src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>` +
                     `<span class='tooltiptext'>${room.room_title}</span>` +
                     `</span>`;
