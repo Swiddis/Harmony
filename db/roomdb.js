@@ -253,7 +253,7 @@ exports.authorizeRoomAccess = (username, room_id, password, callback, save = tru
        */
     userdb.getUser(username, (err, user) => {
         if (err) {
-            callback(err, []);
+            if (callback) callback(err, []);
             return;
         }
 
@@ -265,12 +265,12 @@ exports.authorizeRoomAccess = (username, room_id, password, callback, save = tru
 
         this.getRoom(room_id, (err, room) => {
             if (err) {
-                callback(err, []);
+                if (callback) callback(err, []);
                 return;
             }
 
             if (!room) {
-                callback(new Error("Room not found"), []);
+                if (callback) callback(new Error("Room not found"), []);
                 return;
             }
 
@@ -283,10 +283,10 @@ exports.authorizeRoomAccess = (username, room_id, password, callback, save = tru
                 if (save)
                     room.save();
                 new User(user).save();
-                callback(undefined, ["USER", "ADMIN"]);
+                if (callback) callback(undefined, ["USER", "ADMIN"]);
             } else {
                 //Not authenticated.
-                callback(new Error("Invalid credentials"), []);
+                if (callback) callback(new Error("Invalid credentials"), []);
             }
         });
     });
