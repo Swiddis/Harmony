@@ -9,6 +9,8 @@ const message_box = document.getElementById("my_message");
 
 let username = document.getElementById("username_label").innerText;
 let nicknames;
+let joined_rooms = [];
+let room_titles = {};
 let currentRoomId; //Is assigned whenever in renderRoomContent() is called (meaning onLoad or when clicking on bubble)
 let prev_sender = undefined;
 let prev_timestamp = -1000;
@@ -118,51 +120,98 @@ const sendFile = (callback) => {
 const openUserInfo = user => {
     closeModals();
     console.log("Opening user info for " + user);
-    let modal = document.createElement("div");
-    modal.id = "user_modal";
-    modal.classList = ["modal"];
 
-    let content = document.createElement("div");
-    content.classList = ["modal_content"];
-    modal.append(content);
+    fetch(`/user/${user}`)
+        .then(response => response.json())
+        .then(data => {
+            let userData = data.data;
+            console.log(userData);
+            let modal = document.createElement("div");
+            modal.id = "user_modal";
+            modal.classList = ["modal"];
 
-    let close = document.createElement("span");
-    close.classList = ["close"];
-    close.onclick = evt => {
-        modal.remove();
-    };
-    close.innerHTML = "&times;"
-    content.append(close);
-    //TODO Load in user info like avatar.
+            let content = document.createElement("div");
+            content.classList = ["modal_content"];
+            modal.append(content);
 
-    let name = document.createElement("div");
-    name.innerHTML = user;
-    content.append(name);
+            let avatar = document.createElement("span");
+            avatar.classList = ["avatar"];
+            let img = new Image();
+            img.src = userData.avatar;
+            img.onerror = loadDefault;
+            avatar.append(img);
+            content.append(avatar);
 
-    if (user != username) {
-        //Only display DM button if it's not YOU.
-        let dmButton = document.createElement("button");
-        dmButton.innerText = "Start DM";
-        dmButton.onclick = evt => {
-            fetch(`/dm/${username}/${user}`,
-                {
-                    method: "POST"
-                })
-                .then(response => {
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(data);
-                    closeModals();
-                    renderRoomList();
-                    renderRoomContent(data.data.room_id);
-                });
-        };
-        content.append(dmButton);
-    }
+            let close = document.createElement("span");
+            close.classList = ["close"];
+            close.onclick = evt => {
+                modal.remove();
+                closeModals();
+            }
+            close.innerHTML = "&times;"
+            content.append(close);
+            //TODO Load in user info like avatar.
 
-    modal.style.display = "block";
-    document.body.append(modal);
+            let name = document.createElement("div");
+            name.classList = ["name"];
+            name.innerHTML = user;
+            content.append(name);
+
+            if (user != username) {
+                //Only display DM button if it's not YOU.
+                let dmButton = document.createElement("button");
+                dmButton.classList = ["button"];
+                dmButton.innerText = "Start DM";
+                content.append(dmButton);
+                dmButton.onclick = evt => {
+                    fetch(`/dm/${username}/${user}`,
+                        {
+                            method: "POST"
+                        })
+                        .then(response => {
+                            return response.json();
+                        })
+                        .then(data => {
+                            closeModals();
+                            renderRoomList();
+                            renderRoomContent(data.data.room_id);
+                        });
+                };
+            }
+
+            let clear = document.createElement("div");
+            clear.classList = ["clear"];
+            content.append(clear);
+
+            let mutual = document.createElement("div");
+            mutual.id = "mutual";
+            mutual.innerHTML = "<div class='title'>Mutual Rooms</div>";
+            content.append(mutual);
+
+            let foundRoom = false;
+            userData.joined_rooms.forEach(room => {
+                if (joined_rooms.includes(room)) {
+                    foundRoom = true;
+                    let roomLink = document.createElement("div");
+                    roomLink.classList = ["room-link"];
+                    roomLink.innerHTML = "- " + room_titles[room];
+
+                    mutual.append(roomLink);
+
+                    roomLink.onclick = evt => {
+                        closeModals();
+                        renderRoomContent(room);
+                    };
+                }
+            });
+
+            if (!foundRoom)
+                content.innerHTML += "<div class='room-link'>No mutual rooms</div>";
+
+            document.getElementById("modal_background").style.display = "flex";
+            modal.style.display = "block";
+            document.getElementById("modal_background").append(modal);
+        });
 };
 
 socket.on("message", (msg) => {
@@ -191,7 +240,7 @@ socket.on("message", (msg) => {
         // );
         renderGroupedMessages(msg);
 
-        if(msg.username != username) {
+        if (msg.username != username) {
             let notif = document.getElementById("notif");
             notif.volume = 0.5;
             notif.play();
@@ -264,15 +313,15 @@ const formatImage = message => {
     let isImage = isFileImage(message);
     let fileStr = splitFileString(message);
     let ret = "";
-    if(!isImage) {
+    if (!isImage) {
         ret += `<a href='${fileStr[0]}' download='${fileStr[1]}'>`;
     }
-    if(isImage) {
+    if (isImage) {
         ret += `<img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image' onclick="displayViewImageModal('${fileStr[0]}', '${fileStr[1]}')"/>`;
     } else {
         ret += `<img src='/images/media.png' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/><div>${fileStr[1]}</div>`;
     }
-    if(!isImage) {
+    if (!isImage) {
         ret += `</a>`;
     }
     return ret;
@@ -416,10 +465,14 @@ const renderRoomList = () => {
 
     fetchUser(username).then(function (user) {
         console.log(user);
+        joined_rooms = user.joined_rooms;
+        room_titles = {};
         for (let i = 0; i < user.joined_rooms.length; i++) {
+            let rm = user.joined_rooms[i]
             //${user.joined_rooms[i]}
-            fetchRoomData(user.joined_rooms[i]).then(function (room) {
+            fetchRoomData(rm).then(function (room) {
                 if (!room) return;
+                room_titles[room.room_id] = room.room_title;
                 rooms_container.innerHTML +=
                     `<span class='room tooltip' style='text-align:center' id='${user.joined_rooms[i]}' onclick='renderRoomContent("${user.joined_rooms[i]}");'>` +
                     `<img onerror="loadDefaultRoom(this)" src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>` +

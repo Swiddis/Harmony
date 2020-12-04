@@ -147,7 +147,6 @@ for(var i = 0; i < backButtons.length; i++){
 }
 
 modal_background.onclick = evt => {
-    console.log(evt.target);
     if(evt.target == modal_background) {
         closeModals();
     }

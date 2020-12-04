@@ -1,3 +1,7 @@
+body {
+    font-family: "Open Sans", sans-serif;
+}
+
 /* Container Holding all Page Containers*/
 #page_container {
     display: flex;
@@ -133,6 +137,11 @@
     color: black;
 }
 
+.modal div {
+    color: var(--font-color);
+    transition: color 0.5s;
+}
+
 .modal_body {
     display: flex;
     flex-direction: column;
@@ -143,9 +152,11 @@
 }
 
 .modal_content {
+    box-sizing: border-box;
+    position: relative;
     padding: 20px;
-    width: 80%; /* Could be more or less, depending on screen size */
-    /*height: 24em;*/
+    width: 100%;
+    height: 100%;
     background-color: var(--modal-color);
     border: 1px solid var(--borderModal-color);
     border-radius: 10px;
@@ -155,6 +166,11 @@
     -webkit-animation-duration: 0.2s;
     animation-name: modalpop;
     animation-duration: 0.2s;
+}
+
+#user_modal {
+    width: 30%;
+    height: 40%;
 }
 
 #drop_overlay {
@@ -207,4 +223,32 @@
 
 .modal_footer {
     padding: 2px 16px;
+}
+
+.modal .name {
+    font-size: 2em;
+    max-width: 60%;
+    margin: 5px auto;
+    text-decoration: underline;
+    color: var(--font-color);
+}
+
+.modal .avatar {
+    margin: 10px 20px;
+}
+
+.clear {
+    clear: both;
+}
+
+#mutual .title {
+    text-decoration: underline;
+}
+
+.room-link {
+    font-style: italic;
+}
+
+.room-link:hover {
+    cursor: pointer;
 }

@@ -9,6 +9,7 @@
     --closeModal-color: #555;
     --borderModal-color: rgb(68, 68, 68);
     --link-color: #1f2fff;
+    --name-hover: #85ff52;
 }
 
 [data-theme="dark"] {
@@ -22,6 +23,7 @@
     --closeModal-color: #aaa;
     --borderModal-color: #888;
     --link-color: #8ff8ff;
+    --name-hover: #52fff1;
 }
 
 /* General Styles*/
@@ -202,7 +204,13 @@ body {
     box-sizing: border-box;
 }
 
+.name:hover, .msgAvatar:hover {
+    cursor: pointer;
+    color: var(--name-hover);
+}
+
 .name {
+    transition: color 0.5s;
     display: block;
     margin-bottom: 5px;
     font-weight: bold;
