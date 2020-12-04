@@ -41,7 +41,9 @@ body {
 
 #input_message_container {
     background-color: var(--bg-color);
-    transition: background-color 0.5s;
+    box-shadow: 5px 0px 10px var(--bg-color);
+    transition: background-color 0.5s, box-shadow 0.5s;
+    z-index: 1;
     flex-grow: 1;
     padding: 1em;
     display: flex;
@@ -53,6 +55,7 @@ body {
 /* Right (Currently just Username and Logout) Container*/
 #right_content {
     width: 15em;
+    z-index: 2;
     min-width: 165px;
     height: 100%;
     background-color: var(--secondary-bgColor);
