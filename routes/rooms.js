@@ -7,6 +7,7 @@
 
 const db = require("../db/roomdb");
 const crypto = require("crypto");
+const iomanager = require('../io-manager');
 
 const btoa = (string) => {
     return Buffer.from(string, "binary").toString("base64");
@@ -126,6 +127,13 @@ exports.establishUserDMs = (req, res) => {
                             room.room_id,
                             password,
                             (err, auths) => {
+
+                                let client = iomanager.getClientByUsername(user2);
+                                if (client) {
+                                    // Push a message out telling the client to re-render the rooms list.
+                                    client.getSocket().emit("custom", {action: "rerender"});
+                                }
+
                                 buildCreationResponse(res, err, room);
                             }
                         );

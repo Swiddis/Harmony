@@ -252,6 +252,15 @@ socket.on("message", (msg) => {
     }
 });
 
+socket.on("custom", data => {
+    if (data.action) {
+        if (data.action == "rerender") {
+            console.log("Re-rendering room list.");
+            renderRoomList();
+        }
+    }
+});
+
 const createRoom = () => {
     const room_id = document.getElementById("create_id").value;
     const room_title = document.getElementById("create_title").value;
@@ -469,7 +478,7 @@ const renderRoomContent = (roomid, forceRender = false) => {
     });
 };
 
-const showRoomTip = (id) =>{
+const showRoomTip = (id) => {
     tipId = id + "_tip";
     let tip = document.getElementById(tipId);
     tip.style.top = tip.parentElement.getBoundingClientRect().y + 6 + "px";
@@ -505,7 +514,7 @@ const renderRoomList = () => {
                 roomElm.setAttribute("onmouseout", `hideRoomTip('${user.joined_rooms[i]}')`);
 
                 //WORKING HERE
-                roomElm.addEventListener("contextmenu", function(e){
+                roomElm.addEventListener("contextmenu", function (e) {
                     menu.style.display = "block";
                     menu.style.top = e.y + "px";
                     menu.style.left = e.x + "px";
@@ -720,7 +729,7 @@ document
     .addEventListener("click", uploadRoomIcon);
 
 //Copy to clipboard roomid
-document.getElementById("menu_copy").addEventListener("click", function(){
+document.getElementById("menu_copy").addEventListener("click", function () {
     const temp = document.createElement('textarea');
     temp.value = currentContextRoomId;
     document.body.appendChild(temp);
