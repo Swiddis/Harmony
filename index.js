@@ -91,14 +91,6 @@ app.post(
 );
 app.get('/media/:file_name', media.getMedia);
 
-//TODO Development purposes. Will be removed for prod.
-app.get('/testsocket', (req, res) => {
-    res.render('testsocket', {
-        username: (req.session.user ? req.session.user.username : undefined),
-        title: "Test Socket"
-    });
-});
-
 app.get("/logout", render.logout);
 
 const port = 80
