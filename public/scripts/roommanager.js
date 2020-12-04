@@ -540,7 +540,7 @@ const renderRoomList = () => {
                     img.src = room.roomAvatar;
                 } else
                     img.src = "./images/room.png";
-                img.style = "margin: 0 1px; width: 50px; height: 50px; background-color: var(--modal-color);";
+                img.style = "margin: 0 1px; width: 50px; height: 50px; object-fit: cover; background-color: var(--modal-color);";
 
 
                 let tip = document.createElement("span");
