@@ -296,6 +296,7 @@ span.textarea {
     height: 90%;
     box-sizing: border-box;
     color: var(--font-color);
+    padding: 5px 0;
     transition: background-color 0.5s, color 0.5s;
 }
 

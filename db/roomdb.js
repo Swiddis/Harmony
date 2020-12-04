@@ -3,6 +3,15 @@ const {User, Room, Message} = require("../conf/mongo_conf");
 const userdb = require("./userdb");
 let room_cache = [];
 
+exports.getCachedRoom = (room_id) => {
+    for(let room of room_cache) {
+        if(room.room_id == room_id)
+            return room;
+    }
+
+    reutrn;
+};
+
 /**
  * The room should be passed in as a JSON object.
  * {
@@ -271,10 +280,10 @@ exports.authorizeRoomAccess = (username, room_id, password, callback, save = tru
                     room.members.push(user.username);
                 if (!user.joined_rooms.includes(room.room_id))
                     user.joined_rooms.push(room.room_id);
-                callback(undefined, ["USER", "ADMIN"]);
                 if (save)
                     room.save();
                 new User(user).save();
+                callback(undefined, ["USER", "ADMIN"]);
             } else {
                 //Not authenticated.
                 callback(new Error("Invalid credentials"), []);
@@ -365,9 +374,7 @@ exports.findDM = (user1, user2, callback) => {
 
 exports.editRoom = (room, owner, callback) => {
 
-    Room.findOne({
-            room_id: room.room_id
-        },
+    this.getRoom(room.room_id,
         (err, rm) => {
             if (err) {
                 console.error("Could not fetch room!")
