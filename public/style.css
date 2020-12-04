@@ -165,3 +165,86 @@ label {
     color: #d00;
     margin-top: 1em;
 }
+
+@media screen and (max-width: 1060px) {
+    /* Style */
+    #titleB {
+        font-family: 'Merriweather', serif;
+        font-size: 35px;
+        margin-top: 10px;
+    }
+
+    #welcome {
+        font-family: 'Sansita Swashed', cursive;
+        font-size: 30px;
+    }
+
+    /* NavBar */
+    li {
+        margin-top: 10px;
+        margin-left: -80px;
+    }
+    
+    li, a {
+        display: inline-block;
+        font-size: 25px;
+        color: whitesmoke;
+    }
+
+    /* login page */
+    #submitButton {
+        margin: 0 -50px;
+        width: 500px;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+    }
+    
+    #loginSubmit {
+        cursor: pointer;
+        height: 45px;
+        text-align: center;
+        font-family: 'Indie Flower', cursive;
+        font-size: 25px;
+    }
+
+    #signUpHref {
+        color: black;
+        background-color: #ABB2B9;
+        font-size: 30px;
+    }
+    
+    label {
+        padding: 0px 8px;
+        font-size: 20px;
+        font-family: 'Indie Flower', cursive;
+    }
+
+    /*Create Account Form*/
+    #createSubmit {
+        cursor: pointer;
+        margin: auto;
+        width: 28%;
+        height: 50px;
+        font-size: 26px;
+        font-family: 'Indie Flower', cursive;
+        justify-content: center;
+    }
+
+    /* Images */
+    #webEx {
+        width: 700px;
+        height: 350px;
+    }
+
+    #logo {
+        width: 90px;
+        height: 80px;
+        margin-left: 30px;
+    }
+
+    .error {
+        color: #d00;
+        margin-top: 1em;
+    }
+}
