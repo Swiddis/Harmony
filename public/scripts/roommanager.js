@@ -543,10 +543,12 @@ const renderRoomList = () => {
             elements.forEach(roomElm => rooms_container.appendChild(roomElm));
         }
 
+        let iterated = 0;
         for (let i = 0; i < joined_rooms.length; i++) {
             let rm = joined_rooms[i];
 
             fetchRoomData(rm).then(function (room) {
+                iterated++;
                 if (!room) return;
                 room_titles[room.room_id] = room.room_title;
 
@@ -584,7 +586,7 @@ const renderRoomList = () => {
                 roomElm.appendChild(img);
                 roomElm.appendChild(tip);
                 elements.push(roomElm);
-                if (elements.length == joined_rooms.length)
+                if (iterated == joined_rooms.length)
                     buildMenu(elements);
 
                 // rooms_container.innerHTML +=
