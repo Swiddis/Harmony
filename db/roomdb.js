@@ -362,3 +362,88 @@ exports.findDM = (user1, user2, callback) => {
                 callback(new Error("Room not found"), room);
         });
 };
+
+exports.editRoom = (room, owner, callback) => {
+
+    Room.findOne({
+            room_id: room.room_id
+        },
+        (err, rm) => {
+            if (err) {
+                console.error("Could not fetch room!")
+                if (typeof callback == "function")
+                    callback(err, rm);
+                return;
+            }
+
+            if (!rm) {
+                console.log("Could not update room '" + room.room_id + "'. Room not found.");
+                if (typeof callback == "function")
+                    callback(new Error("Room not found"));
+                return;
+            }
+
+            if(room.owner && room.owner != user) {
+                callback(new Error("Not owner"));
+                return;
+            }
+
+            if (room.roomAvatar)
+                rm.roomAvatar = room.roomAvatar;
+            if (room.room_title)
+                rm.room_title = room.room_title;
+            if (room.password) {
+                let salt = bcrypt.genSaltSync(10);
+                let hash = bcrypt.hashSync(room.password, salt);
+                rm.password = hash;
+            }
+            if(room.owner)
+                rm.owner = room.owner;
+
+            rm.save();
+
+            if (typeof callback == "function")
+                callback(err, rm);
+        });
+};
+
+exports.leaveRoom = (user, room, callback) => {
+    let doCall = (err, obj) => {
+        if(typeof callback == "function")
+            callback(err, obj);
+    }
+    User.findOne({
+            username: user.username
+        },
+        (err, us) => {
+            if (err) {
+               doCall(err, undefined);
+                return;
+            }
+            if (!us) {
+                doCall(new Error("User not found"), undefined);
+                return;
+            }
+
+            us.joined_rooms = us.joined_rooms.filter(id => id != room);
+            us.save();
+
+            Room.findOne({
+                    room_id: room
+                },
+                (err, rm) => {
+                    if (err) {
+                        doCall(err, rm);
+                        return;
+                    }
+                    if (!rm) {
+                        doCall(new Error("Room not found"), rm);
+                        return;
+                    }
+
+                    rm.members = rm.members.filter(mem => mem != us.username);
+                    rm.save(doCall);
+                });
+
+        });
+};
