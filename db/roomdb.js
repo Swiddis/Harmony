@@ -4,8 +4,8 @@ const userdb = require("./userdb");
 let room_cache = [];
 
 exports.getCachedRoom = (room_id) => {
-    for(let room of room_cache) {
-        if(room.room_id == room_id)
+    for (let room of room_cache) {
+        if (room.room_id == room_id)
             return room;
     }
 
@@ -390,7 +390,7 @@ exports.editRoom = (room, owner, callback) => {
                 return;
             }
 
-            if(room.owner && room.owner != user) {
+            if (room.owner && room.owner != user) {
                 callback(new Error("Not owner"));
                 return;
             }
@@ -404,7 +404,7 @@ exports.editRoom = (room, owner, callback) => {
                 let hash = bcrypt.hashSync(room.password, salt);
                 rm.password = hash;
             }
-            if(room.owner)
+            if (room.owner)
                 rm.owner = room.owner;
 
             rm.save();
@@ -416,41 +416,35 @@ exports.editRoom = (room, owner, callback) => {
 
 exports.leaveRoom = (user, room, callback) => {
     let doCall = (err, obj) => {
-        if(typeof callback == "function")
+        if (typeof callback == "function")
             callback(err, obj);
     }
-    User.findOne({
-            username: user.username
-        },
-        (err, us) => {
+    userdb.getUser(user.username, (err, us) => {
+        if (err) {
+            doCall(err, undefined);
+            return;
+        }
+        if (!us) {
+            doCall(new Error("User not found"), undefined);
+            return;
+        }
+
+        us.joined_rooms = us.joined_rooms.filter(id => id != room);
+        us.save();
+
+        this.getRoom(room, (err, rm) => {
             if (err) {
-               doCall(err, undefined);
+                doCall(err, rm);
                 return;
             }
-            if (!us) {
-                doCall(new Error("User not found"), undefined);
+            if (!rm) {
+                doCall(new Error("Room not found"), rm);
                 return;
             }
 
-            us.joined_rooms = us.joined_rooms.filter(id => id != room);
-            us.save();
-
-            Room.findOne({
-                    room_id: room
-                },
-                (err, rm) => {
-                    if (err) {
-                        doCall(err, rm);
-                        return;
-                    }
-                    if (!rm) {
-                        doCall(new Error("Room not found"), rm);
-                        return;
-                    }
-
-                    rm.members = rm.members.filter(mem => mem != us.username);
-                    rm.save(doCall);
-                });
-
+            rm.members = rm.members.filter(mem => mem != us.username);
+            rm.save(doCall);
         });
+
+    });
 };
