@@ -37,8 +37,10 @@ html
                 div(id="roomname_label")
                 img(class="avatar" id="avatarImg" src=avatar)
                 div(id="username_label")=username
+                div(id="changepass")
+                    p Change Password
                 div(id="logout") 
-                    a(href="/logout") Log Out
+                    p Log Out
         
         div(id="modal_background") 
             div(id="room_modal" class="modal")
@@ -111,6 +113,15 @@ html
                         form(id="choose_avatar" enctype="multipart/form-data")
                             input(type="file" accept="image/*" id="avatar_upload" name="media")
                             button(id="useAvatar") Use Avatar
+            div(id="password_modal" class="modal")
+                div(class="modal_content")
+                    div(class="modal_header")
+                        span(class="close") &times;
+                        h2 Change Password
+                    div(class="modal_body")
+                        input(type="password" id="change_old_password" placeholder="Old Password")
+                        input(type="password" id="change_new_password" placeholder="New Password")
+                        span(id="change_password_button" class="button") Change
             div(id="file_modal" class="modal")
                 div(class="modal_content")
                     div(class="modal_header")

@@ -50,8 +50,17 @@ body {
 
 /* logout */
 #logout {
-    background-color: #F4F6F7;
-    font-size: 20px;
+    background-color: var(--bg-color);
+    font-size: 16px;
+    text-align: center;
+    margin: 20px;
+    color: var(--font-color);
+    transition: color 0.5s;
+}
+
+#changepass {
+    background-color: var(--bg-color);
+    font-size: 16px;
     text-align: center;
     margin: 20px;
     color: var(--font-color);
