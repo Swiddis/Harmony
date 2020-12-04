@@ -14,7 +14,7 @@ exports.createUser = (req, res) => {
     avatar: `https://ui-avatars.com/api/size=256&name=${req.body.username}`,
   };
 
-  db.createUser(user, (err, user) => buildCreationResponse(res, err, user));
+  db.createUser(user);
   roomdb.authorizeRoomAccess(user.username, "public", "");
   res.redirect("/login");
 };
