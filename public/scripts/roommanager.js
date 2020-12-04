@@ -686,6 +686,22 @@ const uploadRoomIcon = () => {
 
 };
 
+const changePassword = () => {
+    let newPassword = document.getElementById("change_new_password").value;
+
+    fetch(`/user/${username}`, {
+        method: 'PATCH',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username: username
+        })
+    }).then(response => {
+        closeModals();
+    });
+}
+
 const validateFileSize = evt => {
     let elm = evt.target; //This should be the <input type="file"> element
     console.log(elm.files);
@@ -706,6 +722,8 @@ const sendToggle = (username, theme) => {
 
 document.getElementById("useAvatar").onclick = uploadAvatar;
 document.getElementById("avatar_upload").onchange = validateFileSize;
+
+document.getElementById("change_password_button").onclick = changePassword;
 
 document.getElementById("avatarImg").onerror = loadDefault;
 document.getElementById("changeAvatar").onerror = loadDefault;
