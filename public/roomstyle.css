@@ -67,21 +67,23 @@ body {
     transition: color 0.5s;
 }
 
+#changepass:hover,
+#changepass:focus,
+#logout:hover,
+#logout:focus{
+    cursor: pointer;
+}
+
 /*Room (Icon) Styles*/
 .room, #new_room {
     height: 3em;
     width: 3em;
     margin: .75em;
     cursor: pointer;
-    border-radius: 50%;
-    transition: border-radius 0.2s;
-    overflow: hidden;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
-.room:hover {
+.room:hover img,
+.room:focus img{
     /* background-color:gray; */
     border-radius: 15px;
     transition: border-radius 0.2s;
@@ -89,6 +91,7 @@ body {
 
 #new_room {
     background-color: var(--button-color);
+    border-radius: 50%;
 }
 
 #new_room_icon{

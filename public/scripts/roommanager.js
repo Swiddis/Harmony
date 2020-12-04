@@ -538,10 +538,12 @@ const renderRoomList = () => {
                 img.onerror = () => loadDefaultRoom({target: img});
                 if (room.roomAvatar) {
                     img.src = room.roomAvatar;
-                } else
+                    img.style = "margin: 0 1px; width: 50px; height: 50px; border-radius: 50%;";
+                }
+                else{
                     img.src = "./images/room.png";
-                img.style = "margin: 0 1px; width: 50px; height: 50px; background-color: var(--modal-color);";
-
+                    img.style = "margin: 0 1px; width: 50px; height: 50px; border-radius: 50%; background-color: white;";
+                }
 
                 let tip = document.createElement("span");
                 tip.id = user.joined_rooms[i] + "_tip";
