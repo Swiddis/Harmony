@@ -35,7 +35,8 @@ body {
 }
 
 .button {
-    background-color: #fff;
+    background-color: var(--bg-color);
+    color: var(--font-color);
     padding: 12px 20px;
     border: 2px solid black;
     border-radius: 8px;
@@ -94,41 +95,28 @@ body {
 
 .tooltiptext{
     display: none;
-}
-/*.tooltip {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted black;
-}
-
-.tooltip .tooltiptext {
-    visibility: hidden;
+    position: absolute;
     width: 120px;
-    background-color: black;
+    background-color: #000;
     color: #fff;
     text-align: center;
     border-radius: 6px;
-    padding: 10px 0;
-    position: absolute;
+    padding: 5px 0;
     z-index: 1;
-    top: 7px;
-    left: 120%;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent black transparent transparent;
 }
-
-.tooltip .tooltiptext::after {
+.tooltiptext::after {
     content: "";
     position: absolute;
     top: 50%;
-    right: 100%;
+    right: 104%;
     margin-top: -5px;
     border-width: 5px;
     border-style: solid;
     border-color: transparent black transparent transparent;
 }
-
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-}*/
 
 
 /* Right Side Labels*/
@@ -199,7 +187,6 @@ body {
     width: 100%;
     object-fit: cover;
     border-radius: 50%;
-    border: var(--bg-color) 2px solid;
     transition: border 0.5s;
     box-sizing: border-box;
 }
@@ -497,3 +484,40 @@ input:checked + .slider:before {
 .circle-button:hover {
     cursor: pointer;
 }
+
+
+/* Context Menu Stuff*/
+#context_menu{
+    display: none;
+    position: absolute;
+    z-index: 10;
+    background-color: var(--secondary-bgColor);
+    color: var(--font-color);
+    border-radius: 8px;
+}
+
+#menu{
+    display:flex;
+    flex-direction: column;
+    text-align: center;
+    vertical-align: center;
+    justify-content: center;
+    align-items: space-evenly;
+    padding: 0.5em;
+}
+
+.menu_item{
+    height: 3em;
+    width: 10em;
+    border-bottom: 2px solid var(--therd-bgColor);
+    padding-top: 1em;
+}
+
+#menu_leave{
+    border-bottom: 0;
+}
+
+.menu_item:hover,
+.menu_item:focus{
+    cursor: pointer;
+};

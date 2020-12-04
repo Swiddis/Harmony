@@ -6,12 +6,14 @@ const messages_container = document.getElementById(
     "display_messages_container"
 );
 const message_box = document.getElementById("my_message");
+const menu = document.getElementById("context_menu");
 
 let username = document.getElementById("username_label").innerText;
 let nicknames;
 let joined_rooms = [];
 let room_titles = {};
 let currentRoomId; //Is assigned whenever in renderRoomContent() is called (meaning onLoad or when clicking on bubble)
+let currentContextRoomId; //Assigned whenever right clicked bubble
 let prev_sender = undefined;
 let prev_timestamp = -1000;
 const FIVE_MINS = 5 * 60 * 1000;
@@ -299,6 +301,12 @@ const joinRoom = () => {
     });
 };
 
+const leaveRoom = () => {
+    //TODO
+    //currentContextRoomId;
+    //Allow leaving rooms
+};
+
 const loadDefault = img => {
     if (img.target)
         img = img.target;
@@ -460,6 +468,20 @@ const renderRoomContent = (roomid, forceRender = false) => {
     });
 };
 
+const showRoomTip = (id) =>{
+    tipId = id + "_tip";
+    let tip = document.getElementById(tipId);
+    tip.style.top = tip.parentElement.getBoundingClientRect().y + 6 + "px";
+    tip.style.left = tip.parentElement.getBoundingClientRect().left + 72 + "px";
+    tip.style.pointerEvents = "none";
+    tip.style.display = "block";
+};
+const hideRoomTip = (id) => {
+    tipId = id + "_tip";
+    let tip = document.getElementById(tipId);
+    tip.style.display = "none";
+};
+
 const renderRoomList = () => {
     rooms_container.innerHTML = "";
 
@@ -468,16 +490,47 @@ const renderRoomList = () => {
         joined_rooms = user.joined_rooms;
         room_titles = {};
         for (let i = 0; i < user.joined_rooms.length; i++) {
-            let rm = user.joined_rooms[i]
-            //${user.joined_rooms[i]}
+            let rm = user.joined_rooms[i];
+
             fetchRoomData(rm).then(function (room) {
                 if (!room) return;
                 room_titles[room.room_id] = room.room_title;
-                rooms_container.innerHTML +=
-                    `<span class='room tooltip' style='text-align:center' id='${user.joined_rooms[i]}' onclick='renderRoomContent("${user.joined_rooms[i]}");'>` +
-                    `<img onerror="loadDefaultRoom(this)" src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>` +
-                    `<span class='tooltiptext'>${room.room_title}</span>` +
-                    `</span>`;
+
+                let roomElm = document.createElement("span");
+                roomElm.className = "room";
+                roomElm.id = user.joined_rooms[i];
+                roomElm.setAttribute("onclick", `renderRoomContent('${user.joined_rooms[i]}')`);
+                roomElm.setAttribute("onmouseover", `showRoomTip('${user.joined_rooms[i]}')`);
+                roomElm.setAttribute("onmouseout", `hideRoomTip('${user.joined_rooms[i]}')`);
+
+                //WORKING HERE
+                roomElm.addEventListener("contextmenu", function(e){
+                    menu.style.display = "block";
+                    menu.style.top = e.y + "px";
+                    menu.style.left = e.x + "px";
+                    e.preventDefault();
+                    currentContextRoomId = roomElm.id;
+                });
+
+                let img = document.createElement("img");
+                img.onerror = loadDefaultRoom(this);
+                img.src = "./images/room.png";
+                img.style = "margin: 0 1px; width: 50px; height: 50px;";
+
+                let tip = document.createElement("span");
+                tip.id = user.joined_rooms[i] + "_tip";
+                tip.className = "tooltiptext";
+                tip.innerText = room.room_title;
+
+                rooms_container.appendChild(roomElm);
+                roomElm.appendChild(img);
+                roomElm.appendChild(tip);
+
+                // rooms_container.innerHTML +=
+                //     `<span class='room' style='text-align:center' id='${user.joined_rooms[i]}' onclick='renderRoomContent("${user.joined_rooms[i]}");' onmouseover='showRoomTip("${user.joined_rooms[i]}");' onmouseout='hideRoomTip("${user.joined_rooms[i]}");'>` +
+                //     `<img onerror="loadDefaultRoom(this)" src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>` +
+                //     `<span id='${user.joined_rooms[i]}_tip' class='tooltiptext'>${room.room_title}</span>` +
+                //     `</span>`;
             });
         }
     });
@@ -618,6 +671,11 @@ const uploadAvatar = () => {
     return false;
 };
 
+const uploadRoomIcon = () => {
+    //TODO Upload Room Icon
+
+};
+
 const validateFileSize = evt => {
     let elm = evt.target; //This should be the <input type="file"> element
     console.log(elm.files);
@@ -655,3 +713,20 @@ document
 document
     .getElementById("change_nickname_button")
     .addEventListener("click", updateNickname);
+
+document
+    .getElementById("submit_room_icon_button")
+    .addEventListener("click", uploadRoomIcon);
+
+//Copy to clipboard roomid
+document.getElementById("menu_copy").addEventListener("click", function(){
+    const temp = document.createElement('textarea');
+    temp.value = currentContextRoomId;
+    document.body.appendChild(temp);
+    temp.select();
+    document.execCommand('copy');
+    document.body.removeChild(temp);
+    menu.style.display = "none";
+});
+
+document.getElementById("menu_leave").addEventListener("click", leaveRoom);

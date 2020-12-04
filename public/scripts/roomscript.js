@@ -9,6 +9,7 @@ const nickname_modal = document.getElementById("nickname_modal");
 const avatar_modal = document.getElementById("avatar_modal");
 const file_modal = document.getElementById("file_modal");
 const view_image_modal = document.getElementById("view_image_modal");
+const room_icon_modal = document.getElementById("room_icon_modal");
 var background_activated = false;
 
 const toggleDarkMode = () => {
@@ -61,6 +62,12 @@ const displayFileModal = () => {
 const displayAvatarModal = () => {
     activateBackground()
     avatar_modal.style.display = "block";
+}
+
+const displayRoomIconModal = () => {
+    activateBackground();
+    room_icon_modal.style.display = "block";
+    menu.style.display = "none";
 }
 
 const displayNicknameModal = () => {
@@ -128,6 +135,8 @@ document.getElementById("create_room_option").addEventListener("click", displayC
 document.getElementById("join_room_option").addEventListener("click", displayJoinModal);
 document.getElementById("username_label").addEventListener("click", displayNicknameModal);
 document.getElementById("avatarImg").addEventListener("click", displayAvatarModal);
+
+document.getElementById("menu_icon").addEventListener("click", displayRoomIconModal);
 
 document.getElementById("my_file").onchange = function() {
     let file = this.files[0];

@@ -39,8 +39,7 @@ html
                 div(id="username_label")=username
                 div(id="logout") 
                     a(href="/logout") Log Out
-
-
+        
         div(id="modal_background") 
             div(id="room_modal" class="modal")
                 div(class="modal_content")
@@ -120,15 +119,33 @@ html
                     div(class="modal_body")
                         span(id="submit_file_button" class="button") Upload
                     div(class="modal_footer")
+            div(id="room_icon_modal" class="modal")
+                div(class="modal_content")
+                    div(class="modal_header")
+                        span(class="close") &times;
+                        h2 Change Room Icon
+                    div(class="modal_body")
+                        input(type="file")
+                        span(id="submit_room_icon_button" class="button") Change
             div(id="view_image_modal" class="modal")
                 div(id="special_modal_content")
+            
         div(id="drop_overlay")
             div Drop files to upload them
+
+        div(id="menu_background")
+            div(id="context_menu")
+                div(id="menu")
+                    span(class="menu_item" id="menu_icon") Change Room Icon
+                    span(class="menu_item" id="menu_copy") Copy Room Id
+                    span(class="menu_item" id="menu_leave") Leave Room
+
 
         audio(id="notif")
             source(src="/sounds/notif.ogg" type="audio/ogg")
             source(src="/sounds/notif.mp3" type="audio/mpeg")
             source(src="/sounds/notif.m4r" type="audio/aac")
+
         script(src="/scripts/roommanager.js")
         script(src="/scripts/roomscript.js")
         script(src="/scripts/dragdropuploader.js")
