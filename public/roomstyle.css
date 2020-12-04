@@ -80,6 +80,11 @@ body {
     width: 3em;
     margin: .75em;
     cursor: pointer;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .room:hover img,
