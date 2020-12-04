@@ -15,9 +15,7 @@ exports.createUser = (req, res) => {
   };
 
   db.createUser(user, (err, user) => buildCreationResponse(res, err, user));
-  roomdb.authorizeRoomAccess(user.username, "public", "", (err, authorities) =>
-    buildAuthResponse(res, err, authorities)
-  );
+  roomdb.authorizeRoomAccess(user.username, "public", "");
   res.redirect("/login");
 };
 
