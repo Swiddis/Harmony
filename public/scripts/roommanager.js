@@ -260,6 +260,7 @@ const createRoom = () => {
     const room = {
         room_id: room_id,
         room_title: room_title,
+        owner: username,
         password: password,
         roomAvatar: "./images/room.png",
     };

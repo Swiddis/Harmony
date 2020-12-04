@@ -22,6 +22,7 @@ exports.createRoom = (req, res) => {
     let room = {
         room_id: req.body.room_id,
         room_title: req.body.room_title,
+        owner: req.body.owner,
         password: req.body.password,
         nicknames: req.body.nicknames,
         roomAvatar: "./images/room.png",
@@ -51,6 +52,28 @@ exports.sendToRoom = (req, res) => {
         },
         (err, message) => buildResponse(res, err, message)
     );
+};
+
+/**
+ * Edit room endpoint to be used with the PATCH '/room'
+ */
+exports.editRoom = (req, res) => {
+    let user = req.body.user;
+    let room = req.body.room;
+
+    db.editRoom(
+        room,
+        user,
+        (err, room) => buildResponse(res, err, room)
+    );
+};
+
+exports.leaveRoom = (req, res) => {
+    let user = req.session.user;
+    let room = req.params.room_id;
+
+    db.leaveRoom(user, room, (err, obj) => buildResponse(res, err, obj));
+
 };
 
 exports.getMessages = (req, res) => {

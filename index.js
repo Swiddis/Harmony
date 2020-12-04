@@ -64,7 +64,9 @@ app.get("/room", checkAuth, render.rooms);
 app.get("/login", render.login);
 app.post("/login", urlencodedParser, render.checkAccess);
 
-app.post('/room', jsonParser, rooms.createRoom);
+app.post('/room', checkAuth, jsonParser, rooms.createRoom);
+app.patch('/room', checkAuth, jsonParser, rooms.editRoom);
+app.post('/leaveroom/:room_id', checkAuth, rooms.leaveRoom);
 app.get('/room/:room_id', rooms.getRoom);
 app.get('/messages/:room_id', rooms.getMessages); // Possibly add authentication here so no anons can get the message history.
 app.post('/room/:room_id', urlencodedParser, rooms.sendToRoom);

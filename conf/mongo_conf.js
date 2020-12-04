@@ -52,6 +52,7 @@ let roomSchema = mongoose.Schema({
     ],
     roomAvatar: String,
     members: Array,
+    owner: String,
     is_dm: Boolean
 });
 
