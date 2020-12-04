@@ -87,8 +87,8 @@ body {
     justify-content: center;
 }
 
-.room:hover img,
-.room:focus img{
+.room:hover,
+.room:focus {
     /* background-color:gray; */
     border-radius: 15px;
     transition: border-radius 0.2s;
