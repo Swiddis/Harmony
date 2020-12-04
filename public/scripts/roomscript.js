@@ -6,6 +6,7 @@ const room_modal = document.getElementById("room_modal")
 const create_modal = document.getElementById("create_room_modal");
 const join_modal = document.getElementById("join_room_modal");
 const nickname_modal = document.getElementById("nickname_modal");
+const password_modal = document.getElementById("password_modal");
 const avatar_modal = document.getElementById("avatar_modal");
 const file_modal = document.getElementById("file_modal");
 const view_image_modal = document.getElementById("view_image_modal");
@@ -75,6 +76,15 @@ const displayNicknameModal = () => {
     nickname_modal.style.display = "block";
 };
 
+const displayPasswordModal = () => {
+    activateBackground();
+    password_modal.style.display = "block";
+}
+
+const logOut = () => {
+    document.location.href = "/logout"
+}
+
 const displayModal = () => {
     activateBackground()
     room_modal.style.display = "block";
@@ -134,9 +144,10 @@ document.getElementById("new_room").addEventListener("click", displayModal);
 document.getElementById("create_room_option").addEventListener("click", displayCreateModal);
 document.getElementById("join_room_option").addEventListener("click", displayJoinModal);
 document.getElementById("username_label").addEventListener("click", displayNicknameModal);
+document.getElementById("changepass").addEventListener("click", displayPasswordModal);
 document.getElementById("avatarImg").addEventListener("click", displayAvatarModal);
-
 document.getElementById("menu_icon").addEventListener("click", displayRoomIconModal);
+document.getElementById("logout").addEventListener("click", logOut);
 
 document.getElementById("my_file").onchange = function() {
     let file = this.files[0];
