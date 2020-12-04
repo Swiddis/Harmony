@@ -18,6 +18,9 @@ let prev_sender = undefined;
 let prev_timestamp = -1000;
 const FIVE_MINS = 5 * 60 * 1000;
 
+const PLACEHOLDER = document.createElement("div");
+PLACEHOLDER.innerHTML = "<span class='message_box'><span class='message'>No messages yet...</span></span>";
+
 async function fetchUser(username) {
     let response = await fetch(`/user/${username}`);
     let data = await response.text();
@@ -284,7 +287,6 @@ const createRoom = () => {
         console.log(response.status);
         if (response.status === 201) {
             console.log("CREATED ROOM SUCCESSFULLy!");
-            //TODO Quick Fix so you don't have to manually join the room after making it
             document.getElementById("join_id").value = room_id;
             document.getElementById("join_password").value = password;
             joinRoom();
@@ -323,7 +325,9 @@ const loadDefault = img => {
     img.src = "/images/user_icon_blue.png";
 };
 const loadDefaultRoom = img => {
-
+    if (img.target)
+        img = img.target;
+    img.src = "/images/user_icon_green.png";
 };
 
 const formatImage = message => {
@@ -421,6 +425,9 @@ const formatRoomMessagePartial = (message, isFile, timestamp) => {
 };
 
 const renderGroupedMessages = msg => {
+    if (messages_container.innerHTML == PLACEHOLDER.innerHTML)
+        messages_container.innerHTML = "";
+
     if (!msg.sender && msg.username)
         msg.sender = msg.username;
     if (!messages_container.lastChild || msg.sender != prev_sender || Math.abs(new Date(msg.timestamp) - prev_timestamp) > FIVE_MINS) {
@@ -470,6 +477,10 @@ const renderRoomContent = (roomid, forceRender = false) => {
         fetchRoomMessages(roomid).then(function (messages) {
             currentRoomId = roomid;
             //Currently the messages array is backwards so will do it this way
+            if (!messages || messages.length == 0) {
+                //Placeholder.
+                messages_container.innerHTML = PLACEHOLDER.innerHTML;
+            }
             for (let i = messages.length - 1; i >= 0; i--) {
                 let msg = messages[i];
                 renderGroupedMessages(msg);
@@ -498,8 +509,9 @@ const renderRoomList = () => {
     fetchUser(username).then(function (user) {
         console.log(user);
         joined_rooms = user.joined_rooms;
+        joined_rooms.sort();
         room_titles = {};
-        for (let i = 0; i < user.joined_rooms.length; i++) {
+        for (let i = 0; i < joined_rooms.length; i++) {
             let rm = user.joined_rooms[i];
 
             fetchRoomData(rm).then(function (room) {
@@ -523,13 +535,12 @@ const renderRoomList = () => {
                 });
 
                 let img = document.createElement("img");
-                img.onerror = loadDefaultRoom(this);
-                if(room.roomAvatar){
+                img.onerror = () => loadDefaultRoom({target: img});
+                if (room.roomAvatar) {
                     img.src = room.roomAvatar;
-                }
-                else
+                } else
                     img.src = "./images/room.png";
-                img.style = "margin: 0 1px; width: 50px; height: 50px; border-radius: 50%; background-color: white;";
+                img.style = "margin: 0 1px; width: 50px; height: 50px; background-color: var(--modal-color);";
 
 
                 let tip = document.createElement("span");
@@ -736,7 +747,8 @@ const uploadRoomIcon = () => {
                 closeModals();
                 renderRoomList();
             })
-        };
+        }
+        ;
     };
     request.send(formData);
     return false;

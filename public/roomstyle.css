@@ -73,7 +73,12 @@ body {
     width: 3em;
     margin: .75em;
     cursor: pointer;
+    border-radius: 50%;
     transition: border-radius 0.2s;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .room:hover {
