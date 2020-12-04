@@ -75,6 +75,8 @@ const displayRoomIconModal = () => {
 const displayLeaveRoomModal = () => {
     activateBackground();
     room_leave_modal.style.display = "block";
+    //Just id for now
+    document.getElementById("leave_header").innerText = `Leave '${currentContextRoomId}'`;
     menu.style.display = "none";
 };
 
@@ -156,6 +158,7 @@ document.getElementById("changepass").addEventListener("click", displayPasswordM
 document.getElementById("avatarImg").addEventListener("click", displayAvatarModal);
 document.getElementById("menu_icon").addEventListener("click", displayRoomIconModal);
 document.getElementById("menu_leave").addEventListener("click", displayLeaveRoomModal);
+document.getElementById("cancel_leave").addEventListener("click", closeModals);
 document.getElementById("logout").addEventListener("click", logOut);
 
 document.getElementById("my_file").onchange = function() {

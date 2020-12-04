@@ -545,3 +545,10 @@ input:checked + .slider:before {
     color: var(--bg-color);
     border-radius: 2px;
 }
+
+#leave_room_button:hover,
+#leave_room_button:focus,
+#cancel_leave:hover,
+#cancel_leave:focus{
+    cursor: pointer;
+}

@@ -314,9 +314,30 @@ const joinRoom = () => {
 };
 
 const leaveRoom = () => {
-    //TODO
-    //currentContextRoomId;
-    //Allow leaving rooms
+    let body = {
+        user: {
+            username: username
+        },
+        room: {
+            room_id: currentContextRoomId
+        }
+    };
+
+    fetch(`/leaveroom/${currentContextRoomId}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    }).then((response) => {
+        if (response.status === 200) {
+            closeModals();
+            renderRoomList();
+            if (currentRoomId == currentContextRoomId) {
+                renderRoomContent(joined_rooms[0]);
+            }
+        }
+    });
 };
 
 const loadDefault = img => {
@@ -504,15 +525,26 @@ const hideRoomTip = (id) => {
 };
 
 const renderRoomList = () => {
-    rooms_container.innerHTML = "";
-
     fetchUser(username).then(function (user) {
         console.log(user);
         joined_rooms = user.joined_rooms;
-        joined_rooms.sort();
         room_titles = {};
+        let elements = [];
+
+        let buildMenu = elements => {
+            elements.sort((a, b) => {
+                let one = room_titles[a.id];
+                let two = room_titles[b.id];
+                if (one < two) return -1;
+                else if (two < one) return 1;
+                else return 0;
+            });
+            rooms_container.innerHTML = "";
+            elements.forEach(roomElm => rooms_container.appendChild(roomElm));
+        }
+
         for (let i = 0; i < joined_rooms.length; i++) {
-            let rm = user.joined_rooms[i];
+            let rm = joined_rooms[i];
 
             fetchRoomData(rm).then(function (room) {
                 if (!room) return;
@@ -538,8 +570,7 @@ const renderRoomList = () => {
                 img.onerror = () => loadDefaultRoom({target: img});
                 if (room.roomAvatar) {
                     img.src = room.roomAvatar;
-                }
-                else {
+                } else {
                     img.src = "./images/room.png";
                 }
                 img.style = "margin: 0 1px; width: 50px; height: 50px; object-fit: cover; background-color: var(--modal-color);";
@@ -550,9 +581,11 @@ const renderRoomList = () => {
                 tip.className = "tooltiptext";
                 tip.innerText = room.room_title;
 
-                rooms_container.appendChild(roomElm);
                 roomElm.appendChild(img);
                 roomElm.appendChild(tip);
+                elements.push(roomElm);
+                if (elements.length == joined_rooms.length)
+                    buildMenu(elements);
 
                 // rooms_container.innerHTML +=
                 //     `<span class='room' style='text-align:center' id='${user.joined_rooms[i]}' onclick='renderRoomContent("${user.joined_rooms[i]}");' onmouseover='showRoomTip("${user.joined_rooms[i]}");' onmouseout='hideRoomTip("${user.joined_rooms[i]}");'>` +
@@ -828,4 +861,4 @@ document.getElementById("menu_copy").addEventListener("click", function () {
     menu.style.display = "none";
 });
 
-document.getElementById("menu_leave").addEventListener("click", leaveRoom);
+document.getElementById("leave_room_button").addEventListener("click", leaveRoom);
