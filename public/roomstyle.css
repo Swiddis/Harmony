@@ -69,8 +69,6 @@ body {
 
 /*Room (Icon) Styles*/
 .room, #new_room {
-    background-color: white;
-    border-radius: 50%;
     height: 3em;
     width: 3em;
     margin: .75em;
@@ -508,8 +506,6 @@ input:checked + .slider:before {
 #menu{
     display:flex;
     flex-direction: column;
-    text-align: center;
-    vertical-align: center;
     justify-content: center;
     align-items: space-evenly;
     padding: 0.5em;
@@ -518,6 +514,7 @@ input:checked + .slider:before {
 .menu_item{
     height: 3em;
     width: 10em;
+    text-align: center;
     border-bottom: 2px solid var(--therd-bgColor);
     padding-top: 1em;
 }
@@ -529,4 +526,7 @@ input:checked + .slider:before {
 .menu_item:hover,
 .menu_item:focus{
     cursor: pointer;
+    background-color: var(--name-hover);
+    color: var(--bg-color);
+    border-radius: 2px;
 }

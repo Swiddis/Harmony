@@ -135,8 +135,17 @@ html
                         span(class="close") &times;
                         h2 Change Room Icon
                     div(class="modal_body")
-                        input(type="file")
+                        form(id="choose_room_icon" enctype="multipart/form-data")
+                            input(type="file" id="room_icon_upload" name="media")
                         span(id="submit_room_icon_button" class="button") Change
+            div(id="leave_room_modal" class="modal")
+                dv(class="modal_content")
+                    div(class="modal_header")
+                        span(class="close") &times;
+                        h2 Leave 'Blank_Room'
+                    div(class="modal_body")
+                        span(id="leave_room_button" class="button" style="background-color:red;") Leave
+                        span(id="cancel_leave") Cancel
             div(id="view_image_modal" class="modal")
                 div(id="special_modal_content")
             

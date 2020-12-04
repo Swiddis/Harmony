@@ -524,8 +524,13 @@ const renderRoomList = () => {
 
                 let img = document.createElement("img");
                 img.onerror = loadDefaultRoom(this);
-                img.src = "./images/room.png";
-                img.style = "margin: 0 1px; width: 50px; height: 50px;";
+                if(room.roomAvatar){
+                    img.src = room.roomAvatar;
+                }
+                else
+                    img.src = "./images/room.png";
+                img.style = "margin: 0 1px; width: 50px; height: 50px; border-radius: 50%; background-color: white;";
+
 
                 let tip = document.createElement("span");
                 tip.id = user.joined_rooms[i] + "_tip";
@@ -682,7 +687,59 @@ const uploadAvatar = () => {
 };
 
 const uploadRoomIcon = () => {
-    //TODO Upload Room Icon
+    // let form = document.forms.namedItem("choose_room_icon");
+    // let formData = new FormData(form);
+
+    // formData.append("user", username);
+    let icon = (document.getElementById("room_icon_upload")).files[0];
+
+    // let body = {
+    //     user: {
+    //         username: username
+    //     },
+    //     room: {
+    //         room_id: currentContextRoomId,
+    //         roomAvatar: icon
+    //     }
+    // };
+
+    //I need to send media -> save it then use thing to set room
+
+    let form = document.forms.namedItem("choose_room_icon");
+    let formData = new FormData(form);
+    formData.append("sender", username);
+
+    let request = new XMLHttpRequest();
+    request.open('POST', "/media");
+    request.onload = function () {
+        console.log(request.status);
+        if (request.status === 200) {
+            console.log(request.response);
+            let data = JSON.parse(request.response);
+            let url = data.path.split("::")[0];
+
+            fetch(`/room`, {
+                method: "PATCH",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user: {
+                        username: username
+                    },
+                    room: {
+                        room_id: currentContextRoomId,
+                        roomAvatar: url
+                    }
+                })
+            }).then(response => {
+                closeModals();
+                renderRoomList();
+            })
+        };
+    };
+    request.send(formData);
+    return false;
 
 };
 

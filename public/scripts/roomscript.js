@@ -11,6 +11,7 @@ const avatar_modal = document.getElementById("avatar_modal");
 const file_modal = document.getElementById("file_modal");
 const view_image_modal = document.getElementById("view_image_modal");
 const room_icon_modal = document.getElementById("room_icon_modal");
+const room_leave_modal = document.getElementById("leave_room_modal");
 var background_activated = false;
 
 const toggleDarkMode = () => {
@@ -71,6 +72,12 @@ const displayRoomIconModal = () => {
     menu.style.display = "none";
 }
 
+const displayLeaveRoomModal = () => {
+    activateBackground();
+    room_leave_modal.style.display = "block";
+    menu.style.display = "none";
+};
+
 const displayNicknameModal = () => {
     activateBackground()
     nickname_modal.style.display = "block";
@@ -118,6 +125,7 @@ const closeModals = () => {
     }
 
     document.getElementById("my_file").value = "";
+    document.getElementById("room_icon_upload").value = "";
 };
 
 const goBackModal = () => {
@@ -147,6 +155,7 @@ document.getElementById("username_label").addEventListener("click", displayNickn
 document.getElementById("changepass").addEventListener("click", displayPasswordModal);
 document.getElementById("avatarImg").addEventListener("click", displayAvatarModal);
 document.getElementById("menu_icon").addEventListener("click", displayRoomIconModal);
+document.getElementById("menu_leave").addEventListener("click", displayLeaveRoomModal);
 document.getElementById("logout").addEventListener("click", logOut);
 
 document.getElementById("my_file").onchange = function() {
@@ -166,8 +175,16 @@ for(var i = 0; i < backButtons.length; i++){
     backButtons[i].addEventListener("click", goBackModal, false);
 }
 
+//If you click out of modal(when popped up) make it gone
 modal_background.onclick = evt => {
     if(evt.target == modal_background) {
         closeModals();
+    }
+}
+
+//If you click out of context-menu make it gone
+document.onclick = evt => {
+    if(evt.target != menu){
+        menu.style.display = "none";
     }
 }
