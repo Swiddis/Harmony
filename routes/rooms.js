@@ -104,6 +104,7 @@ exports.establishUserDMs = (req, res) => {
         room_id: crypto.randomBytes(20).toString("hex"),
         room_title: `Direct ${user1}-${user2}`,
         password,
+        owner: user1,
         is_dm: true
     };
 
