@@ -314,9 +314,27 @@ const joinRoom = () => {
 };
 
 const leaveRoom = () => {
-    //TODO
-    //currentContextRoomId;
-    //Allow leaving rooms
+    let body = {
+        user: {
+            username: username
+        },
+        room : {
+            room_id: currentContextRoomId
+        }
+    };
+
+    fetch(`/leaveroom/${currentContextRoomId}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    }).then((response) => {
+        if (response.status === 200) {
+            closeModals();
+            renderRoomList();
+        }
+    });
 };
 
 const loadDefault = img => {
@@ -828,4 +846,4 @@ document.getElementById("menu_copy").addEventListener("click", function () {
     menu.style.display = "none";
 });
 
-document.getElementById("menu_leave").addEventListener("click", leaveRoom);
+document.getElementById("leave_room_button").addEventListener("click", leaveRoom);
