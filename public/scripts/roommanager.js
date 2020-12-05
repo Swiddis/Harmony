@@ -64,13 +64,12 @@ const sendNotification = (data) => {
             renderRoomContent(data.room_id);
         };
 
-        setTimeout(notification.close.bind(notification), 10000);
+        setTimeout(notification.close.bind(notification), 6000);
 
     };
 
     if (!("Notification" in window)) { //Browser supports notifications
     } else {
-        console.log("Notif: " + Notification.permission);
         if (Notification.permission === "granted") { //Notifications allowed
             //Build notification
             notify();
