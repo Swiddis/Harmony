@@ -9,6 +9,7 @@ const bodyParser = require('body-parser');
 const expressSession = require("express-session");
 const multer = require('multer');
 const ioManager = require("./io-manager");
+const fs = require('fs');
 /*
 We can interface with the ioManager like this
 
@@ -20,9 +21,16 @@ We can interface with the ioManager like this
     }
  */
 
+const ssl = {
+    key: fs.readFileSync('/etc/letsencrypt/live/harmonyclient.xyz/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/harmonyclient.xyz/cert.pem')
+}
+
 const app = express();
 
-const server = require('http').createServer(app);
+const http = express();
+const https = require('https');
+const server = https.createServer(app);
 const io = require('socket.io')(server);
 ioManager.init(io);
 
@@ -93,7 +101,11 @@ app.get('/media/:file_name', media.getMedia);
 
 app.get("/logout", render.logout);
 
-const port = 80
-server.listen(port, () => {
-    console.log("Listening on port " + 80);
+http.all('*', (req, res) => res.redirect(308, 'https://' + req.headers.host + req.originalUrl));
+http.listen(80);
+
+const port = 443;
+https.createServer(ssl, app).listen(port, () => {
+    console.log("Listening on port " + port);
 });
+
