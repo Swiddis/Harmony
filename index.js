@@ -30,7 +30,7 @@ const app = express();
 
 const http = express();
 const https = require('https');
-const server = https.createServer(app);
+const server = https.createServer(ssl, app);
 const io = require('socket.io')(server);
 ioManager.init(io);
 
@@ -105,7 +105,7 @@ http.all('*', (req, res) => res.redirect(308, 'https://' + req.headers.host + re
 http.listen(80);
 
 const port = 443;
-https.createServer(ssl, app).listen(port, () => {
+server.listen(port, () => {
     console.log("Listening on port " + port);
 });
 
