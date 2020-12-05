@@ -64,7 +64,7 @@ const sendNotification = (data) => {
             renderRoomContent(data.room_id);
         };
 
-        setTimeout(notification.close.bind(notification), 10000);
+        setTimeout(notification.close.bind(notification), 6000);
 
     };
 
