@@ -104,6 +104,7 @@ window.onload = function () {
 };
 
 const socket = io.connect(document.location.host, {
+    secure: true,
     query: `username=${username}`,
 });
 
