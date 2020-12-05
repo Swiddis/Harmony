@@ -29,28 +29,28 @@ document.getElementById("dark_toggle").onclick = toggleDarkMode;
 
 //For Modal Displays (Popup Windows)
 const displayViewImageModal = (imgUrl, imgName) => {
-    if(!background_activated){
+    if (!background_activated) {
         modal_background.style.display = "flex";
         background_activated = true;
     }
-    
+
     view_image_modal.innerHTML = "";
-    let img = document.createElement('img'); 
-    img.src =  imgUrl; 
+    let img = document.createElement('img');
+    img.src = imgUrl;
     img.setAttribute("class", "view_image");
-    view_image_modal.appendChild(img); 
+    view_image_modal.appendChild(img);
     let download = document.createElement('a');
     //<a href='${fileStr[0]}' download='${fileStr[1]}'>
     download.setAttribute("class", "image_link");
     download.setAttribute("href", imgUrl);
     download.setAttribute("download", imgName);
-    download.innerText="Download";
+    download.innerText = "Download";
     view_image_modal.appendChild(download);
     view_image_modal.style.display = "block";
 }
 
 const activateBackground = () => {
-    if(!background_activated){
+    if (!background_activated) {
         modal_background.style.display = "flex";
         background_activated = true;
     }
@@ -122,7 +122,7 @@ const closeModals = () => {
         elements[i].value = "";
     }
     elements = nickname_modal.getElementsByTagName("input");
-    for(let i = 0; i < elements.length; i++){
+    for (let i = 0; i < elements.length; i++) {
         elements[i].value = "";
     }
 
@@ -132,14 +132,14 @@ const closeModals = () => {
 
 const goBackModal = () => {
     create_modal.style.display = "none";
-    join_modal.style.display="none";
+    join_modal.style.display = "none";
 }
 //When user clicks out of modal close it
-window.onclick = function(event) {
+window.onclick = function (event) {
     if (event.target == modal_background) {
-      closeModals();
+        closeModals();
     }
-  }
+}
 
 //On Enter Submit Message
 function submitOnEnter(evt) {
@@ -161,9 +161,10 @@ document.getElementById("menu_leave").addEventListener("click", displayLeaveRoom
 document.getElementById("cancel_leave").addEventListener("click", closeModals);
 document.getElementById("logout").addEventListener("click", logOut);
 
-document.getElementById("my_file").onchange = function() {
+document.getElementById("my_file").onchange = evt => {
+    validateFileSize(evt);
     let file = this.files[0];
-    if(file){
+    if (file) {
         displayFileModal();
         document.getElementById("upload_name").innerHTML = file.name;
     }
@@ -174,20 +175,20 @@ for (var i = 0; i < closeButtons.length; i++) {
     closeButtons[i].addEventListener("click", closeModals, false);
 }
 var backButtons = document.getElementsByClassName("back_modal");
-for(var i = 0; i < backButtons.length; i++){
+for (var i = 0; i < backButtons.length; i++) {
     backButtons[i].addEventListener("click", goBackModal, false);
 }
 
 //If you click out of modal(when popped up) make it gone
 modal_background.onclick = evt => {
-    if(evt.target == modal_background) {
+    if (evt.target == modal_background) {
         closeModals();
     }
 }
 
 //If you click out of context-menu make it gone
 document.onclick = evt => {
-    if(evt.target != menu){
+    if (evt.target != menu) {
         menu.style.display = "none";
     }
 }
