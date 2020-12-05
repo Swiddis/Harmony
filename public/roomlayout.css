@@ -14,7 +14,7 @@ body {
 /* Left (Room Icon) Container*/
 #left_content, #rooms_container {
     width: 6em;
-    height: 100%;
+    flex-grow: 1;
     background-color: var(--secondary-bgColor);
     transition: background-color 0.5s;
     display: flex;

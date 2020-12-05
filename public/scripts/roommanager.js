@@ -535,10 +535,12 @@ const renderRoomContent = (roomid, forceRender = false) => {
 const showRoomTip = (id) => {
     tipId = id + "_tip";
     let tip = document.getElementById(tipId);
-    tip.style.top = tip.parentElement.getBoundingClientRect().y + 6 + "px";
-    tip.style.left = tip.parentElement.getBoundingClientRect().left + 72 + "px";
-    tip.style.pointerEvents = "none";
     tip.style.display = "block";
+    let tipRect = tip.getBoundingClientRect();
+    let rect = tip.parentElement.getBoundingClientRect()
+    tip.style.top = (rect.y + (rect.height / 2) - (tipRect.height / 2)) + "px";
+    tip.style.left = rect.left + rect.width + 10 + "px";
+    tip.style.pointerEvents = "none";
 };
 const hideRoomTip = (id) => {
     tipId = id + "_tip";
