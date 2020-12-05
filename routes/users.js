@@ -7,7 +7,6 @@ const io = require("../io-manager");
 
 // Post to /user, accepts input in JSON format
 exports.createUser = (req, res) => {
-    console.log(req.body);
     let user = {
         username: req.body.username,
         password: req.body.password,

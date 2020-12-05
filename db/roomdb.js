@@ -9,8 +9,12 @@ exports.getCachedRoom = (room_id) => {
             return room;
     }
 
-    reutrn;
+    return;
 };
+
+exports.exists = room => {
+    return this.getCachedRoom(room);
+}
 
 /**
  * The room should be passed in as a JSON object.
@@ -282,7 +286,7 @@ exports.authorizeRoomAccess = (username, room_id, password, callback, save = tru
                     user.joined_rooms.push(room.room_id);
                 if (save)
                     room.save();
-                new User(user).save();
+                user.save();
                 if (callback) callback(undefined, ["USER", "ADMIN"]);
             } else {
                 //Not authenticated.
