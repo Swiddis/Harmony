@@ -33,7 +33,7 @@ body {
 
 #display_messages_container {
     min-width: 400px;
-    flex-grow: 30;
+    flex-basis: 100%;
     display: flex;
     flex-direction: column;
     overflow: auto;
@@ -44,13 +44,11 @@ body {
     box-shadow: 5px 0px 10px var(--bg-color);
     transition: background-color 0.5s, box-shadow 0.5s;
     z-index: 1;
-    flex-grow: 1;
     padding: 5px 1em;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     max-height: 40vh;
-    min-height: 4em;
 }
 
 /* Right (Currently just Username and Logout) Container*/
