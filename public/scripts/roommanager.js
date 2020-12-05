@@ -70,7 +70,6 @@ const sendNotification = (data) => {
 
     if (!("Notification" in window)) { //Browser supports notifications
     } else {
-        console.log("Notif: " + Notification.permission);
         if (Notification.permission === "granted") { //Notifications allowed
             //Build notification
             notify();
