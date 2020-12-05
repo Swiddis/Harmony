@@ -16,13 +16,14 @@ var background_activated = false;
 
 const toggleDarkMode = () => {
     let theme = document.body.getAttribute("data-theme");
-    console.log(theme);
     if (theme == "dark") {
         //Set the theme to light
         document.body.setAttribute("data-theme", "light");
+        sendToggle(username, "light");
     } else {
         //Set the theme to dark
         document.body.setAttribute("data-theme", "dark");
+        sendToggle(username, "dark");
     }
 };
 document.getElementById("dark_toggle").onclick = toggleDarkMode;
