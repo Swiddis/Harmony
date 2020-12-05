@@ -48,6 +48,47 @@ async function fetchRoomMessages(roomid) {
     return JSON.parse(data).data;
 }
 
+let activeNotif;
+const sendNotification = (data) => {
+    let notify = () => {
+
+        let notification = new Notification(data.title, {
+            icon: data.icon,
+            body: data.body,
+            silent: true
+        });
+        activeNotif = notification;
+
+        notification.onclick = () => {
+            window.focus();
+            renderRoomContent(data.room_id);
+        };
+
+        setTimeout(notification.close.bind(notification), 10000);
+
+    };
+
+    if ("Notification" in window) { //Browser supports notifications
+        if (Notification.permission === "granted") { //Notifications allowed
+            //Build notification
+            notify();
+        } else if (Notification.permission !== "denied") { //Not denied, but not granted yet.
+            Notification.requestPermission().then(result => {
+                notify();
+            });
+        }
+    }
+
+    //Regardless, we'll play sound here.
+    let audio = document.getElementById("notif");
+    audio.volume = 0.5;
+    audio.play();
+};
+document.onvisibilitychange = evt => {
+    if (activeNotif)
+        activeNotif.close();
+};
+
 window.onload = function () {
     fetchUser(username).then(function (user) {
         console.log(user);
@@ -258,14 +299,19 @@ socket.on("message", (msg) => {
         //     msg.timestamp
         // );
         renderGroupedMessages(msg);
-
-        if (msg.username != username) {
-            let notif = document.getElementById("notif");
-            notif.volume = 0.5;
-            notif.play();
-        }
         //TODO make scroll to bottom every message only when already scrolled down
         messages_container.scrollTop = messages_container.scrollHeight;
+    }
+
+    if (msg.room_id && joined_rooms.includes(msg.room_id)) {
+        if (msg.username != username) {
+            sendNotification({
+                title: msg.username + " - " + room_titles[msg.room_id],
+                icon: msg.avatar,
+                body: msg.message,
+                room_id: msg.room_id
+            });
+        }
     }
 });
 
@@ -527,6 +573,7 @@ const renderRoomContent = (roomid, forceRender = false) => {
                 let msg = messages[i];
                 renderGroupedMessages(msg);
             }
+            setTimeout(() => messages_container.lastChild.scrollIntoView({behavior: "smooth"}), 500);
             hideLoad();
         });
     });
