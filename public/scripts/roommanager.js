@@ -21,6 +21,14 @@ const FIVE_MINS = 5 * 60 * 1000;
 const PLACEHOLDER = document.createElement("div");
 PLACEHOLDER.innerHTML = "<span class='message_box'><span class='message'>No messages yet...</span></span>";
 
+const load = document.getElementById("load-container");
+const displayLoad = () => {
+    load.style.display = "flex";
+}
+const hideLoad = () => {
+    load.style.display = "none";
+}
+
 async function fetchUser(username) {
     let response = await fetch(`/user/${username}`);
     let data = await response.text();
@@ -99,6 +107,7 @@ const sendFile = (callback) => {
     formData.append("sender", username);
     formData.append("room_id", currentRoomId);
 
+    displayLoad();
     var request = new XMLHttpRequest();
     request.open("POST", "/media");
     request.onload = function () {
@@ -115,6 +124,7 @@ const sendFile = (callback) => {
             document.getElementById("img_preview").innerHTML = "";
             document.getElementById("my_file").value = "";
             closeModals();
+            hideLoad();
             if (callback)
                 callback();
         }
@@ -126,6 +136,7 @@ const openUserInfo = user => {
     closeModals();
     console.log("Opening user info for " + user);
 
+    displayLoad();
     fetch(`/user/${user}`)
         .then(response => response.json())
         .then(data => {
@@ -169,6 +180,7 @@ const openUserInfo = user => {
                 dmButton.innerText = "Start DM";
                 content.append(dmButton);
                 dmButton.onclick = evt => {
+                    displayLoad();
                     fetch(`/dm/${username}/${user}`,
                         {
                             method: "POST"
@@ -180,6 +192,7 @@ const openUserInfo = user => {
                             closeModals();
                             renderRoomList();
                             renderRoomContent(data.data.room_id);
+                            hideLoad();
                         });
                 };
             }
@@ -216,6 +229,7 @@ const openUserInfo = user => {
             document.getElementById("modal_background").style.display = "flex";
             modal.style.display = "block";
             document.getElementById("modal_background").append(modal);
+            hideLoad();
         });
 };
 
@@ -277,6 +291,7 @@ const createRoom = () => {
         roomAvatar: "./images/room.png",
     };
 
+    displayLoad();
     fetch("/room", {
         method: "POST",
         headers: {
@@ -292,6 +307,7 @@ const createRoom = () => {
             joinRoom();
             closeModals();
         }
+        hideLoad();
     });
 };
 
@@ -299,6 +315,7 @@ const joinRoom = () => {
     const room_id = document.getElementById("join_id").value;
     const password = document.getElementById("join_password").value;
 
+    displayLoad();
     fetch(`/room/authorize/${room_id}`, {
         headers: new Headers({
             Authorization: "Basic " + btoa(username + ":" + password),
@@ -310,6 +327,7 @@ const joinRoom = () => {
             renderRoomContent(room_id);
             closeModals();
         }
+        hideLoad();
     });
 };
 
@@ -323,6 +341,7 @@ const leaveRoom = () => {
         }
     };
 
+    displayLoad();
     fetch(`/leaveroom/${currentContextRoomId}`, {
         method: "POST",
         headers: {
@@ -337,6 +356,7 @@ const leaveRoom = () => {
                 renderRoomContent(joined_rooms[0]);
             }
         }
+        hideLoad();
     });
 };
 
@@ -479,6 +499,7 @@ const renderRoomContent = (roomid, forceRender = false) => {
         return;
     }
 
+    displayLoad();
     console.log("RENDERING ROOM: " + roomid);
     messages_container.innerHTML = "";
 
@@ -506,6 +527,7 @@ const renderRoomContent = (roomid, forceRender = false) => {
                 let msg = messages[i];
                 renderGroupedMessages(msg);
             }
+            hideLoad();
         });
     });
 };
@@ -525,6 +547,7 @@ const hideRoomTip = (id) => {
 };
 
 const renderRoomList = () => {
+    displayLoad();
     fetchUser(username).then(function (user) {
         console.log(user);
         joined_rooms = user.joined_rooms;
@@ -541,6 +564,7 @@ const renderRoomList = () => {
             });
             rooms_container.innerHTML = "";
             elements.forEach(roomElm => rooms_container.appendChild(roomElm));
+            hideLoad();
         }
 
         let iterated = 0;
@@ -702,6 +726,7 @@ const uploadAvatar = () => {
 
     formData.append("sender", username);
 
+    displayLoad();
     let request = new XMLHttpRequest();
     request.open('POST', "/media");
     request.onload = function () {
@@ -727,6 +752,7 @@ const uploadAvatar = () => {
                 })
             }).then(response => {
                 closeModals();
+                hideLoad();
             })
         }
     }
@@ -757,6 +783,7 @@ const uploadRoomIcon = () => {
     let formData = new FormData(form);
     formData.append("sender", username);
 
+    displayLoad();
     let request = new XMLHttpRequest();
     request.open('POST', "/media");
     request.onload = function () {
@@ -783,6 +810,7 @@ const uploadRoomIcon = () => {
             }).then(response => {
                 closeModals();
                 renderRoomList();
+                hideLoad();
             })
         }
         ;
@@ -795,6 +823,7 @@ const uploadRoomIcon = () => {
 const changePassword = () => {
     let newPassword = document.getElementById("change_new_password").value;
 
+    displayLoad();
     fetch(`/user/${username}`, {
         method: 'PATCH',
         headers: {
@@ -805,6 +834,7 @@ const changePassword = () => {
         })
     }).then(response => {
         closeModals();
+        hideLoad();
     });
 }
 
@@ -828,6 +858,7 @@ const sendToggle = (username, theme) => {
 
 document.getElementById("useAvatar").onclick = uploadAvatar;
 document.getElementById("avatar_upload").onchange = validateFileSize;
+document.getElementById("room_icon_upload").onchange = validateFileSize;
 
 document.getElementById("change_password_button").onclick = changePassword;
 
