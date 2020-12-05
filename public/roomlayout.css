@@ -50,6 +50,7 @@ body {
     flex-direction: column;
     align-items: flex-start;
     max-height: 40vh;
+    min-height: 4em;
 }
 
 /* Right (Currently just Username and Logout) Container*/
