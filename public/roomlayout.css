@@ -14,7 +14,7 @@ body {
 /* Left (Room Icon) Container*/
 #left_content, #rooms_container {
     width: 6em;
-    height: 100%;
+    flex-grow: 1;
     background-color: var(--secondary-bgColor);
     transition: background-color 0.5s;
     display: flex;
@@ -41,7 +41,9 @@ body {
 
 #input_message_container {
     background-color: var(--bg-color);
-    transition: background-color 0.5s;
+    box-shadow: 5px 0px 10px var(--bg-color);
+    transition: background-color 0.5s, box-shadow 0.5s;
+    z-index: 1;
     flex-grow: 1;
     padding: 1em;
     display: flex;
@@ -53,6 +55,7 @@ body {
 /* Right (Currently just Username and Logout) Container*/
 #right_content {
     width: 15em;
+    z-index: 2;
     min-width: 165px;
     height: 100%;
     background-color: var(--secondary-bgColor);
@@ -185,6 +188,7 @@ body {
     font-size: 1.5em;
     top: 0;
     left: 0;
+    z-index: 50;
     width: 100%;
     height: 100%;
 }
@@ -215,12 +219,16 @@ body {
     margin: 5px 40px;
     position: relative;
     display: inline-block;
-    max-height: 230px;
+    max-height: 20vh;
+}
+
+#img_preview:empty {
+    margin: 0;
 }
 
 #img_preview img {
     display: inline-block;
-    max-height: 200px;
+    max-height: 19vh;
 }
 
 .modal_footer {

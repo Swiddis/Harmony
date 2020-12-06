@@ -23,6 +23,7 @@ document.getElementById("my_message").onpaste = evt => {
 };
 
 renderFile = evt => {
+    validateFileSize(evt);
     console.log(evt.target.files[0]);
     if (evt.target.files[0]) {
         var reader = new FileReader();

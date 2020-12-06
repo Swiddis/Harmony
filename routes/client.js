@@ -26,6 +26,8 @@ function Client(io, socket) {
     }
     io.emit("message", {
       username: socket.username,
+      avatar: socket.avatar,
+      timestamp: new Date(),
       message: "disconnected.",
     });
   };
@@ -39,12 +41,12 @@ function Client(io, socket) {
   } else {
     socket.username = socket.handshake.query.username;
   }
-  //We probably don't need to send this message every time the page is refreshed.
-  // Just need it when they first join a room.
+  //TODO Probably do away with this and just display online users on the right side of the screen
   let connect = () => {
     io.emit("message", {
       username: socket.username,
       avatar: socket.avatar,
+      timestamp: new Date(),
       message: "connected!",
     });
     console.log(socket.username + " connected.");

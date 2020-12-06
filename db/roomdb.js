@@ -3,6 +3,15 @@ const {User, Room, Message} = require("../conf/mongo_conf");
 const userdb = require("./userdb");
 let room_cache = [];
 
+exports.getCachedRoom = (room_id) => {
+    for (let room of room_cache) {
+        if (room.room_id == room_id)
+            return room;
+    }
+
+    reutrn;
+};
+
 /**
  * The room should be passed in as a JSON object.
  * {
@@ -244,7 +253,7 @@ exports.authorizeRoomAccess = (username, room_id, password, callback, save = tru
        */
     userdb.getUser(username, (err, user) => {
         if (err) {
-            callback(err, []);
+            if (callback) callback(err, []);
             return;
         }
 
@@ -256,12 +265,12 @@ exports.authorizeRoomAccess = (username, room_id, password, callback, save = tru
 
         this.getRoom(room_id, (err, room) => {
             if (err) {
-                callback(err, []);
+                if (callback) callback(err, []);
                 return;
             }
 
             if (!room) {
-                callback(new Error("Room not found"), []);
+                if (callback) callback(new Error("Room not found"), []);
                 return;
             }
 
@@ -271,13 +280,13 @@ exports.authorizeRoomAccess = (username, room_id, password, callback, save = tru
                     room.members.push(user.username);
                 if (!user.joined_rooms.includes(room.room_id))
                     user.joined_rooms.push(room.room_id);
-                callback(undefined, ["USER", "ADMIN"]);
                 if (save)
                     room.save();
                 new User(user).save();
+                if (callback) callback(undefined, ["USER", "ADMIN"]);
             } else {
                 //Not authenticated.
-                callback(new Error("Invalid credentials"), []);
+                if (callback) callback(new Error("Invalid credentials"), []);
             }
         });
     });
@@ -365,9 +374,7 @@ exports.findDM = (user1, user2, callback) => {
 
 exports.editRoom = (room, owner, callback) => {
 
-    Room.findOne({
-            room_id: room.room_id
-        },
+    this.getRoom(room.room_id,
         (err, rm) => {
             if (err) {
                 console.error("Could not fetch room!")
@@ -383,7 +390,7 @@ exports.editRoom = (room, owner, callback) => {
                 return;
             }
 
-            if(room.owner && room.owner != user) {
+            if (room.owner && room.owner != user) {
                 callback(new Error("Not owner"));
                 return;
             }
@@ -397,7 +404,7 @@ exports.editRoom = (room, owner, callback) => {
                 let hash = bcrypt.hashSync(room.password, salt);
                 rm.password = hash;
             }
-            if(room.owner)
+            if (room.owner)
                 rm.owner = room.owner;
 
             rm.save();
@@ -409,41 +416,35 @@ exports.editRoom = (room, owner, callback) => {
 
 exports.leaveRoom = (user, room, callback) => {
     let doCall = (err, obj) => {
-        if(typeof callback == "function")
+        if (typeof callback == "function")
             callback(err, obj);
     }
-    User.findOne({
-            username: user.username
-        },
-        (err, us) => {
+    userdb.getUser(user.username, (err, us) => {
+        if (err) {
+            doCall(err, undefined);
+            return;
+        }
+        if (!us) {
+            doCall(new Error("User not found"), undefined);
+            return;
+        }
+
+        us.joined_rooms = us.joined_rooms.filter(id => id != room);
+        us.save();
+
+        this.getRoom(room, (err, rm) => {
             if (err) {
-               doCall(err, undefined);
+                doCall(err, rm);
                 return;
             }
-            if (!us) {
-                doCall(new Error("User not found"), undefined);
+            if (!rm) {
+                doCall(new Error("Room not found"), rm);
                 return;
             }
 
-            us.joined_rooms = us.joined_rooms.filter(id => id != room);
-            us.save();
-
-            Room.findOne({
-                    room_id: room
-                },
-                (err, rm) => {
-                    if (err) {
-                        doCall(err, rm);
-                        return;
-                    }
-                    if (!rm) {
-                        doCall(new Error("Room not found"), rm);
-                        return;
-                    }
-
-                    rm.members = rm.members.filter(mem => mem != us.username);
-                    rm.save(doCall);
-                });
-
+            rm.members = rm.members.filter(mem => mem != us.username);
+            rm.save(doCall);
         });
+
+    });
 };

@@ -11,45 +11,47 @@ const avatar_modal = document.getElementById("avatar_modal");
 const file_modal = document.getElementById("file_modal");
 const view_image_modal = document.getElementById("view_image_modal");
 const room_icon_modal = document.getElementById("room_icon_modal");
+const room_leave_modal = document.getElementById("leave_room_modal");
 var background_activated = false;
 
 const toggleDarkMode = () => {
     let theme = document.body.getAttribute("data-theme");
-    console.log(theme);
     if (theme == "dark") {
         //Set the theme to light
         document.body.setAttribute("data-theme", "light");
+        sendToggle(username, "light");
     } else {
         //Set the theme to dark
         document.body.setAttribute("data-theme", "dark");
+        sendToggle(username, "dark");
     }
 };
 document.getElementById("dark_toggle").onclick = toggleDarkMode;
 
 //For Modal Displays (Popup Windows)
 const displayViewImageModal = (imgUrl, imgName) => {
-    if(!background_activated){
+    if (!background_activated) {
         modal_background.style.display = "flex";
         background_activated = true;
     }
-    
+
     view_image_modal.innerHTML = "";
-    let img = document.createElement('img'); 
-    img.src =  imgUrl; 
+    let img = document.createElement('img');
+    img.src = imgUrl;
     img.setAttribute("class", "view_image");
-    view_image_modal.appendChild(img); 
+    view_image_modal.appendChild(img);
     let download = document.createElement('a');
     //<a href='${fileStr[0]}' download='${fileStr[1]}'>
     download.setAttribute("class", "image_link");
     download.setAttribute("href", imgUrl);
     download.setAttribute("download", imgName);
-    download.innerText="Download";
+    download.innerText = "Download";
     view_image_modal.appendChild(download);
     view_image_modal.style.display = "block";
 }
 
 const activateBackground = () => {
-    if(!background_activated){
+    if (!background_activated) {
         modal_background.style.display = "flex";
         background_activated = true;
     }
@@ -70,6 +72,14 @@ const displayRoomIconModal = () => {
     room_icon_modal.style.display = "block";
     menu.style.display = "none";
 }
+
+const displayLeaveRoomModal = () => {
+    activateBackground();
+    room_leave_modal.style.display = "block";
+    //Just id for now
+    document.getElementById("leave_header").innerText = `Leave '${currentContextRoomId}'`;
+    menu.style.display = "none";
+};
 
 const displayNicknameModal = () => {
     activateBackground()
@@ -113,23 +123,24 @@ const closeModals = () => {
         elements[i].value = "";
     }
     elements = nickname_modal.getElementsByTagName("input");
-    for(let i = 0; i < elements.length; i++){
+    for (let i = 0; i < elements.length; i++) {
         elements[i].value = "";
     }
 
     document.getElementById("my_file").value = "";
+    document.getElementById("room_icon_upload").value = "";
 };
 
 const goBackModal = () => {
     create_modal.style.display = "none";
-    join_modal.style.display="none";
+    join_modal.style.display = "none";
 }
 //When user clicks out of modal close it
-window.onclick = function(event) {
+window.onclick = function (event) {
     if (event.target == modal_background) {
-      closeModals();
+        closeModals();
     }
-  }
+}
 
 //On Enter Submit Message
 function submitOnEnter(evt) {
@@ -147,11 +158,14 @@ document.getElementById("username_label").addEventListener("click", displayNickn
 document.getElementById("changepass").addEventListener("click", displayPasswordModal);
 document.getElementById("avatarImg").addEventListener("click", displayAvatarModal);
 document.getElementById("menu_icon").addEventListener("click", displayRoomIconModal);
+document.getElementById("menu_leave").addEventListener("click", displayLeaveRoomModal);
+document.getElementById("cancel_leave").addEventListener("click", closeModals);
 document.getElementById("logout").addEventListener("click", logOut);
 
-document.getElementById("my_file").onchange = function() {
+document.getElementById("my_file").onchange = evt => {
+    validateFileSize(evt);
     let file = this.files[0];
-    if(file){
+    if (file) {
         displayFileModal();
         document.getElementById("upload_name").innerHTML = file.name;
     }
@@ -162,12 +176,20 @@ for (var i = 0; i < closeButtons.length; i++) {
     closeButtons[i].addEventListener("click", closeModals, false);
 }
 var backButtons = document.getElementsByClassName("back_modal");
-for(var i = 0; i < backButtons.length; i++){
+for (var i = 0; i < backButtons.length; i++) {
     backButtons[i].addEventListener("click", goBackModal, false);
 }
 
+//If you click out of modal(when popped up) make it gone
 modal_background.onclick = evt => {
-    if(evt.target == modal_background) {
+    if (evt.target == modal_background) {
         closeModals();
+    }
+}
+
+//If you click out of context-menu make it gone
+document.onclick = evt => {
+    if (evt.target != menu) {
+        menu.style.display = "none";
     }
 }

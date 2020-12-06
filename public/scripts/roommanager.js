@@ -18,6 +18,17 @@ let prev_sender = undefined;
 let prev_timestamp = -1000;
 const FIVE_MINS = 5 * 60 * 1000;
 
+const PLACEHOLDER = document.createElement("div");
+PLACEHOLDER.innerHTML = "<span class='message_box'><span class='message'>No messages yet...</span></span>";
+
+const load = document.getElementById("load-container");
+const displayLoad = () => {
+    load.style.display = "flex";
+}
+const hideLoad = () => {
+    load.style.display = "none";
+}
+
 async function fetchUser(username) {
     let response = await fetch(`/user/${username}`);
     let data = await response.text();
@@ -96,6 +107,7 @@ const sendFile = (callback) => {
     formData.append("sender", username);
     formData.append("room_id", currentRoomId);
 
+    displayLoad();
     var request = new XMLHttpRequest();
     request.open("POST", "/media");
     request.onload = function () {
@@ -112,6 +124,7 @@ const sendFile = (callback) => {
             document.getElementById("img_preview").innerHTML = "";
             document.getElementById("my_file").value = "";
             closeModals();
+            hideLoad();
             if (callback)
                 callback();
         }
@@ -123,6 +136,7 @@ const openUserInfo = user => {
     closeModals();
     console.log("Opening user info for " + user);
 
+    displayLoad();
     fetch(`/user/${user}`)
         .then(response => response.json())
         .then(data => {
@@ -166,6 +180,7 @@ const openUserInfo = user => {
                 dmButton.innerText = "Start DM";
                 content.append(dmButton);
                 dmButton.onclick = evt => {
+                    displayLoad();
                     fetch(`/dm/${username}/${user}`,
                         {
                             method: "POST"
@@ -177,6 +192,7 @@ const openUserInfo = user => {
                             closeModals();
                             renderRoomList();
                             renderRoomContent(data.data.room_id);
+                            hideLoad();
                         });
                 };
             }
@@ -213,6 +229,7 @@ const openUserInfo = user => {
             document.getElementById("modal_background").style.display = "flex";
             modal.style.display = "block";
             document.getElementById("modal_background").append(modal);
+            hideLoad();
         });
 };
 
@@ -274,6 +291,7 @@ const createRoom = () => {
         roomAvatar: "./images/room.png",
     };
 
+    displayLoad();
     fetch("/room", {
         method: "POST",
         headers: {
@@ -284,12 +302,12 @@ const createRoom = () => {
         console.log(response.status);
         if (response.status === 201) {
             console.log("CREATED ROOM SUCCESSFULLy!");
-            //TODO Quick Fix so you don't have to manually join the room after making it
             document.getElementById("join_id").value = room_id;
             document.getElementById("join_password").value = password;
             joinRoom();
             closeModals();
         }
+        hideLoad();
     });
 };
 
@@ -297,6 +315,7 @@ const joinRoom = () => {
     const room_id = document.getElementById("join_id").value;
     const password = document.getElementById("join_password").value;
 
+    displayLoad();
     fetch(`/room/authorize/${room_id}`, {
         headers: new Headers({
             Authorization: "Basic " + btoa(username + ":" + password),
@@ -308,13 +327,37 @@ const joinRoom = () => {
             renderRoomContent(room_id);
             closeModals();
         }
+        hideLoad();
     });
 };
 
 const leaveRoom = () => {
-    //TODO
-    //currentContextRoomId;
-    //Allow leaving rooms
+    let body = {
+        user: {
+            username: username
+        },
+        room: {
+            room_id: currentContextRoomId
+        }
+    };
+
+    displayLoad();
+    fetch(`/leaveroom/${currentContextRoomId}`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+    }).then((response) => {
+        if (response.status === 200) {
+            closeModals();
+            renderRoomList();
+            if (currentRoomId == currentContextRoomId) {
+                renderRoomContent(joined_rooms[0]);
+            }
+        }
+        hideLoad();
+    });
 };
 
 const loadDefault = img => {
@@ -323,7 +366,9 @@ const loadDefault = img => {
     img.src = "/images/user_icon_blue.png";
 };
 const loadDefaultRoom = img => {
-
+    if (img.target)
+        img = img.target;
+    img.src = "/images/user_icon_green.png";
 };
 
 const formatImage = message => {
@@ -421,6 +466,9 @@ const formatRoomMessagePartial = (message, isFile, timestamp) => {
 };
 
 const renderGroupedMessages = msg => {
+    if (messages_container.innerHTML == PLACEHOLDER.innerHTML)
+        messages_container.innerHTML = "";
+
     if (!msg.sender && msg.username)
         msg.sender = msg.username;
     if (!messages_container.lastChild || msg.sender != prev_sender || Math.abs(new Date(msg.timestamp) - prev_timestamp) > FIVE_MINS) {
@@ -451,6 +499,7 @@ const renderRoomContent = (roomid, forceRender = false) => {
         return;
     }
 
+    displayLoad();
     console.log("RENDERING ROOM: " + roomid);
     messages_container.innerHTML = "";
 
@@ -470,10 +519,15 @@ const renderRoomContent = (roomid, forceRender = false) => {
         fetchRoomMessages(roomid).then(function (messages) {
             currentRoomId = roomid;
             //Currently the messages array is backwards so will do it this way
+            if (!messages || messages.length == 0) {
+                //Placeholder.
+                messages_container.innerHTML = PLACEHOLDER.innerHTML;
+            }
             for (let i = messages.length - 1; i >= 0; i--) {
                 let msg = messages[i];
                 renderGroupedMessages(msg);
             }
+            hideLoad();
         });
     });
 };
@@ -481,10 +535,12 @@ const renderRoomContent = (roomid, forceRender = false) => {
 const showRoomTip = (id) => {
     tipId = id + "_tip";
     let tip = document.getElementById(tipId);
-    tip.style.top = tip.parentElement.getBoundingClientRect().y + 6 + "px";
-    tip.style.left = tip.parentElement.getBoundingClientRect().left + 72 + "px";
-    tip.style.pointerEvents = "none";
     tip.style.display = "block";
+    let tipRect = tip.getBoundingClientRect();
+    let rect = tip.parentElement.getBoundingClientRect()
+    tip.style.top = (rect.y + (rect.height / 2) - (tipRect.height / 2)) + "px";
+    tip.style.left = rect.left + rect.width + 10 + "px";
+    tip.style.pointerEvents = "none";
 };
 const hideRoomTip = (id) => {
     tipId = id + "_tip";
@@ -493,16 +549,32 @@ const hideRoomTip = (id) => {
 };
 
 const renderRoomList = () => {
-    rooms_container.innerHTML = "";
-
+    displayLoad();
     fetchUser(username).then(function (user) {
         console.log(user);
         joined_rooms = user.joined_rooms;
         room_titles = {};
-        for (let i = 0; i < user.joined_rooms.length; i++) {
-            let rm = user.joined_rooms[i];
+        let elements = [];
+
+        let buildMenu = elements => {
+            elements.sort((a, b) => {
+                let one = room_titles[a.id];
+                let two = room_titles[b.id];
+                if (one < two) return -1;
+                else if (two < one) return 1;
+                else return 0;
+            });
+            rooms_container.innerHTML = "";
+            elements.forEach(roomElm => rooms_container.appendChild(roomElm));
+            hideLoad();
+        }
+
+        let iterated = 0;
+        for (let i = 0; i < joined_rooms.length; i++) {
+            let rm = joined_rooms[i];
 
             fetchRoomData(rm).then(function (room) {
+                iterated++;
                 if (!room) return;
                 room_titles[room.room_id] = room.room_title;
 
@@ -523,18 +595,25 @@ const renderRoomList = () => {
                 });
 
                 let img = document.createElement("img");
-                img.onerror = loadDefaultRoom(this);
-                img.src = "./images/room.png";
-                img.style = "margin: 0 1px; width: 50px; height: 50px;";
+                img.onerror = () => loadDefaultRoom({target: img});
+                if (room.roomAvatar) {
+                    img.src = room.roomAvatar;
+                } else {
+                    img.src = "./images/room.png";
+                }
+                img.style = "margin: 0 1px; width: 50px; height: 50px; object-fit: cover; background-color: var(--modal-color);";
+
 
                 let tip = document.createElement("span");
                 tip.id = user.joined_rooms[i] + "_tip";
                 tip.className = "tooltiptext";
                 tip.innerText = room.room_title;
 
-                rooms_container.appendChild(roomElm);
                 roomElm.appendChild(img);
                 roomElm.appendChild(tip);
+                elements.push(roomElm);
+                if (iterated == joined_rooms.length)
+                    buildMenu(elements);
 
                 // rooms_container.innerHTML +=
                 //     `<span class='room' style='text-align:center' id='${user.joined_rooms[i]}' onclick='renderRoomContent("${user.joined_rooms[i]}");' onmouseover='showRoomTip("${user.joined_rooms[i]}");' onmouseout='hideRoomTip("${user.joined_rooms[i]}");'>` +
@@ -649,6 +728,7 @@ const uploadAvatar = () => {
 
     formData.append("sender", username);
 
+    displayLoad();
     let request = new XMLHttpRequest();
     request.open('POST', "/media");
     request.onload = function () {
@@ -674,6 +754,7 @@ const uploadAvatar = () => {
                 })
             }).then(response => {
                 closeModals();
+                hideLoad();
             })
         }
     }
@@ -682,13 +763,69 @@ const uploadAvatar = () => {
 };
 
 const uploadRoomIcon = () => {
-    //TODO Upload Room Icon
+    // let form = document.forms.namedItem("choose_room_icon");
+    // let formData = new FormData(form);
+
+    // formData.append("user", username);
+    let icon = (document.getElementById("room_icon_upload")).files[0];
+
+    // let body = {
+    //     user: {
+    //         username: username
+    //     },
+    //     room: {
+    //         room_id: currentContextRoomId,
+    //         roomAvatar: icon
+    //     }
+    // };
+
+    //I need to send media -> save it then use thing to set room
+
+    let form = document.forms.namedItem("choose_room_icon");
+    let formData = new FormData(form);
+    formData.append("sender", username);
+
+    displayLoad();
+    let request = new XMLHttpRequest();
+    request.open('POST', "/media");
+    request.onload = function () {
+        console.log(request.status);
+        if (request.status === 200) {
+            console.log(request.response);
+            let data = JSON.parse(request.response);
+            let url = data.path.split("::")[0];
+
+            fetch(`/room`, {
+                method: "PATCH",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user: {
+                        username: username
+                    },
+                    room: {
+                        room_id: currentContextRoomId,
+                        roomAvatar: url
+                    }
+                })
+            }).then(response => {
+                closeModals();
+                renderRoomList();
+                hideLoad();
+            })
+        }
+        ;
+    };
+    request.send(formData);
+    return false;
 
 };
 
 const changePassword = () => {
     let newPassword = document.getElementById("change_new_password").value;
 
+    displayLoad();
     fetch(`/user/${username}`, {
         method: 'PATCH',
         headers: {
@@ -700,6 +837,7 @@ const changePassword = () => {
         })
     }).then(response => {
         closeModals();
+        hideLoad();
     });
 }
 
@@ -723,6 +861,7 @@ const sendToggle = (username, theme) => {
 
 document.getElementById("useAvatar").onclick = uploadAvatar;
 document.getElementById("avatar_upload").onchange = validateFileSize;
+document.getElementById("room_icon_upload").onchange = validateFileSize;
 
 document.getElementById("change_password_button").onclick = changePassword;
 
@@ -758,4 +897,4 @@ document.getElementById("menu_copy").addEventListener("click", function () {
     menu.style.display = "none";
 });
 
-document.getElementById("menu_leave").addEventListener("click", leaveRoom);
+document.getElementById("leave_room_button").addEventListener("click", leaveRoom);
