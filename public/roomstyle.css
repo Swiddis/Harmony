@@ -67,10 +67,9 @@ body {
     transition: color 0.5s;
 }
 
-#changepass:hover,
-#changepass:focus,
-#logout:hover,
-#logout:focus{
+#changepass:hover, #changepass:focus,
+#logout:hover, #logout:focus,
+#delete:hover, #delete:focus {
     cursor: pointer;
 }
 
@@ -85,6 +84,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: 0 0 10px #000;
 }
 
 .room:hover,
@@ -99,7 +99,7 @@ body {
     border-radius: 50%;
 }
 
-#new_room_icon{
+#new_room_icon {
     width: 80%;
     height: 80%;
 }
@@ -111,7 +111,7 @@ body {
 }
 
 
-.tooltiptext{
+.tooltiptext {
     display: none;
     position: absolute;
     width: 120px;
@@ -125,6 +125,7 @@ body {
     border-style: solid;
     border-color: transparent black transparent transparent;
 }
+
 .tooltiptext::after {
     content: "";
     position: absolute;
@@ -237,6 +238,7 @@ body {
     white-space: pre-wrap;
     padding: 5px 0px 20px 0px;
     margin-left: 90px;
+    overflow-wrap: break-word;
 }
 
 .message:last-child {
@@ -256,7 +258,7 @@ body {
 }
 
 /* change avatar */
-#avatarImg{
+#avatarImg {
     cursor: pointer;
     border-radius: 4px;
 }
@@ -298,6 +300,7 @@ body {
 span.textarea:empty::before {
     content: "Message";
 }
+
 span.textarea {
     display: flex;
     background-color: var(--msgBox-color);
@@ -328,7 +331,7 @@ span.textarea:hover, span.textarea:focus {
     box-sizing: border-box;
 }
 
-#file_icon_container{
+#file_icon_container {
     display: flex;
     position: relative;
     justify-content: center;
@@ -340,31 +343,33 @@ span.textarea:hover, span.textarea:focus {
     background-color: var(--button-color);
     border-radius: 50%;
 }
+
 #file_icon_container:hover,
-#file_icon_container:focus{
+#file_icon_container:focus {
     cursor: pointer;
     background-color: lightgray;
 }
-#file_icon{
+
+#file_icon {
     display: inline-block;
     object-fit: contain;
     width: 65%;
     height: 65%;
 }
 
-#my_file{
+#my_file {
     display: none;
 }
 
 /* Extra Modal Stuff */
-.view_image{
+.view_image {
     position: absolute;
     left: 45%;
     top: 45%;
     transform: translate(-50%, -50%);
 }
 
-.image_link{
+.image_link {
     position: absolute;
     left: 45%;
     top: 80%;
@@ -376,8 +381,8 @@ span.textarea:hover, span.textarea:focus {
     cursor: pointer;
 }
 
-.modal_body > .button{
-    text-align:center;
+.modal_body > .button {
+    text-align: center;
     width: 50%;
 }
 
@@ -506,13 +511,14 @@ input:checked + .slider:before {
     justify-content: center;
     align-items: center;
 }
+
 .circle-button:hover {
     cursor: pointer;
 }
 
 
 /* Context Menu Stuff*/
-#context_menu{
+#context_menu {
     display: none;
     position: absolute;
     z-index: 10;
@@ -521,15 +527,15 @@ input:checked + .slider:before {
     border-radius: 8px;
 }
 
-#menu{
-    display:flex;
+#menu {
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: space-evenly;
     padding: 0.5em;
 }
 
-.menu_item{
+.menu_item {
     height: 3em;
     width: 10em;
     text-align: center;
@@ -537,12 +543,12 @@ input:checked + .slider:before {
     padding-top: 1em;
 }
 
-#menu_leave{
+#menu_leave {
     border-bottom: 0;
 }
 
 .menu_item:hover,
-.menu_item:focus{
+.menu_item:focus {
     cursor: pointer;
     background-color: var(--name-hover);
     color: var(--bg-color);
@@ -552,12 +558,12 @@ input:checked + .slider:before {
 #leave_room_button:hover,
 #leave_room_button:focus,
 #cancel_leave:hover,
-#cancel_leave:focus{
+#cancel_leave:focus {
     cursor: pointer;
 }
 
 #load-container {
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0, 0, 0, 0.4);
     position: fixed;
     top: 0;
     left: 0;
@@ -583,4 +589,22 @@ input:checked + .slider:before {
 
 #load-image {
     height: 90%;
+}
+
+label[for="avatar_upload"] {
+    width: auto;
+    background-color: var(--msgBox-color);
+}
+
+#useAvatar {
+    font-size: 1.5em;
+    width: auto;
+}
+
+#avatar_upload {
+    display: none;
+}
+
+#spacer {
+    flex-grow: 1;
 }

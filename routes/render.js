@@ -88,7 +88,7 @@ exports.checkAccess = (req, res) => {
             theme: req.body.theme
         };
         allowed = userName;
-        res.redirect("/room");
+        res.redirect("/app");
     });
 };
 
@@ -103,8 +103,10 @@ exports.logout = (req, res) => {
 };
 
 exports.delete = function (req, res) {
-    User.findByIdAndRemove(req.params.id, function (err, user) {
+    userdb.deleteUser(req.params.id, (err, user) => {
         if(err) return console.error(err);
-        res.redirect('/');
+        console.log("Deleted user: " + user.username);
+        req.session.destroy();
+        res.json({success: true});
     });
 };

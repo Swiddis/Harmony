@@ -29,23 +29,20 @@ html
             div(id="right_content")
                 div(class="theme-switch-wrapper")
                     label(class="theme-switch" for="dark_toggle")
-                        input(type="checkbox" id="dark_toggle" checked=(!theme || theme=="dark"))
+                        input(type="checkbox" id="dark_toggle" checked=(!theme || theme == "dark"))
                         div(class="slider round")
                     em Dark Mode!
-                br 
-                br 
+                br
+                br
                 div(id="roomname_label")
                 img(class="avatar" id="avatarImg" src=avatar)
                 div(id="username_label")=username
                 div(id="changepass")
                     p Change Password
-                div(id="logout") 
+                div(id="logout")
                     p Log Out
-                br 
-                br 
-                br
-                br 
-                a(id="delete" href="/delete/" + id)
+                span(id="spacer")
+                div(id="delete")
                     p Delete Account
         
         div(id="modal_background") 
@@ -68,7 +65,7 @@ html
                         p Room Name:
                         input(type="text" id="create_title")
                         p Password:
-                        input(type="password" id="create_password")               
+                        input(type="password" id="create_password")
                         span(id="create_room_button" class="button") Create Room
                     div(class="modal_footer")
                         span(class="back_modal") Back 
@@ -91,7 +88,8 @@ html
                         span(class="close") &times;
                         h2 Change Nickname
                     div(class="modal_body")
-                        input(type="text" id="change_nickname")
+                        input(type="text" id="change_nickname" placeholder="New Nickname")
+                        br
                         span(id="change_nickname_button" class="button") Change
             div(id="avatar_modal" class="modal")
                 div(class="modal_content")
@@ -114,11 +112,15 @@ html
                             option(value="avatar9") Avatar 9
                             option(value="avatar10") Avatar 10
                         br
+                        //button(id="tryAvatar" class="button") Try avatar!
+                        //br
+                        div Or Upload your own!
                         br
-                        button(id="tryAvatar") Try avatar!
                         form(id="choose_avatar" enctype="multipart/form-data")
+                            label(for="avatar_upload" class="button") Select Image
                             input(type="file" accept="image/*" id="avatar_upload" name="media")
-                            button(id="useAvatar") Use Avatar
+                        br
+                        button(id="useAvatar" class="button") Use Avatar
             div(id="password_modal" class="modal")
                 div(class="modal_content")
                     div(class="modal_header")
@@ -126,6 +128,7 @@ html
                         h2 Change Password
                     div(class="modal_body")
                         input(type="password" id="change_new_password" placeholder="New Password")
+                        br
                         span(id="change_password_button" class="button") Change
             div(id="file_modal" class="modal")
                 div(class="modal_content")
@@ -142,7 +145,7 @@ html
                         h2 Change Room Icon
                     div(class="modal_body")
                         form(id="choose_room_icon" enctype="multipart/form-data")
-                            input(type="file" id="room_icon_upload" name="media")
+                            input(type="file" accept="image/*" id="room_icon_upload" name="media")
                         span(id="submit_room_icon_button" class="button") Change
             div(id="leave_room_modal" class="modal")
                 div(class="modal_content")
@@ -154,7 +157,7 @@ html
                         span(id="cancel_leave") Cancel
             div(id="view_image_modal" class="modal")
                 div(id="special_modal_content")
-            
+
         div(id="drop_overlay")
             div Drop files to upload them
 
