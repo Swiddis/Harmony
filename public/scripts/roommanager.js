@@ -575,7 +575,35 @@ const renderRoomContent = (roomid, forceRender = false) => {
                 let msg = messages[i];
                 renderGroupedMessages(msg);
             }
-            setTimeout(() => messages_container.lastChild.scrollIntoView({behavior: "smooth"}), 500);
+
+            //Attempts to wait until all imgs either rendered or errored out before scrolling.
+            let count = 0;
+            let imgs = messages_container.getElementsByTagName("img");
+
+            let incr = () => {
+                // count++;
+                // if (count == imgs.length) {
+                    messages_container.lastChild.scrollIntoView({behavior: "smooth"});
+                // }
+            }
+
+            let counted = [];
+            for (let img of imgs) {
+                if (img.complete) {
+                    incr();
+                }
+                img.onload = () => {
+                    incr();
+                };
+                img.addEventListener("error", () => {
+                    if (!img.onerror) {
+                        if(!counted.includes(img)) {
+                            counted.push(img);
+                            incr();
+                        }
+                    }
+                });
+            }
             hideLoad();
         });
     });
@@ -881,7 +909,8 @@ const changePassword = () => {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            username: username
+            username: username,
+            password: newPassword
         })
     }).then(response => {
         closeModals();

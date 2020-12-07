@@ -1,6 +1,37 @@
 const bcrypt = require("bcryptjs");
-const {User} = require("../conf/mongo_conf");
+const {User, Room} = require("../conf/mongo_conf");
 let user_cache = [];
+
+exports.clean = (user, callback) => {
+    let cleaned_room_list = [];
+    let iterated = 0;
+    if (user.joined_rooms.length == 0) callback(user);
+    user.joined_rooms.forEach(rm => {
+        if (!cleaned_room_list.includes(rm)) {
+            cleaned_room_list.push(rm);
+            Room.findOne({room_id: rm}, (err, room) => {
+                iterated++;
+                if (err) return;
+                if (!room)
+                    cleaned_room_list = cleaned_room_list.filter(r => r != rm);
+                if (iterated == user.joined_rooms.length)
+                    finish();
+            });
+        } else {
+            iterated++;
+            if (iterated == user.joined_rooms.length)
+                finish();
+        }
+    });
+    let finish = () => {
+        user.joined_rooms = cleaned_room_list;
+        if (!user.saved || new Date() - user.saved > 1000) {
+            user.saved = new Date();
+            user.save();
+        }
+        callback(user);
+    }
+};
 
 /**
  * The user should be passed in as a JSON object.
@@ -29,7 +60,7 @@ exports.createUser = (user_obj, callback) => {
             if (user) {
                 if (callback) callback(new Error("User already exists"), user);
             } else {
-                console.log("Didn't have any errors, but didn't find user.");
+                console.log("Creating new user: " + user_obj.username);
                 let salt = bcrypt.genSaltSync(10);
                 let hash = bcrypt.hashSync(user_obj.password, salt);
                 user_obj.password = hash;
@@ -60,7 +91,7 @@ exports.getUser = (username, callback) => {
     // We'll cache users in memory so we don't always have to query the database
     for (let user of user_cache) {
         if (user.username == username) {
-            callback(undefined, user);
+            this.clean(user, user => callback(undefined, user));
             return;
         }
     }
@@ -77,8 +108,10 @@ exports.getUser = (username, callback) => {
                 return;
             }
             if (user) {
-                user_cache.push(user);
-                callback(undefined, user);
+                this.clean(user, user => {
+                    user_cache.push(user);
+                    callback(undefined, user)
+                });
             } else {
                 callback(new Error("User not found"));
             }
@@ -107,7 +140,7 @@ const updateAndSaveUser = (us, user) => {
     //   us.joined_rooms = user.joined_rooms;
     // }
 
-    new User(us).save((err, user) => {
+    us.save((err, user) => {
         if (err) {
             console.error("Could not update user '" + us.username + "'");
             console.error(err);
