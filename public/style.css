@@ -38,7 +38,8 @@ ul {
 
 li {
     margin-top: 10px;
-    margin-left: 70px;
+    margin-left: 40px;
+    margin-right: 40px;
 }
 
 li, a {
@@ -151,8 +152,8 @@ label {
 
 /* Images */
 #webEx {
-    width: 930px;
-    height: 450px;
+    width: 910px;
+    height: 430px;
 }
 
 #logo {
@@ -182,7 +183,8 @@ label {
     /* NavBar */
     li {
         margin-top: 10px;
-        margin-left: -80px;
+        margin-left: -40px;
+        margin-right: -40px;
     }
     
     li, a {
