@@ -115,23 +115,19 @@ body {
 /* transition getting smaller to bigger*/
 @-webkit-keyframes modalpop {
     from {
-        width: 5em;
-        height: 6em;
+        transform: scale(0, 0);
     }
     to {
-        width: 100%;
-        height: 100%;
+        transform: scale(1, 1);
     }
 }
 
 @keyframes modalpop {
     from {
-        width: 5em;
-        height: 6em
+        transform: scale(0, 0);
     }
     to {
-        width: 100%;
-        height: 100%;
+        transform: scale(1, 1);
     }
 }
 
@@ -166,6 +162,7 @@ body {
     padding: 20px;
     width: 100%;
     height: 100%;
+    overflow: hidden;
     /*width: 20em;
     height: 24em;*/
     background-color: var(--modal-color);
@@ -174,12 +171,14 @@ body {
     transition: background-color 0.5s, border 0.5s;
 
     -webkit-animation-name: modalpop;
-    -webkit-animation-duration: 0.2s;
+    -webkit-animation-duration: 0.4s;
     animation-name: modalpop;
-    animation-duration: 0.2s;
+    animation-duration: 0.4s;
 }
 
 #user_modal {
+    align-items: center;
+    justify-content: center;
     width: 30%;
     height: 40%;
 }
