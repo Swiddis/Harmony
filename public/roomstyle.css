@@ -365,18 +365,25 @@ span.textarea:hover, span.textarea:focus {
 }
 
 /* Extra Modal Stuff */
+#view_image_modal {
+    flex-direction: column;
+    align-items: center;
+}
+
 .view_image {
-    position: absolute;
-    left: 45%;
-    top: 45%;
-    transform: translate(-50%, -50%);
+    height: 70%;
+    width: auto;
+}
+
+@media screen and (orientation: portrait) {
+    .view_image {
+        width: 90%;
+        height: auto;
+    }
 }
 
 .image_link {
-    position: absolute;
-    left: 45%;
-    top: 80%;
-    transform: translate(-50%, -50%);
+    color: #8FF8FF;
 }
 
 #username_label:hover,

@@ -31,7 +31,7 @@ document.getElementById("dark_toggle").onclick = toggleDarkMode;
 //For Modal Displays (Popup Windows)
 const displayViewImageModal = (imgUrl, imgName) => {
     closeModals();
-    activateBackground();
+    activateBackground(true);
 
     view_image_modal.innerHTML = "";
     let img = document.createElement('img');
@@ -44,14 +44,21 @@ const displayViewImageModal = (imgUrl, imgName) => {
     download.setAttribute("href", imgUrl);
     download.setAttribute("download", imgName);
     download.innerText = "Download";
+    view_image_modal.append(document.createElement("br"));
     view_image_modal.appendChild(download);
-    view_image_modal.style.display = "block";
+    view_image_modal.style.display = "flex";
 }
 
-const activateBackground = () => {
+const activateBackground = (over_right_panel = false) => {
     if (!background_activated) {
         modal_background.style.display = "flex";
         background_activated = true;
+    }
+
+    if (over_right_panel) {
+        modal_background.style.zIndex = "200";
+    } else {
+        modal_background.style.zIndex = "1";
     }
 }
 
