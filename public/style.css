@@ -90,13 +90,15 @@ a:hover {
 #signUpHref {
     color: black;
     background-color: #ABB2B9;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 30px;
 }
 
 #loginSubmit {
     cursor: pointer;
     height: 59px;
     justify-content: center;
-    font-family: 'Indie Flower', cursive;
+    font-family: 'Open Sans', sans-serif;
     font-size: 35px;
 }
 
@@ -110,7 +112,7 @@ input {
 label {
     padding: 0px 8px;
     font-size: 25px;
-    font-family: 'Indie Flower', cursive;
+    font-family: 'Open Sans', sans-serif;
 }
 
 /*Create Account Form*/
@@ -145,7 +147,7 @@ label {
     width: 30%;
     height: 55px;
     font-size: 30px;
-    font-family: 'Indie Flower', cursive;
+    font-family: 'Open Sans', sans-serif;
     justify-content: center;
 }
 
@@ -204,20 +206,14 @@ label {
         cursor: pointer;
         height: 45px;
         text-align: center;
-        font-family: 'Indie Flower', cursive;
+        font-family: 'Open Sans', sans-serif;
         font-size: 25px;
-    }
-
-    #signUpHref {
-        color: black;
-        background-color: #ABB2B9;
-        font-size: 30px;
     }
     
     label {
         padding: 0px 8px;
         font-size: 20px;
-        font-family: 'Indie Flower', cursive;
+        font-family: 'Open Sans', sans-serif;
     }
 
     /*Create Account Form*/
@@ -227,7 +223,7 @@ label {
         width: 28%;
         height: 50px;
         font-size: 26px;
-        font-family: 'Indie Flower', cursive;
+        font-family: 'Open Sans', sans-serif;
         justify-content: center;
     }
 
