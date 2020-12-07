@@ -67,7 +67,7 @@ app.use(
 app.get('/', render.index);
 
 // app.get("/room", render.rooms)
-app.get("/room", checkAuth, render.rooms);
+app.get("/app", checkAuth, render.rooms);
 
 app.get("/login", render.login);
 app.post("/login", urlencodedParser, render.checkAccess);
@@ -91,6 +91,8 @@ app.post('/dm/:user1/:user2', rooms.establishUserDMs);
 
 app.get("/signup", render.signUp);
 app.post("/signup", urlencodedParser, users.createUser); // Redundant?
+
+app.delete('/delete/:id', checkAuth, render.delete);
 
 app.post(
     '/media',

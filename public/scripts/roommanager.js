@@ -555,6 +555,7 @@ const renderRoomContent = (roomid, forceRender = false) => {
         if (!room) return;
         nicknames = room.nicknames;
         //RoomName Label (Right bar)
+        document.title = "Harmony \u2022 " + room.room_title;
         document.getElementById("roomname_label").innerHTML = room.room_title;
         //Nickname User Label (Right bar)
         let nickname = getNickname(username);
@@ -583,7 +584,7 @@ const renderRoomContent = (roomid, forceRender = false) => {
             let incr = () => {
                 // count++;
                 // if (count == imgs.length) {
-                    messages_container.lastChild.scrollIntoView({behavior: "smooth"});
+                messages_container.lastChild.scrollIntoView({behavior: "smooth"});
                 // }
             }
 
@@ -597,7 +598,7 @@ const renderRoomContent = (roomid, forceRender = false) => {
                 };
                 img.addEventListener("error", () => {
                     if (!img.onerror) {
-                        if(!counted.includes(img)) {
+                        if (!counted.includes(img)) {
                             counted.push(img);
                             incr();
                         }
@@ -775,18 +776,38 @@ const myAvatars = () => {
     return theAvatar;
 };
 
-const tryAvatarBtn = document.getElementById("tryAvatar");
-tryAvatarBtn.addEventListener("click", function (evt) {
+document.getElementById("avatarSelection").onchange = evt => {
+    let upload = document.getElementById("avatar_upload");
+    upload.value = "";
+    previewAvatar();
+}
+
+const previewAvatar = evt => {
+    let preview = document.getElementById("changeAvatar");
+    let sel = myAvatars();
+    if (sel != "0") {
+        preview.src = "/images/" + myAvatars() + ".jpg";
+    } else {
+        let upload = document.getElementById("avatar_upload");
+        let reader = new FileReader();
+        reader.onload = e => preview.src = e.target.result;
+        // read the image file as a data URL.
+        reader.readAsDataURL(upload.files[0]);
+    }
+
+};
+
+const useStaticAvatar = (evt) => {
     evt.preventDefault();
     const avatar = document.getElementById("changeAvatar");
-    const url = `./images/${myAvatars()}.jpg`;
-    console.log("Avatar: " + url);
+    let av = myAvatars();
+    if (av == 0) return;
+    const url = `./images/${av}.jpg`;
     avatar.src = url;
 
     let data = {
         avatar: url
     };
-    console.log(data);
     fetch(`/user/${username}`, {
         method: "PATCH",
         headers: {
@@ -795,9 +816,15 @@ tryAvatarBtn.addEventListener("click", function (evt) {
         body: JSON.stringify(data)
     }).then(response => {
         console.log(response);
+        document.getElementById("avatarSelection").selectedIndex = 0;
+        document.getElementById("avatarImg").src = `./images/${av}.jpg`
+        closeModals();
         //TODO Tell the user it was a success
     });
-});
+};
+
+// const tryAvatarBtn = document.getElementById("tryAvatar");
+// tryAvatarBtn.addEventListener("click", useStaticAvatar);
 
 const uploadAvatar = () => {
     let form = document.forms.namedItem("choose_avatar");
@@ -830,6 +857,7 @@ const uploadAvatar = () => {
                     avatar: url
                 })
             }).then(response => {
+                document.getElementById("avatar_upload").value = "";
                 closeModals();
                 hideLoad();
             })
@@ -926,8 +954,10 @@ const validateFileSize = evt => {
         if (file.size >= 104857600) {
             elm.value = "";
             alert("That file is too large (>100MB)");
+            return false;
         }
     }
+    return true;
 };
 
 const sendToggle = (username, theme) => {
@@ -936,8 +966,23 @@ const sendToggle = (username, theme) => {
     }).then();
 }
 
-document.getElementById("useAvatar").onclick = uploadAvatar;
-document.getElementById("avatar_upload").onchange = validateFileSize;
+document.getElementById("useAvatar").onclick = evt => {
+    let upload = document.getElementById("avatar_upload");
+    let sel = myAvatars();
+    if (upload.files.length > 0) {
+        console.log("Uploading file");
+        uploadAvatar(evt);
+    } else if (sel != 0) {
+        console.log("Using static");
+        useStaticAvatar(evt);
+    }
+}
+document.getElementById("avatar_upload").onchange = evt => {
+    if (validateFileSize(evt)) {
+        document.getElementById("avatarSelection").selectedIndex = 0;
+        previewAvatar();
+    }
+}
 document.getElementById("room_icon_upload").onchange = validateFileSize;
 
 document.getElementById("change_password_button").onclick = changePassword;
@@ -975,3 +1020,16 @@ document.getElementById("menu_copy").addEventListener("click", function () {
 });
 
 document.getElementById("leave_room_button").addEventListener("click", leaveRoom);
+
+document.getElementById("delete").onclick = evt => {
+    console.log(`/delete/${username}`);
+    fetch(`/delete/${username}`,{
+        method: "DELETE"
+    }).then(res => {
+        if(res.status == 200) {
+            console.log("Deleted.");
+            console.log(document.location);
+            // location.href = document.location.originalUrl;
+        }
+    });
+};

@@ -13,8 +13,6 @@ body {
 
 /* Left (Room Icon) Container*/
 #left_content, #rooms_container {
-    width: 6em;
-    flex-grow: 1;
     background-color: var(--secondary-bgColor);
     transition: background-color 0.5s;
     display: flex;
@@ -23,12 +21,21 @@ body {
     overflow-x: hidden;
 }
 
+#rooms_container {
+    flex-grow: 1;
+}
+
+#left_content::-webkit-scrollbar, #rooms_container::-webkit-scrollbar {
+    display: none;
+}
+
 /* Center (Messages Display and Input Message) Container*/
 #middle_content {
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
     margin: 0;
-    width: 100%;
+    width: 50%;
 }
 
 #display_messages_container {
@@ -108,23 +115,23 @@ body {
 /* transition getting smaller to bigger*/
 @-webkit-keyframes modalpop {
     from {
-        width: 15em;
-        height: 18em;
+        width: 5em;
+        height: 6em;
     }
     to {
-        width: 20em;
-        height: 24em;
+        width: 100%;
+        height: 100%;
     }
 }
 
 @keyframes modalpop {
     from {
-        width: 15em;
-        height: 18em
+        width: 5em;
+        height: 6em
     }
     to {
-        width: 20em;
-        height: 24em;
+        width: 100%;
+        height: 100%;
     }
 }
 
