@@ -30,10 +30,8 @@ document.getElementById("dark_toggle").onclick = toggleDarkMode;
 
 //For Modal Displays (Popup Windows)
 const displayViewImageModal = (imgUrl, imgName) => {
-    if (!background_activated) {
-        modal_background.style.display = "flex";
-        background_activated = true;
-    }
+    closeModals();
+    activateBackground();
 
     view_image_modal.innerHTML = "";
     let img = document.createElement('img');
@@ -58,22 +56,26 @@ const activateBackground = () => {
 }
 
 const displayFileModal = () => {
-    activateBackground()
+    closeModals();
+    activateBackground();
     file_modal.style.display = "block";
 }
 
 const displayAvatarModal = () => {
-    activateBackground()
+    closeModals();
+    activateBackground();
     avatar_modal.style.display = "block";
 }
 
 const displayRoomIconModal = () => {
+    closeModals();
     activateBackground();
     room_icon_modal.style.display = "block";
     menu.style.display = "none";
 }
 
 const displayLeaveRoomModal = () => {
+    closeModals();
     activateBackground();
     room_leave_modal.style.display = "block";
     //Just id for now
@@ -82,11 +84,13 @@ const displayLeaveRoomModal = () => {
 };
 
 const displayNicknameModal = () => {
-    activateBackground()
+    closeModals();
+    activateBackground();
     nickname_modal.style.display = "block";
 };
 
 const displayPasswordModal = () => {
+    closeModals();
     activateBackground();
     password_modal.style.display = "block";
 }
@@ -96,13 +100,18 @@ const logOut = () => {
 }
 
 const displayModal = () => {
-    activateBackground()
+    closeModals();
+    activateBackground();
     room_modal.style.display = "block";
 };
 const displayCreateModal = () => {
+    closeModals();
+    activateBackground();
     create_modal.style.display = "block";
 };
 const displayJoinModal = () => {
+    closeModals();
+    activateBackground();
     join_modal.style.display = "block";
 };
 const closeModals = () => {
@@ -132,8 +141,9 @@ const closeModals = () => {
 };
 
 const goBackModal = () => {
-    create_modal.style.display = "none";
-    join_modal.style.display = "none";
+    closeModals();
+    activateBackground();
+    room_modal.style.display = "flex";
 }
 //When user clicks out of modal close it
 window.onclick = function (event) {

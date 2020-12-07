@@ -85,6 +85,8 @@ body {
     align-items: center;
     justify-content: center;
     box-shadow: 0 0 10px #000;
+    background-color: #626262;
+    background-size: cover;
 }
 
 .room:hover,
@@ -432,6 +434,7 @@ span.textarea:hover, span.textarea:focus {
 .theme-switch-wrapper {
     display: flex;
     align-items: center;
+    margin: 0 auto;
 }
 
 em {

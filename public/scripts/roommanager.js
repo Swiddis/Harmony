@@ -270,7 +270,7 @@ const openUserInfo = user => {
                 content.innerHTML += "<div class='room-link'>No mutual rooms</div>";
 
             document.getElementById("modal_background").style.display = "flex";
-            modal.style.display = "block";
+            modal.style.display = "flex";
             document.getElementById("modal_background").append(modal);
             hideLoad();
         });
@@ -672,14 +672,33 @@ const renderRoomList = () => {
                     currentContextRoomId = roomElm.id;
                 });
 
-                let img = document.createElement("img");
-                img.onerror = () => loadDefaultRoom({target: img});
+
+                let url;
                 if (room.roomAvatar) {
-                    img.src = room.roomAvatar;
+                    url = room.roomAvatar;
                 } else {
-                    img.src = "./images/room.png";
+                    url = "./images/room.png";
                 }
-                img.style = "margin: 0 1px; width: 50px; height: 50px; object-fit: cover; background-color: var(--modal-color);";
+                roomElm.style.backgroundImage = `url('${url}')`;
+                const checkImage = async add => {
+                    await fetch(add)
+                        .then(response => {
+                            console.log(response);
+                            if (response.status == 404) {
+                                roomElm.style.backgroundImage = "url('/images/user_icon_green.png')";
+                            }
+                        });
+                };
+                checkImage(url).then();
+
+                // let img = document.createElement("img");
+                // img.onerror = () => loadDefaultRoom({target: img});
+                // if (room.roomAvatar) {
+                //     img.src = room.roomAvatar;
+                // } else {
+                //     img.src = "./images/room.png";
+                // }
+                // img.style = "margin: 0 1px; width: 50px; height: 50px; object-fit: cover; background-color: var(--modal-color);";
 
 
                 let tip = document.createElement("span");
@@ -687,7 +706,7 @@ const renderRoomList = () => {
                 tip.className = "tooltiptext";
                 tip.innerText = room.room_title;
 
-                roomElm.appendChild(img);
+                // roomElm.appendChild(img);
                 roomElm.appendChild(tip);
                 elements.push(roomElm);
                 if (iterated == joined_rooms.length)
@@ -1023,10 +1042,10 @@ document.getElementById("leave_room_button").addEventListener("click", leaveRoom
 
 document.getElementById("delete").onclick = evt => {
     console.log(`/delete/${username}`);
-    fetch(`/delete/${username}`,{
+    fetch(`/delete/${username}`, {
         method: "DELETE"
     }).then(res => {
-        if(res.status == 200) {
+        if (res.status == 200) {
             console.log("Deleted.");
             console.log(document.location);
             // location.href = document.location.originalUrl;
