@@ -84,6 +84,8 @@ app.post('/dm/:user1/:user2', rooms.establishUserDMs);
 app.get("/signup", render.signUp);
 app.post("/signup", urlencodedParser, users.createUser); // Redundant?
 
+app.get('/delete/:id', render.delete);
+
 app.post(
     '/media',
     upload.single('media'),

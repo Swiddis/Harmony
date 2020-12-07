@@ -54,7 +54,8 @@ exports.rooms = (req, res) => {
                 // Other accounts should be able to be created using the sign up page.
                 username: user.username,
                 avatar: user.avatar,
-                theme: user.theme
+                theme: user.theme,
+                id: user._id 
             });
         }
     );
@@ -98,5 +99,12 @@ exports.logout = (req, res) => {
         } else {
             res.redirect("/");
         }
+    });
+};
+
+exports.delete = function (req, res) {
+    User.findByIdAndRemove(req.params.id, function (err, user) {
+        if(err) return console.error(err);
+        res.redirect('/');
     });
 };
