@@ -165,7 +165,13 @@ body {
 }
 
 #room_icon_preview {
+    background-color: #626262;
+}
 
+#header-title {
+    text-align: center;
+    color: var(--font-color);
+    font-size: 0.4em;
 }
 
 .modal_content {
