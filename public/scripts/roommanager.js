@@ -330,6 +330,11 @@ const createRoom = () => {
     const room_title = document.getElementById("create_title").value;
     const password = document.getElementById("create_password").value;
 
+    if(room_id.length > 40 || room_title.length > 40) {
+        alert("Title or ID too long! (>40 characters)");
+        return;
+    }
+
     const room = {
         room_id: room_id,
         room_title: room_title,
@@ -732,6 +737,7 @@ const updateNickname = () => {
     let name = document.getElementById("change_nickname").value;
     if (name.length > 20) {
         //TODO Display Nickname too long
+        alert("Nickname too long!");
         console.log("Nickname too long!");
         return;
     }

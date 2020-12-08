@@ -241,7 +241,7 @@ body {
     white-space: pre-wrap;
     padding: 5px 0px 20px 0px;
     margin-left: 90px;
-    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .message:last-child {
