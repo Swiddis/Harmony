@@ -66,11 +66,12 @@ html
                         h2 Create Room
                     div(class="modal_body")
                         p Room Id:
-                        input(type="text" id="create_id")
+                        input(type="text" id="create_id" placeholder="ID" maxlength="40")
                         p Room Name:
-                        input(type="text" id="create_title")
+                        input(type="text" id="create_title" placeholder="Title" maxlength="40")
                         p Password:
-                        input(type="password" id="create_password")
+                        input(type="password" id="create_password" placeholder="Password")
+                        br
                         span(id="create_room_button" class="button") Create Room
                     div(class="modal_footer")
                         span(class="back_modal") Back 
@@ -81,9 +82,9 @@ html
                         h2 Join Room
                     div(class="modal_body")
                         p Room Id:
-                        input(type="text" id="join_id")
+                        input(type="text" id="join_id" placeholder="Room ID")
                         p Password:
-                        input(type="text" id="join_password")
+                        input(type="text" id="join_password" placeholder="Password (if applicable)")
                         span(id="join_room_button" class="button") Join 
                     div(class="modal_footer")
                         span(class="back_modal") Back
@@ -93,7 +94,7 @@ html
                         span(class="close") &times;
                         h2 Change Nickname
                     div(class="modal_body")
-                        input(type="text" id="change_nickname" placeholder="New Nickname")
+                        input(type="text" id="change_nickname" placeholder="New Nickname" maxlength="20")
                         br
                         span(id="change_nickname_button" class="button") Change
             div(id="avatar_modal" class="modal")
