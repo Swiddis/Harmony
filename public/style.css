@@ -2,13 +2,15 @@
 
 /* Style */
 html {
-    background-color: rgba(244, 247, 247, 0.548);
+    background: linear-gradient(0deg, #c4c0ff 0%, #fff 10%, #fff 100%);
+    /*background-color: rgba(244, 247, 247, 0.548);*/
+    min-height: 100vh;
 }
 
 body {
     text-align: center;
-    padding: 20px;
-    height: fit-content;
+    padding: 20px 20px 0;
+    margin-bottom: 0;
 }
 
 #titleB {
@@ -58,6 +60,10 @@ nav a:last-child {
 
 a:hover {
     background-color: #283747;
+}
+
+#HomePage {
+    position: relative;
 }
 
 /* login Form */
@@ -166,8 +172,8 @@ label {
 
 /* Images */
 #webEx {
-    width: 910px;
-    height: 430px;
+    height: 55vh;
+    width: auto;
 }
 
 #logo {
@@ -179,6 +185,22 @@ label {
 .error {
     color: #d00;
     margin-top: 1em;
+}
+
+section {
+    font-family: "Open Sans", sans-serif;
+}
+
+#description {
+    width: 60%;
+    margin: 0 auto;
+}
+
+footer {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    font-family: "Open Sans", sans-serif;
+    font-size: 0.8em;
 }
 
 @media screen and (orientation: portrait) {
