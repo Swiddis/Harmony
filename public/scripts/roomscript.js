@@ -58,7 +58,7 @@ const activateBackground = (over_right_panel = false) => {
     if (over_right_panel) {
         modal_background.style.zIndex = "200";
     } else {
-        modal_background.style.zIndex = "1";
+        modal_background.style.zIndex = "10";
     }
 }
 
@@ -78,6 +78,9 @@ const displayRoomIconModal = () => {
     closeModals();
     activateBackground();
     room_icon_modal.style.display = "block";
+    let icon = document.getElementById("room_icon_preview");
+    icon.src = document.getElementById(currentContextRoomId).style.backgroundImage
+        .replace('url("', "").replace('")', "");
     menu.style.display = "none";
 }
 
@@ -176,6 +179,27 @@ function submitOnEnter(evt) {
     }
 }
 
+let burger = document.getElementById("burger-menu");
+let rMenu = document.getElementById("room-menu");
+let leftShown = false, rightShown = false;
+const showLeftMenu = evt => {
+    leftShown = !leftShown;
+    if (leftShown)
+        document.getElementById("left_content").style.transform = "translate(0, 0)";
+    else
+        document.getElementById("left_content").style.transform = "translate(-100%, 0)";
+};
+
+const showRightMenu = evt => {
+    rightShown = !rightShown;
+    if (rightShown)
+        document.getElementById("right_content").style.transform = "translate(0, 0)";
+    else
+        document.getElementById("right_content").style.transform = "translate(100%, 0)";
+};
+burger.onclick = showLeftMenu;
+rMenu.onclick = showRightMenu;
+
 document.getElementById("new_room").addEventListener("click", displayModal);
 document.getElementById("create_room_option").addEventListener("click", displayCreateModal);
 document.getElementById("join_room_option").addEventListener("click", displayJoinModal);
@@ -196,12 +220,12 @@ document.getElementById("my_file").onchange = evt => {
     }
 };
 
-var closeButtons = document.getElementsByClassName("close");
-for (var i = 0; i < closeButtons.length; i++) {
+let closeButtons = document.getElementsByClassName("close");
+for (let i = 0; i < closeButtons.length; i++) {
     closeButtons[i].addEventListener("click", closeModals, false);
 }
-var backButtons = document.getElementsByClassName("back_modal");
-for (var i = 0; i < backButtons.length; i++) {
+let backButtons = document.getElementsByClassName("back_modal");
+for (let i = 0; i < backButtons.length; i++) {
     backButtons[i].addEventListener("click", goBackModal, false);
 }
 
@@ -212,9 +236,45 @@ modal_background.onclick = evt => {
     }
 }
 
+const isDescendant = (parent, child) => {
+    let node = child;
+
+    while (node != null) {
+        if (node == parent) {
+            return true;
+        }
+        node = node.parentNode;
+    }
+
+    return false;
+};
+
+const isModal = elm => {
+    let node = elm;
+
+    while (node != null) {
+        if (node.classList.contains("modal") || node.id == "modal_background")
+            return true;
+        node = node.parentElement;
+    }
+    return false;
+};
+
 //If you click out of context-menu make it gone
 document.onclick = evt => {
     if (evt.target != menu) {
         menu.style.display = "none";
+    }
+
+    if (evt.target != document.getElementById("burger-menu") && leftShown) {
+        showLeftMenu(evt);
+    }
+
+    if (rightShown) {
+        if (evt.target != document.getElementById("room-menu") &&
+            !isDescendant(document.getElementById("right_content"), evt.target) &&
+            !isModal(evt.target)) {
+            showRightMenu(evt);
+        }
     }
 }

@@ -1,7 +1,7 @@
 :root {
     --font-color: black;
     --bg-color: #fff;
-    --secondary-bgColor: #F4F6F7;
+    --secondary-bgColor: #d6d6d6;
     --therd-bgColor: #57595e;
     --msgBox-color: #ababab;
     --button-color: rgb(179, 183, 185);
@@ -37,11 +37,12 @@ body {
 .button {
     background-color: var(--bg-color);
     color: var(--font-color);
-    padding: 12px 20px;
+    padding: 0.7em 0.9em;
     border: 2px solid black;
-    border-radius: 8px;
+    border-radius: 0.4em;
     cursor: pointer;
     margin: 0;
+    font-size: 1em;
 }
 
 .button:hover {
@@ -51,7 +52,7 @@ body {
 /* logout and delete*/
 #logout, #delete {
     background-color: var(--bg-color);
-    font-size: 16px;
+    font-size: 1em;
     text-align: center;
     margin: 20px;
     color: var(--font-color);
@@ -60,7 +61,7 @@ body {
 
 #changepass {
     background-color: var(--bg-color);
-    font-size: 16px;
+    font-size: 1em;
     text-align: center;
     margin: 20px;
     color: var(--font-color);
@@ -116,17 +117,18 @@ body {
 
 .tooltiptext {
     display: none;
-    position: absolute;
-    width: 120px;
-    background-color: #000;
+    position: fixed;
+    max-width: 20%;
+    left: 10px;
+    background-color: rgba(0, 0, 0, 0.7);
     color: #fff;
     text-align: center;
     border-radius: 6px;
-    padding: 5px 0;
-    z-index: 1;
+    padding: 5px;
+    z-index: 15;
     border-width: 5px;
     border-style: solid;
-    border-color: transparent black transparent transparent;
+    border-color: transparent;
 }
 
 .tooltiptext::after {
@@ -146,20 +148,21 @@ body {
     color: var(--font-color);
     transition: color 0.5s;
     text-align: center;
-    font-size: 24px;
+    font-size: 1.5em;
 }
 
 #username_label {
     color: var(--font-color);
     transition: color 0.5s;
     text-align: center;
-    font-size: 20px;
+    font-size: 1.1em;
 }
 
 /* Displayed Messages (MessageBox, Name, Avatar, Message)*/
 .message_box {
+    position: relative;
     color: var(--therd-bgColor);
-    margin: 1em 2em;
+    margin: 1em 1.5em;
     background-color: var(--msgBox-color);
     transition: background-color 0.5s, color 0.5s;
     /*width: 90%;*/
@@ -171,9 +174,12 @@ body {
     display: none;
     font-size: 0.75em;
     position: absolute;
-    top: 0;
+    top: -1em;
     right: 0;
     text-align: right;
+    background-color: rgba(0,0,0,0.7);
+    padding: 0.6em;
+    border-radius: 0.5em;
 }
 
 .message:hover .timestamp {
@@ -190,16 +196,16 @@ body {
     margin: 10px auto;
     display: block;
     float: left;
-    width: 100px;
-    height: 100px;
+    width: 8em;
+    height: 8em;
     border-radius: 50%;
     overflow: hidden;
     object-fit: cover;
 }
 
 .message_box .avatar {
-    width: 60px;
-    height: 60px;
+    width: 3em;
+    height: 3em;
     margin: 10px 20px 10px 10px;
     position: relative;
 }
@@ -231,21 +237,20 @@ body {
     border-bottom: 2px solid var(--bg-color);
     transition: border 0.5s;
     display: block;
-    font-size: 20px;
+    font-size: 1.1em;
 }
 
 .message {
     position: relative;
-    display: block;
-    font-size: 18px;
+    display: flex;
+    font-size: 1em;
     white-space: pre-wrap;
-    padding: 5px 0px 20px 0px;
-    margin-left: 90px;
-    overflow-wrap: break-word;
+    padding: 0.2em 0 1em 0;
+    word-break: break-word;
 }
 
 .message:last-child {
-    padding: 5px 0px;
+    padding: 0.2em 0;
 }
 
 .message a {
@@ -267,17 +272,17 @@ body {
 }
 
 #changeAvatar {
-    width: 80px;
-    height: 80px;
+    width: 5em;
+    height: 5em;
     object-fit: cover;
 }
 
 #avatarSelection {
     position: relative;
     font-family: Arial;
-    font-size: 20px;
-    width: 150px;
-    height: 50px;
+    font-size: 1.1em;
+    width: 80%;
+    height: 2em;
 }
 
 #avatarSelection select {
@@ -296,7 +301,7 @@ body {
     transition: background-color 0.5s;
     width: 150px;
     height: 50px;
-    font-size: 20px;
+    font-size: 1.1em;
 }
 
 /* Input Stuff*/
@@ -306,14 +311,20 @@ span.textarea:empty::before {
 
 span.textarea {
     display: flex;
+    word-break: break-word;
     background-color: var(--msgBox-color);
     border-radius: 8px;
-    min-height: 55px;
+    min-height: 3em;
     max-height: 19vh;
     overflow-y: scroll;
     width: 100%;
     height: 90%;
     box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -webkit-user-select: text; /* Chrome, Opera, Safari */
+    -moz-user-select: text; /* Firefox 2+ */
+    -ms-user-select: text; /* IE 10+ */
+    user-select: text; /* Standard syntax */
     color: var(--font-color);
     padding: 5px 0;
     transition: background-color 0.5s, color 0.5s;
@@ -325,12 +336,15 @@ span.textarea:hover, span.textarea:focus {
 
 #bottom_input {
     background-color: var(--msgBox-color);
-    border-radius: 8px;
+    border-radius: 0.4em;
     width: 100%;
-    height: 100%;
+    /*height: 100%;*/
+    flex-grow: 1;
+    -webkit-flex-grow: 1;
     display: flex;
     padding: 0.2em;
     align-items: center;
+    justify-content: center;
     box-sizing: border-box;
 }
 
@@ -405,8 +419,12 @@ span.textarea:hover, span.textarea:focus {
     color: var(--closeModal-color);
     transition: color 0.5s;
     float: right;
-    font-size: 28px;
+    font-size: 1.7em;
     font-weight: bold;
+    position: absolute;
+    top: -0.2em;
+    right: 0;
+    padding: 0 0.3em;
 }
 
 .close:hover,
@@ -447,16 +465,16 @@ span.textarea:hover, span.textarea:focus {
 
 em {
     margin-left: 10px;
-    font-size: 1rem;
+    font-size: 1em;
     color: var(--font-color);
     transition: color 0.5s;
 }
 
 .theme-switch {
     display: inline-block;
-    height: 34px;
+    height: 2em;
     position: relative;
-    width: 60px;
+    width: 4em;
 }
 
 .theme-switch input {
@@ -464,7 +482,7 @@ em {
 }
 
 .slider {
-    background-color: #ccc;
+    background-color: #adadad;
     bottom: 0;
     cursor: pointer;
     left: 0;
@@ -476,13 +494,13 @@ em {
 
 .slider:before {
     background-color: #fff;
-    bottom: 4px;
+    bottom: 0.2em;
     content: "";
-    height: 26px;
-    left: 4px;
+    height: 1.6em;
+    left: 0.2em;
     position: absolute;
     transition: .4s;
-    width: 26px;
+    width: 1.6em;
 }
 
 input:checked + .slider {
@@ -490,11 +508,11 @@ input:checked + .slider {
 }
 
 input:checked + .slider:before {
-    transform: translateX(26px);
+    transform: translateX(2em);
 }
 
 .slider.round {
-    border-radius: 34px;
+    border-radius: 2em;
 }
 
 .slider.round:before {
@@ -536,6 +554,11 @@ input:checked + .slider:before {
     background-color: var(--secondary-bgColor);
     color: var(--font-color);
     border-radius: 8px;
+}
+
+#menu * {
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 #menu {
@@ -616,6 +639,6 @@ label[for="avatar_upload"] {
     display: none;
 }
 
-#spacer {
+.spacer {
     flex-grow: 1;
 }

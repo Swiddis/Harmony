@@ -331,6 +331,11 @@ const createRoom = () => {
     const room_title = document.getElementById("create_title").value;
     const password = document.getElementById("create_password").value;
 
+    if (room_id.length > 40 || room_title.length > 40) {
+        alert("Title or ID too long! (>40 characters)");
+        return;
+    }
+
     const room = {
         room_id: room_id,
         room_title: room_title,
@@ -450,10 +455,10 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
         formattedMessage =
             "<span class='message_box'>" +
             `<div onclick='openUserInfo("${username}")' class='msgAvatar'><span class='avatar'><img onerror="loadDefault(this)" src="${avatar}" alt="${username}_avatar"/></span></div>` +
-            `<span onclick='openUserInfo("${username}")' class='name'>` +
+            `<div class='message_body'><span onclick='openUserInfo("${username}")' class='name'>` +
             name +
             "</span>" +
-            "<span class='message'>";
+            "<span class='message'></div>";
 
         formattedMessage += formatImage(message);
 
@@ -466,7 +471,7 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
         formattedMessage =
             "<span class='message_box'>" +
             `<div onclick='openUserInfo("${username}")' class='msgAvatar'><span class='avatar'><img onerror="loadDefault(this)" src="${avatar}" alt="${username}_avatar"/></span></div>` +
-            `<span onclick='openUserInfo("${username}")' class='name'>` +
+            `<div class='message_body'><span onclick='openUserInfo("${username}")' class='name'>` +
             name +
             "</span>" +
             "<span class='message'>" +
@@ -476,7 +481,7 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
             date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) +
             "</div>" +
             "</span>" +
-            "</span>";
+            "</span></div>";
     }
 
     return formattedMessage;
@@ -531,7 +536,7 @@ const renderGroupedMessages = msg => {
     } else {
         //Let's double up messages a bit so it's not as spread out.
         // Just with an extra line break between.
-        let prev_message = messages_container.lastChild;
+        let prev_message = messages_container.lastChild.lastChild;
         prev_message.innerHTML += formatRoomMessagePartial(
             msg.content ? msg.content : msg.message,
             msg.is_file,
@@ -610,14 +615,15 @@ const renderRoomContent = (roomid, forceRender = false) => {
     });
 };
 
-const showRoomTip = (id) => {
+const showRoomTip = (parent, id) => {
     tipId = id + "_tip";
     let tip = document.getElementById(tipId);
     tip.style.display = "block";
     let tipRect = tip.getBoundingClientRect();
-    let rect = tip.parentElement.getBoundingClientRect()
+    let rect = parent.getBoundingClientRect();
     tip.style.top = (rect.y + (rect.height / 2) - (tipRect.height / 2)) + "px";
     tip.style.left = rect.left + rect.width + 10 + "px";
+    console.log("Rendering at " + tip.style.top + " - " + tip.style.left);
     tip.style.pointerEvents = "none";
 };
 const hideRoomTip = (id) => {
@@ -656,12 +662,43 @@ const renderRoomList = () => {
                 if (!room) return;
                 room_titles[room.room_id] = room.room_title;
 
+                let touchTimeout;
+                let startTouch = (evt) => {
+                    touchTimeout = window.setTimeout(function () {
+                        hideRoomTip(user.joined_rooms[i]);
+                        menu.style.display = "block";
+                        menu.style.top = evt.touches[0].screenY + "px";
+                        menu.style.left = evt.touches[0].screenX + "px";
+                        evt.preventDefault();
+                        currentContextRoomId = roomElm.id;
+                    }.bind(this), 500);
+                };
+
+                let cancelTouch = () => {
+                    hideRoomTip(user.joined_rooms[i]);
+                    if (touchTimeout)
+                        window.clearTimeout(touchTimeout);
+                }
+
                 let roomElm = document.createElement("span");
                 roomElm.className = "room";
                 roomElm.id = user.joined_rooms[i];
-                roomElm.setAttribute("onclick", `renderRoomContent('${user.joined_rooms[i]}')`);
-                roomElm.setAttribute("onmouseover", `showRoomTip('${user.joined_rooms[i]}')`);
-                roomElm.setAttribute("onmouseout", `hideRoomTip('${user.joined_rooms[i]}')`);
+                roomElm.addEventListener("click",
+                    evt => renderRoomContent(user.joined_rooms[i]));
+                roomElm.addEventListener("mouseover", evt => {
+                    if (!mobileCheck()) //Don't show the tooltip on hover on mobile.
+                        showRoomTip(roomElm, user.joined_rooms[i]);
+                });
+                roomElm.addEventListener("mouseout",
+                    evt => hideRoomTip(user.joined_rooms[i]));
+
+                roomElm.ontouchstart = //Use touch events on mobile!
+                    evt => {
+                        startTouch(evt);
+                        showRoomTip(roomElm, user.joined_rooms[i]);
+                    };
+                roomElm.addEventListener("touchend", cancelTouch);
+                roomElm.addEventListener("touchcancel", cancelTouch);
 
                 //WORKING HERE
                 roomElm.addEventListener("contextmenu", function (e) {
@@ -707,7 +744,7 @@ const renderRoomList = () => {
                 tip.innerText = room.room_title;
 
                 // roomElm.appendChild(img);
-                roomElm.appendChild(tip);
+                document.getElementById("tooltips").appendChild(tip);
                 elements.push(roomElm);
                 if (iterated == joined_rooms.length)
                     buildMenu(elements);
@@ -733,6 +770,7 @@ const updateNickname = () => {
     let name = document.getElementById("change_nickname").value;
     if (name.length > 20) {
         //TODO Display Nickname too long
+        alert("Nickname too long!");
         console.log("Nickname too long!");
         return;
     }
@@ -967,7 +1005,6 @@ const changePassword = () => {
 
 const validateFileSize = evt => {
     let elm = evt.target; //This should be the <input type="file"> element
-    console.log(elm.files);
     let file = elm.files[0];
     if (file) {
         if (file.size >= 104857600) {
@@ -1002,7 +1039,16 @@ document.getElementById("avatar_upload").onchange = evt => {
         previewAvatar();
     }
 }
-document.getElementById("room_icon_upload").onchange = validateFileSize;
+document.getElementById("room_icon_upload").onchange = evt => {
+    if(validateFileSize(evt)) {
+        let upload = evt.target;
+        let preview = document.getElementById("room_icon_preview");
+        let reader = new FileReader();
+        reader.onload = e => preview.src = e.target.result;
+        // read the image file as a data URL.
+        reader.readAsDataURL(upload.files[0]);
+    }
+}
 
 document.getElementById("change_password_button").onclick = changePassword;
 
