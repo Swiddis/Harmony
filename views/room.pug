@@ -5,6 +5,7 @@ html
         link(rel="stylesheet", href="/roomstyle.css")
         link(rel="stylesheet", href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,400;0,600;1,400;1,600&family=Sansita+Swashed:wght@600&display=swap")
         link(rel="icon", type="image/png", href="/images/harmony_logo.png")
+        link(rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons")
         script(src="/scripts/socket.io.js")
     body(data-theme=theme ? theme : "dark")
         div(id="page_container")
@@ -14,9 +15,9 @@ html
                     img(id="new_room_icon" src="/images/add_room.png")
             div(id="middle_content")
                 div(id="head-banner")
-                    div(id="burger-menu") B
+                    div(id="burger-menu" class="material-icons") menu
                     div(class="spacer")
-                    div(id="room-menu") R
+                    div(id="room-menu" class="material-icons") settings
                 div(id="display_messages_container")
                     div(class="message_box")
                         //span(class="avatar")
@@ -36,7 +37,6 @@ html
                         input(type="checkbox" id="dark_toggle" checked=(!theme || theme == "dark"))
                         div(class="slider round")
                     em Dark Mode!
-                br
                 br
                 div(id="roomname_label")
                 img(class="avatar" id="avatarImg" src=avatar)
@@ -150,8 +150,10 @@ html
                         span(class="close") &times;
                         h2 Change Room Icon
                     div(class="modal_body")
+                        img(id="room_icon_preview" class="avatar")
                         form(id="choose_room_icon" enctype="multipart/form-data")
-                            input(type="file" accept="image/*" id="room_icon_upload" name="media")
+                            label(for="room_icon_upload" class="button") Select Image
+                            input(type="file" accept="image/*" id="room_icon_upload" style="display: none" name="media")
                         span(id="submit_room_icon_button" class="button") Change
             div(id="leave_room_modal" class="modal")
                 div(class="modal_content")

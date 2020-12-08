@@ -39,7 +39,7 @@ body {
 }
 
 #display_messages_container {
-    min-width: 400px;
+    /*min-width: 400px;*/
     flex-basis: 100%;
     display: flex;
     flex-direction: column;
@@ -156,10 +156,22 @@ body {
     height: 75%;
 }
 
+.modal_body form {
+    display: flex;
+}
+
+#room_icon_modal form {
+    margin: 1em;
+}
+
+#room_icon_preview {
+
+}
+
 .modal_content {
     box-sizing: border-box;
     position: relative;
-    padding: 20px;
+    padding: 1.2em;
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -270,6 +282,23 @@ body {
 
 #head-banner {
     display: none;
+    background-color: var(--secondary-bgColor);
+    box-shadow: 0px 5px 10px #444;
+    z-index: 3;
+}
+
+.material-icons {
+    display: block;
+    font-size: 0.8em !important;
+    padding: 0.2em;
+    color: var(--bg-color);
+    text-shadow: 0 0 10px #000;
+    box-sizing: border-box;
+}
+
+.message_body {
+    display: flex;
+    flex-direction: column;
 }
 
 /* Define styling rules for mobile phones (Really just whenever the width is less than the height). */
@@ -277,6 +306,9 @@ body {
     #head-banner {
         display: flex;
         font-size: 4em;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 0;
     }
 
     #burger-menu:hover {
@@ -289,6 +321,18 @@ body {
         position: fixed !important;
         transform: translate(-100%, 0);
         transition: transform 0.4s;
+    }
+
+    #right_content {
+        height: 100%;
+        right: 0;
+        z-index: 5;
+        font-size: 2.5em;
+        position: fixed !important;
+        transform: translate(100%, 0);
+        transition: transform 0.4s;
+        padding-top: 1em;
+        box-sizing: border-box;
     }
 
     #middle_content {
@@ -329,6 +373,7 @@ body {
     span.textarea {
         width: 84% !important;
         padding-right: 10px;
+        font-size: 1.5em !important;
     }
 
     #input_message_container {
@@ -341,4 +386,27 @@ body {
         -webkit-box-align: start;
         max-height: 60vh !important;
     }
+
+    .modal {
+        font-size: 2.4em !important;
+        width: 90% !important;
+    }
+
+    .modal input {
+        padding: 0.2em;
+        font-size: 1em;
+    }
+
+    .message_body {
+        font-size: 1.5em;
+    }
+
+    .close {
+        font-size: 3em !important;
+    }
+
+    #menu {
+        font-size: 3em;
+    }
+
 }
