@@ -160,6 +160,7 @@ body {
 
 /* Displayed Messages (MessageBox, Name, Avatar, Message)*/
 .message_box {
+    box-shadow: 0px 5px 5px #222;
     position: relative;
     color: var(--therd-bgColor);
     margin: 1em 1.5em;
@@ -207,7 +208,9 @@ body {
     width: 3em;
     height: 3em;
     margin: 10px 20px 10px 10px;
-    position: relative;
+    position: sticky;
+    top: 0.5em;
+    box-sizing: border-box;
 }
 
 .avatar img {
