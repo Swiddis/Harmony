@@ -198,7 +198,6 @@ body {
     align-items: center;
     justify-content: center;
     width: 30%;
-    height: 40%;
 }
 
 #drop_overlay {
@@ -413,6 +412,19 @@ body {
 
     #menu {
         font-size: 3em;
+    }
+
+    #user_modal .modal_content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        max-height: 80%;
+        overflow: auto;
+    }
+
+    #user_modal .avatar {
+        float: none;
     }
 
 }
