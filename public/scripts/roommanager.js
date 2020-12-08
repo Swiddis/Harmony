@@ -561,6 +561,7 @@ const renderRoomContent = (roomid, forceRender = false) => {
         nicknames = room.nicknames;
         //RoomName Label (Right bar)
         document.title = "Harmony \u2022 " + room.room_title;
+        document.getElementById("header-title").innerText = room.room_title;
         document.getElementById("roomname_label").innerHTML = room.room_title;
         //Nickname User Label (Right bar)
         let nickname = getNickname(username);
