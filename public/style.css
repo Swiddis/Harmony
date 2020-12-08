@@ -4,7 +4,7 @@
 html {
     background: linear-gradient(0deg, #c4c0ff 0%, #fff 10%, #fff 100%);
     /*background-color: rgba(244, 247, 247, 0.548);*/
-    min-height: 100vh;
+    min-height: 100%;
 }
 
 body {
@@ -69,21 +69,17 @@ a:hover {
 /* login Form */
 #LoginPage {
     width: 100%;
-    float: left;
     justify-content: center;
+    align-items: center;
     display: flex;
-}
-
-#loginForm {
-    background-color: #ABB2B9;
-    width: 50%;
-    height: auto;
-    position: absolute;
-    margin: 100px 36px;
-    color: black;
+    flex-direction: column;
 }
 
 #loginForm, #createAccount {
+    background-color: #ABB2B9;
+    width: 50%;
+    height: auto;
+    color: black;
     box-shadow: 5px 5px 10px #444;
     padding-bottom: 10px;
     border-radius: 10px;
@@ -138,18 +134,10 @@ label {
 /*Create Account Form*/
 #SignUpPage{
     width: 100%;
-    float: left;
     justify-content: center;
     display: flex;
-}
-
-#createAccount {
-    background-color: #ABB2B9;
-    width: 50%;
-    height: auto;
-    position: absolute;
-    margin: 100px 36px;
-    color: black;
+    align-items: center;
+    flex-direction: column;
 }
 
 #username, #password {
