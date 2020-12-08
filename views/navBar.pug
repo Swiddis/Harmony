@@ -11,11 +11,11 @@ html
             nav
                 img(id="logo" src="../images/harmony_logo.png")
                 ul
-                if(config != null)
-                    each item in config.menu
-                        a(href = item[1])
-                            div(class = 'menu_item')
-                                li(id = item[0]) #{item[0]}
+                    if(config != null)
+                        each item in config.menu
+                            a(href = item[1])
+                                div(class = 'menu_item')
+                                    li(id = item[0]) #{item[0]}
                 
         section
             div(id=`${title.replace(" ", "")}Page`)
