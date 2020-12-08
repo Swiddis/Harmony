@@ -187,7 +187,7 @@ const showLeftMenu = evt => {
     if (leftShown)
         document.getElementById("left_content").style.transform = "translate(0, 0)";
     else
-        document.getElementById("left_content").style.transform = "translate(-100%, 0)";
+        document.getElementById("left_content").style.transform = "";
 };
 
 const showRightMenu = evt => {
@@ -195,7 +195,7 @@ const showRightMenu = evt => {
     if (rightShown)
         document.getElementById("right_content").style.transform = "translate(0, 0)";
     else
-        document.getElementById("right_content").style.transform = "translate(100%, 0)";
+        document.getElementById("right_content").style.transform = "";
 };
 burger.onclick = showLeftMenu;
 rMenu.onclick = showRightMenu;
