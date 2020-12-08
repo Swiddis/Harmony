@@ -13,6 +13,10 @@ html
                 span(id="new_room")
                     img(id="new_room_icon" src="/images/add_room.png")
             div(id="middle_content")
+                div(id="head-banner")
+                    div(id="burger-menu") B
+                    div(class="spacer")
+                    div(id="room-menu") R
                 div(id="display_messages_container")
                     div(class="message_box")
                         //span(class="avatar")
@@ -41,9 +45,10 @@ html
                     p Change Password
                 div(id="logout")
                     p Log Out
-                span(id="spacer")
+                span(class="spacer")
                 div(id="delete")
                     p Delete Account
+        div(id="tooltips")
         
         div(id="modal_background") 
             div(id="room_modal" class="modal")

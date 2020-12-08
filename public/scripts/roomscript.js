@@ -58,7 +58,7 @@ const activateBackground = (over_right_panel = false) => {
     if (over_right_panel) {
         modal_background.style.zIndex = "200";
     } else {
-        modal_background.style.zIndex = "1";
+        modal_background.style.zIndex = "10";
     }
 }
 
@@ -176,6 +176,18 @@ function submitOnEnter(evt) {
     }
 }
 
+let burger = document.getElementById("burger-menu");
+let leftShown = false;
+const showLeftMenu = evt => {
+    leftShown = !leftShown;
+    console.log("clicked.");
+    if (leftShown)
+        document.getElementById("left_content").style.transform = "translate(0, 0)";
+    else
+        document.getElementById("left_content").style.transform = "translate(-100%, 0)";
+};
+burger.onclick = showLeftMenu;
+
 document.getElementById("new_room").addEventListener("click", displayModal);
 document.getElementById("create_room_option").addEventListener("click", displayCreateModal);
 document.getElementById("join_room_option").addEventListener("click", displayJoinModal);
@@ -216,5 +228,9 @@ modal_background.onclick = evt => {
 document.onclick = evt => {
     if (evt.target != menu) {
         menu.style.display = "none";
+    }
+
+    if(evt.target != document.getElementById("burger-menu") && leftShown) {
+        showLeftMenu(evt);
     }
 }

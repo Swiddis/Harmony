@@ -267,3 +267,78 @@ body {
 .room-link:hover {
     cursor: pointer;
 }
+
+#head-banner {
+    display: none;
+}
+
+/* Define styling rules for mobile phones (Really just whenever the width is less than the height). */
+@media only screen and (min-width: 768px) and (orientation: portrait) {
+    #head-banner {
+        display: flex;
+        font-size: 4em;
+    }
+
+    #burger-menu:hover {
+        cursor: pointer;
+    }
+
+    #left_content {
+        height: 100%;
+        z-index: 5;
+        position: fixed !important;
+        transform: translate(-100%, 0);
+        transition: transform 0.4s;
+    }
+
+    #middle_content {
+        font-size: 2em !important;
+    }
+
+    .room, #new_room {
+        height: 6em !important;
+        width: 6em !important;
+        margin: 2em !important;
+    }
+
+    span.tooltiptext {
+        font-size: 2.5em;
+        max-width: 50%;
+        padding: 10px;
+    }
+
+    .tooltiptext::after {
+        margin-top: -10px !important;
+        border-width: 10px !important;
+        left: 0;
+        transform: translate(-110%, 0);
+        right: unset !important;
+    }
+
+    #bottom_input {
+        display: -webkit-box !important;
+        -webkit-justify-content: center;
+        -webkit-box-align: center;
+        margin-bottom: 0.5em;
+    }
+
+    #bottom_input > #file_icon_container {
+        float: left;
+    }
+
+    span.textarea {
+        width: 84% !important;
+        padding-right: 10px;
+    }
+
+    #input_message_container {
+        display: flex;
+        display: -webkit-box !important;
+        -webkit-box-orient: vertical;
+        /*flex-direction: column;*/
+        /*-webkit-flex-direction: column !important;*/
+        -webkit-justify-content: center;
+        -webkit-box-align: start;
+        max-height: 60vh !important;
+    }
+}

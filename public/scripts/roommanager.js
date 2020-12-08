@@ -609,14 +609,15 @@ const renderRoomContent = (roomid, forceRender = false) => {
     });
 };
 
-const showRoomTip = (id) => {
+const showRoomTip = (parent, id) => {
     tipId = id + "_tip";
     let tip = document.getElementById(tipId);
     tip.style.display = "block";
     let tipRect = tip.getBoundingClientRect();
-    let rect = tip.parentElement.getBoundingClientRect()
+    let rect = parent.getBoundingClientRect();
     tip.style.top = (rect.y + (rect.height / 2) - (tipRect.height / 2)) + "px";
     tip.style.left = rect.left + rect.width + 10 + "px";
+    console.log("Rendering at " + tip.style.top + " - " + tip.style.left);
     tip.style.pointerEvents = "none";
 };
 const hideRoomTip = (id) => {
@@ -658,9 +659,19 @@ const renderRoomList = () => {
                 let roomElm = document.createElement("span");
                 roomElm.className = "room";
                 roomElm.id = user.joined_rooms[i];
-                roomElm.setAttribute("onclick", `renderRoomContent('${user.joined_rooms[i]}')`);
-                roomElm.setAttribute("onmouseover", `showRoomTip('${user.joined_rooms[i]}')`);
-                roomElm.setAttribute("onmouseout", `hideRoomTip('${user.joined_rooms[i]}')`);
+                roomElm.addEventListener("click",
+                    evt => renderRoomContent(user.joined_rooms[i]));
+                roomElm.addEventListener("mouseover", evt => {
+                    if (!mobileCheck()) //Don't show the tooltip on hover on mobile.
+                        showRoomTip(roomElm, user.joined_rooms[i]);
+                });
+                roomElm.addEventListener("mouseout",
+                        evt => hideRoomTip(user.joined_rooms[i]));
+
+                roomElm.addEventListener("touchstart", //Use touch events on mobile!
+                        evt => showRoomTip(roomElm, user.joined_rooms[i]));
+                roomElm.addEventListener("touchend",
+                        evt => hideRoomTip(user.joined_rooms[i]));
 
                 //WORKING HERE
                 roomElm.addEventListener("contextmenu", function (e) {
@@ -706,7 +717,7 @@ const renderRoomList = () => {
                 tip.innerText = room.room_title;
 
                 // roomElm.appendChild(img);
-                roomElm.appendChild(tip);
+                document.getElementById("tooltips").appendChild(tip);
                 elements.push(roomElm);
                 if (iterated == joined_rooms.length)
                     buildMenu(elements);
