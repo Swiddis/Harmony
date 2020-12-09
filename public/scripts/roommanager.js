@@ -133,7 +133,6 @@ const sendMessage = () => {
             alert("You're message is too long! Max of 2000 characters");
             return;
         }
-        console.log("Sending message: " + message_box.innerText);
         socket.emit("message", {
             username: username,
             message: message_box.innerText,
@@ -281,7 +280,6 @@ const openUserInfo = user => {
 };
 
 socket.on("message", (msg) => {
-    console.log(msg);
     //for now if msg recieved is from currentroomid display
     if (msg.nickname) {
         let set = false;
@@ -794,7 +792,6 @@ const renderRoomList = () => {
                 const checkImage = async add => {
                     await fetch(add)
                         .then(response => {
-                            console.log(response);
                             if (response.status == 404) {
                                 roomElm.style.backgroundImage = "url('/images/user_icon_green.png')";
                             }
