@@ -292,20 +292,23 @@ socket.on("message", (msg) => {
         }
     }
 
-    if (msg.room_id === currentRoomId) {
-        // messages_container.innerHTML += formatRoomMessage(
-        //     msg.avatar,
-        //     msg.username,
-        //     msg.message,
-        //     msg.is_file,
-        //     msg.timestamp
-        // );
-        renderGroupedMessages(msg);
-        //TODO make scroll to bottom every message only when already scrolled down
-        messages_container.scrollTop = messages_container.scrollHeight;
-    }
-
     if (msg.room_id && joined_rooms.includes(msg.room_id)) {
+        if (msg.room_id === currentRoomId) {
+            // messages_container.innerHTML += formatRoomMessage(
+            //     msg.avatar,
+            //     msg.username,
+            //     msg.message,
+            //     msg.is_file,
+            //     msg.timestamp
+            // );
+            renderGroupedMessages(msg);
+            //TODO make scroll to bottom every message only when already scrolled down
+            messages_container.scrollTop = messages_container.scrollHeight;
+        } else {
+            document.getElementById(msg.room_id).getElementsByClassName("badge")[0]
+                .style.display = "block";
+        }
+
         if (msg.username != username) {
             sendNotification({
                 title: msg.username + " - " + room_titles[msg.room_id],
@@ -670,6 +673,8 @@ const renderRoomContent = (roomid, forceRender = false) => {
                     }
                 });
             }
+            document.getElementById(roomid).getElementsByClassName("badge")[0]
+                .style.display = "";
             hideLoad();
         });
     });
@@ -683,7 +688,6 @@ const showRoomTip = (parent, id) => {
     let rect = parent.getBoundingClientRect();
     tip.style.top = (rect.y + (rect.height / 2) - (tipRect.height / 2)) + "px";
     tip.style.left = rect.left + rect.width + 10 + "px";
-    console.log("Rendering at " + tip.style.top + " - " + tip.style.left);
     tip.style.pointerEvents = "none";
 };
 const hideRoomTip = (id) => {
@@ -693,7 +697,6 @@ const hideRoomTip = (id) => {
 };
 
 const renderRoomList = () => {
-    displayLoad();
     fetchUser(username).then(function (user) {
         console.log(user);
         joined_rooms = user.joined_rooms;
@@ -710,7 +713,6 @@ const renderRoomList = () => {
             });
             rooms_container.innerHTML = "";
             elements.forEach(roomElm => rooms_container.appendChild(roomElm));
-            hideLoad();
         }
 
         let iterated = 0;
@@ -744,7 +746,10 @@ const renderRoomList = () => {
                 roomElm.className = "room";
                 roomElm.id = user.joined_rooms[i];
                 roomElm.addEventListener("click",
-                    evt => renderRoomContent(user.joined_rooms[i]));
+                    evt => {
+                        renderRoomContent(user.joined_rooms[i]);
+                        hideRoomTip(user.joined_rooms[i]);
+                    });
                 roomElm.addEventListener("mouseover", evt => {
                     if (!mobileCheck()) //Don't show the tooltip on hover on mobile.
                         showRoomTip(roomElm, user.joined_rooms[i]);
@@ -767,6 +772,10 @@ const renderRoomList = () => {
                     e.preventDefault();
                     currentContextRoomId = roomElm.id;
                 });
+
+                let badge = document.createElement("span");
+                badge.classList = ["badge"];
+                roomElm.append(badge);
 
 
                 let url;
