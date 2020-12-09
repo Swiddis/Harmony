@@ -64,6 +64,7 @@ body {
     z-index: 2;
     min-width: 165px;
     height: 100%;
+    padding-top: 1em;
     background-color: var(--secondary-bgColor);
     transition: background-color 0.5s;
     display: flex;
@@ -339,7 +340,7 @@ body {
 }
 
 /* Define styling rules for mobile phones (Really just whenever the width is less than the height). */
-@media only screen and (min-width: 768px) and (orientation: portrait) {
+@media only screen and (min-width: 768px) and (orientation: portrait) and (max-aspect-ratio: 5/8){
     #head-banner {
         display: flex;
         font-size: 4em;
@@ -373,7 +374,6 @@ body {
         position: fixed !important;
         transform: translate(100%, 0);
         transition: transform 0.4s;
-        padding-top: 1em;
         box-sizing: border-box;
     }
 
