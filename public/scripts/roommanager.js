@@ -467,7 +467,32 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
             "</div>" +
             "</span></span>";
     } else {
-        formattedMessage =
+        //CURRENTLY WORKING HERE
+        if(hasUrl(message)){
+            base_urls = getAllUrls(message);
+            let urls = [];
+            //Remove duplicate urls (cause will change all instances for each url)
+            base_urls.forEach((url) => {
+                if(!urls.includes(url)){
+                    urls.push(url);
+                }
+            });
+
+            if(urls != null){
+                urls.forEach(url => {
+                    console.log(url);
+                    let newMsg = `<a href='${url}' target="_blank">${url}</a>`;
+                    //Need to change all rather than first instance
+                    if(isYoutubeVideo(url)){
+                        let videoId = getYoutubeVideoId(url);
+                        newMsg += `<br><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                    }
+                    message = message.replaceAll(url, newMsg);
+                });
+            }
+        }
+
+            formattedMessage =
             "<span class='message_box'>" +
             `<div onclick='openUserInfo("${username}")' class='msgAvatar'><span class='avatar'><img onerror="loadDefault(this)" src="${avatar}" alt="${username}_avatar"/></span></div>` +
             `<div class='message_body'><span onclick='openUserInfo("${username}")' class='name'>` +
@@ -504,6 +529,30 @@ const formatRoomMessagePartial = (message, isFile, timestamp) => {
             "</div>" +
             "</span>";
     } else {
+        if(hasUrl(message)){
+            base_urls = getAllUrls(message);
+            let urls = [];
+            //Remove duplicate urls (cause will change all instances for each url)
+            base_urls.forEach((url) => {
+                if(!urls.includes(url)){
+                    urls.push(url);
+                }
+            });
+
+            if(urls != null){
+                urls.forEach(url => {
+                    console.log(url);
+                    let newMsg = `<a href='${url}' target="_blank">${url}</a>`;
+                    //Need to change all rather than first instance
+                    if(isYoutubeVideo(url)){
+                        let videoId = getYoutubeVideoId(url);
+                        newMsg += `<br><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                    }
+                    message = message.replaceAll(url, newMsg);
+                });
+            }
+        }
+
         formattedMessage +=
             "<span class='message'>" +
             message +
@@ -700,7 +749,6 @@ const renderRoomList = () => {
                 roomElm.addEventListener("touchend", cancelTouch);
                 roomElm.addEventListener("touchcancel", cancelTouch);
 
-                //WORKING HERE
                 roomElm.addEventListener("contextmenu", function (e) {
                     menu.style.display = "block";
                     menu.style.top = e.y + "px";
@@ -819,6 +867,34 @@ const isFileImage = (content) => {
 
 const splitFileString = (content) => {
     return content.split("::");
+};
+
+const hasUrl = (message) => {
+    let urlRegex = /https?:\/\/.{2,}/;
+    return urlRegex.test(message);
+};
+
+const getAllUrls = (message) => {
+    let allUrls = [];
+    let urlRegex = /(https?:\/\/\S*)/ig;
+    allUrls = message.match(urlRegex);
+    console.log(allUrls);
+    return allUrls;
+};
+
+const isYoutubeVideo = (url) => {
+    //need either form at:
+    //youtube.com/watch?v=Us6VsyGsC4o
+    //youtu.be/Us6VsyGsC4o
+    let youtubeRegex = /(youtube\.com\/watch\?v=.{11})|(youtu\.be\/.{11})/;
+    return youtubeRegex.test(url);
+};
+
+const getYoutubeVideoId = (url) => {
+    //id is always 11 characters long
+    let youtubeRegex = /(youtube\.com\/watch\?v=.{11})|(youtu\.be\/.{11})/;
+    let match = url.match(youtubeRegex);
+    return match[0].substring(match[0].length - 11);
 };
 
 //TODO Come back to make downloading files more fancy
