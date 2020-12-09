@@ -52,7 +52,7 @@ let activeNotif;
 const sendNotification = (data) => {
     let notify = () => {
 
-        if (data.room_id != currentRoomId) { //Only send notification if in different room.
+        if (data.room_id != currentRoomId || ! document.hasFocus()) { //Only send notification if in different room.
 
             let notification = new Notification(data.title, {
                 icon: data.icon,
