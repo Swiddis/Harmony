@@ -305,8 +305,9 @@ socket.on("message", (msg) => {
             //TODO make scroll to bottom every message only when already scrolled down
             messages_container.scrollTop = messages_container.scrollHeight;
         } else {
-            document.getElementById(msg.room_id).getElementsByClassName("badge")[0]
-                .style.display = "block";
+            if (document.getElementById(msg.room_id))
+                document.getElementById(msg.room_id).getElementsByClassName("badge")[0]
+                    .style.display = "block";
         }
 
         if (msg.username != username) {
@@ -673,8 +674,9 @@ const renderRoomContent = (roomid, forceRender = false) => {
                     }
                 });
             }
-            document.getElementById(roomid).getElementsByClassName("badge")[0]
-                .style.display = "";
+            if (document.getElementById(roomid))
+                document.getElementById(roomid).getElementsByClassName("badge")[0]
+                    .style.display = "";
             hideLoad();
         });
     });
