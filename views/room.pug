@@ -30,7 +30,7 @@ html
                             img(id="file_icon" src="/images/download.png")
                         form(id="send_media" enctype="multipart/form-data")
                             input(type="file" id="my_file" name="media")
-                        span(class="textarea" contenteditable=true id="my_message" onkeypress="return submitOnEnter(event);")
+                        span(class="textarea" contenteditable=true id="my_message" onkeyup="return submitOnEnter(event);")
             div(id="right_content")
                 div(class="theme-switch-wrapper")
                     label(class="theme-switch" for="dark_toggle")

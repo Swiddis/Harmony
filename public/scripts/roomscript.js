@@ -172,7 +172,10 @@ const mobileCheck = () => {
 
 //On Enter Submit Message
 function submitOnEnter(evt) {
-    if (evt.key === "Enter" && (mobileCheck() || evt.shiftKey === false)) {
+    let text = evt.target.innerText;
+    if (((evt.keyCode === 13 || text.endsWith("\n")) && mobileCheck()) ||
+        (evt.keyCode === 13 && evt.shiftKey === false)) {
+        if (text.endsWith("\n")) message_box.innerText = text.trim();
         sendMessage();
         message_box.innerText = "";
         evt.preventDefault();
