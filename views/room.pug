@@ -10,9 +10,11 @@ html
     body(data-theme=theme ? theme : "dark")
         div(id="page_container")
             div(id="left_content")
-                div(id="rooms_container")
-                span(id="new_room")
-                    img(id="new_room_icon" src="/images/add_room.png")
+                div(style="overflow: auto")
+                    div(id="rooms_container")
+                div
+                    span(id="new_room")
+                        img(id="new_room_icon" src="/images/add_room.png")
             div(id="middle_content")
                 div(id="head-banner")
                     div(id="burger-menu" class="material-icons") menu

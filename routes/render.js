@@ -2,7 +2,7 @@ const config = require("../config.json");
 const {User} = require("../conf/mongo_conf");
 const userdb = require("../db/userdb");
 
-var allowed;
+let allowed;
 
 exports.index = (req, res) => {
     res.render("index", {

@@ -109,7 +109,8 @@ const buildResponse = (res, err, user, created = false) => {
                 username: user.username,
                 joined_rooms: user.joined_rooms,
                 avatar: user.avatar,
-                theme: user.theme
+                theme: user.theme,
+                rooms: user.rooms
             }; //Make sure not to send back the password!
             response.data = tempUser;
         }
