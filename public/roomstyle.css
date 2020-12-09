@@ -76,12 +76,13 @@ body {
 
 /*Room (Icon) Styles*/
 .room, #new_room {
+    position: relative;
     height: 3em;
     width: 3em;
     margin: .75em;
     cursor: pointer;
     border-radius: 50%;
-    overflow: hidden;
+    /*overflow: hidden;*/
     display: flex;
     align-items: center;
     justify-content: center;

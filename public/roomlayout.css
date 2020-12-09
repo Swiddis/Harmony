@@ -306,6 +306,37 @@ body {
     flex-direction: column;
 }
 
+@-webkit-keyframes notif-anim {
+    0% { box-shadow: 0px 0px 5px #fff; }
+    50% { box-shadow: 0px 0px 5px 2px #fff; }
+    100% { box-shadow: 0px 0px 5px #fff; }
+}
+
+@keyframes notif-anim {
+    0% { box-shadow: 0px 0px 5px #fff; }
+    50% { box-shadow: 0px 0px 5px 2px #fff; }
+    100% { box-shadow: 0px 0px 5px #fff; }
+}
+
+.badge {
+    display: none;
+    position: absolute;
+    height: 0.6em;
+    width: 0.6em;
+    top: -0em;
+    right: -0em;
+    border-radius: 50%;
+    background: #ff8910;
+    color: white;
+    box-shadow: 0px 0px 5px #fff;
+    -webkit-animation-name: notif-anim;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-iteration-count: infinite;
+    animation-name: notif-anim;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+
 /* Define styling rules for mobile phones (Really just whenever the width is less than the height). */
 @media only screen and (min-width: 768px) and (orientation: portrait) {
     #head-banner {
