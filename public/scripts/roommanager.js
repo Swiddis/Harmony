@@ -489,7 +489,7 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
                         let videoId = getYoutubeVideoId(url);
                         newVideos += `<br><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
                     }
-                    message = message.replaceAll(url, newMsg);
+                    message = message.replace(url, newMsg);
                 });
                 message += newVideos;
             }
@@ -552,7 +552,7 @@ const formatRoomMessagePartial = (message, isFile, timestamp) => {
                         let videoId = getYoutubeVideoId(url);
                         newVideos += `<br><iframe width="560" height="315" style="margin-top:0.8em" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
                     }
-                    message = message.replaceAll(url, newMsg);
+                    message = message.replace(url, newMsg);
                 });
                 message += newVideos;
             }
