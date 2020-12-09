@@ -50,6 +50,9 @@ body {
 }
 
 /* logout and delete*/
+#delete {
+    background-color: #c00 !important;
+}
 #logout, #delete {
     background-color: var(--bg-color);
     font-size: 1em;
