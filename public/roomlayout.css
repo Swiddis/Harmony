@@ -328,6 +328,7 @@ body {
     border-radius: 50%;
     background: #ff8910;
     color: white;
+    border: 1px solid #fff;
     box-shadow: 0px 0px 5px #fff;
     -webkit-animation-name: notif-anim;
     -webkit-animation-duration: 2s;
@@ -345,6 +346,11 @@ body {
         align-items: center;
         justify-content: center;
         flex-grow: 0;
+    }
+
+    .badge {
+        height: 1.5em !important;
+        width: 1.5em !important;
     }
 
     #burger-menu:hover {
