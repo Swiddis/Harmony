@@ -246,6 +246,7 @@ body {
 .message {
     position: relative;
     display: flex;
+    flex-direction: column;
     font-size: 1em;
     white-space: pre-wrap;
     padding: 0.2em 0 1em 0;
