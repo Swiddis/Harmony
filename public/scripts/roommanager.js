@@ -457,7 +457,7 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
             `<div class='message_body'><span onclick='openUserInfo("${username}")' class='name'>` +
             name +
             "</span>" +
-            "<span class='message'></div>";
+            "<span class='message'>";
 
         formattedMessage += formatImage(message);
 
@@ -465,25 +465,25 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
             (now.toLocaleDateString() != date.toLocaleDateString() ? date.toLocaleDateString() + "<br>" : "") +
             date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) +
             "</div>" +
-            "</span></span>";
+            "</span></div></span>";
     } else {
         //CURRENTLY WORKING HERE
-        if(hasUrl(message)){
+        if (hasUrl(message)) {
             base_urls = getAllUrls(message);
             let urls = [];
             //Remove duplicate urls (cause will change all instances for each url)
             base_urls.forEach((url) => {
-                if(!urls.includes(url)){
+                if (!urls.includes(url)) {
                     urls.push(url);
                 }
             });
 
-            if(urls != null){
+            if (urls != null) {
                 urls.forEach(url => {
                     console.log(url);
                     let newMsg = `<a href='${url}' target="_blank">${url}</a>`;
                     //Need to change all rather than first instance
-                    if(isYoutubeVideo(url)){
+                    if (isYoutubeVideo(url)) {
                         let videoId = getYoutubeVideoId(url);
                         newMsg += `<br><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
                     }
@@ -492,7 +492,7 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
             }
         }
 
-            formattedMessage =
+        formattedMessage =
             "<span class='message_box'>" +
             `<div onclick='openUserInfo("${username}")' class='msgAvatar'><span class='avatar'><img onerror="loadDefault(this)" src="${avatar}" alt="${username}_avatar"/></span></div>` +
             `<div class='message_body'><span onclick='openUserInfo("${username}")' class='name'>` +
@@ -529,22 +529,22 @@ const formatRoomMessagePartial = (message, isFile, timestamp) => {
             "</div>" +
             "</span>";
     } else {
-        if(hasUrl(message)){
+        if (hasUrl(message)) {
             base_urls = getAllUrls(message);
             let urls = [];
             //Remove duplicate urls (cause will change all instances for each url)
             base_urls.forEach((url) => {
-                if(!urls.includes(url)){
+                if (!urls.includes(url)) {
                     urls.push(url);
                 }
             });
 
-            if(urls != null){
+            if (urls != null) {
                 urls.forEach(url => {
                     console.log(url);
                     let newMsg = `<a href='${url}' target="_blank">${url}</a>`;
                     //Need to change all rather than first instance
-                    if(isYoutubeVideo(url)){
+                    if (isYoutubeVideo(url)) {
                         let videoId = getYoutubeVideoId(url);
                         newMsg += `<br><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
                     }
@@ -1116,7 +1116,7 @@ document.getElementById("avatar_upload").onchange = evt => {
     }
 }
 document.getElementById("room_icon_upload").onchange = evt => {
-    if(validateFileSize(evt)) {
+    if (validateFileSize(evt)) {
         let upload = evt.target;
         let preview = document.getElementById("room_icon_preview");
         let reader = new FileReader();
