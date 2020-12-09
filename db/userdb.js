@@ -91,7 +91,21 @@ exports.getUser = (username, callback) => {
     // We'll cache users in memory so we don't always have to query the database
     for (let user of user_cache) {
         if (user.username == username) {
-            this.clean(user, user => callback(undefined, user));
+            this.clean(user, user => {
+                Room.find({room_id: {$in: user.joined_rooms}}, (err, rooms) => {
+                    let list = [];
+                    rooms.forEach(rm => {
+                        let tmp = {};
+                        tmp.room_id = rm.room_id;
+                        tmp.members = rm.members;
+                        tmp.room_title = rm.room_title;
+                        tmp.roomAvatar = rm.roomAvatar;
+                        list.push(tmp)
+                    });
+                    user.rooms = list;
+                    callback(undefined, user);
+                });
+            });
             return;
         }
     }
@@ -109,8 +123,20 @@ exports.getUser = (username, callback) => {
             }
             if (user) {
                 this.clean(user, user => {
-                    user_cache.push(user);
-                    callback(undefined, user)
+                    Room.find({room_id: {$in: user.joined_rooms}}, (err, rooms) => {
+                        let list = [];
+                        rooms.forEach(rm => {
+                            let tmp = {};
+                            tmp.room_id = rm.room_id;
+                            tmp.members = rm.members;
+                            tmp.room_title = rm.room_title;
+                            tmp.roomAvatar = rm.roomAvatar;
+                            list.push(tmp)
+                        });
+                        user.rooms = list;
+                        user_cache.push(user);
+                        callback(undefined, user)
+                    });
                 });
             } else {
                 callback(new Error("User not found"));

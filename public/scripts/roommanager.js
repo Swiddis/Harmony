@@ -18,6 +18,8 @@ let prev_sender = undefined;
 let prev_timestamp = -1000;
 const FIVE_MINS = 5 * 60 * 1000;
 
+let USER;
+
 const PLACEHOLDER = document.createElement("div");
 PLACEHOLDER.innerHTML = "<span class='message_box'><span class='message'>No messages yet...</span></span>";
 
@@ -37,6 +39,11 @@ async function fetchUser(username) {
 
 //Does not include messages
 async function fetchRoomData(roomid) {
+    for (let room of USER.rooms) {
+        if (room.room_id == roomid)
+            return room;
+    }
+
     let response = await fetch(`/room/${roomid}`);
     let data = await response.text();
     return JSON.parse(data).data;
@@ -52,7 +59,7 @@ let activeNotif;
 const sendNotification = (data) => {
     let notify = () => {
 
-        if (data.room_id != currentRoomId || ! document.hasFocus()) { //Only send notification if in different room.
+        if (data.room_id != currentRoomId || !document.hasFocus()) { //Only send notification if in different room.
 
             let notification = new Notification(data.title, {
                 icon: data.icon,
@@ -94,16 +101,25 @@ document.onvisibilitychange = evt => {
         activeNotif.close();
 };
 
-window.onload = function () {
+window.onload = async function () {
     fetchUser(username).then(function (user) {
-        console.log(user);
+        USER = user;
         if (user.joined_rooms.length > 0) {
-            renderRoomList();
+            renderRoomList(user.rooms);
             //Currently when first loading in, will just load the first room in the list
-            console.log("JOINED_ROOMS:" + user.joined_rooms[0]);
             renderRoomContent(user.joined_rooms[0]);
         }
     });
+};
+
+const loadImages = () => {
+    let elms = document.querySelectorAll("img[lazysrc]");
+    if (elms) {
+        elms.forEach(elm => {
+            elm.src = elm.getAttribute("lazysrc");
+            elm.removeAttribute("lazysrc");
+        });
+    }
 };
 
 const socket = io.connect(document.location.host, {
@@ -147,14 +163,14 @@ const sendMessage = () => {
 };
 
 const sendFile = (callback) => {
-    var form = document.forms.namedItem("send_media");
-    var formData = new FormData(form);
+    let form = document.forms.namedItem("send_media");
+    let formData = new FormData(form);
 
     formData.append("sender", username);
     formData.append("room_id", currentRoomId);
 
     displayLoad();
-    var request = new XMLHttpRequest();
+    let request = new XMLHttpRequest();
     request.open("POST", "/media");
     request.onload = function () {
         console.log(request.status);
@@ -305,7 +321,10 @@ socket.on("message", (msg) => {
             // );
             renderGroupedMessages(msg);
             //TODO make scroll to bottom every message only when already scrolled down
-            messages_container.scrollTop = messages_container.scrollHeight;
+            let child = messages_container.lastChild;
+            let bounds = messages_container.scrollHeight - child.scrollHeight - messages_container.getBoundingClientRect().height;
+            if (messages_container.scrollTop > bounds)
+                child.scrollIntoView({behavior: "smooth", block: "end"});
         } else {
             if (document.getElementById(msg.room_id))
                 document.getElementById(msg.room_id).getElementsByClassName("badge")[0]
@@ -439,9 +458,9 @@ const formatImage = message => {
         ret += `<a href='${fileStr[0]}' download='${fileStr[1]}'>`;
     }
     if (isImage) {
-        ret += `<img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image' onclick="displayViewImageModal('${fileStr[0]}', '${fileStr[1]}')"/>`;
+        ret += `<img lazysrc='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image' onclick="displayViewImageModal('${fileStr[0]}', '${fileStr[1]}')"/>`;
     } else {
-        ret += `<img src='/images/media.png' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/><div>${fileStr[1]}</div>`;
+        ret += `<img lazysrc='/images/media.png' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/><div>${fileStr[1]}</div>`;
     }
     if (!isImage) {
         ret += `</a>`;
@@ -492,7 +511,6 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
             if (urls != null) {
                 let newVideos = "";
                 urls.forEach(url => {
-                    console.log(url);
                     let newMsg = `<a href='${url}' target="_blank">${url}</a>`;
                     //Need to change all rather than first instance
                     if (isYoutubeVideo(url)) {
@@ -591,13 +609,17 @@ const renderGroupedMessages = msg => {
         msg.sender = msg.username;
     if (!messages_container.lastChild || msg.sender != prev_sender || Math.abs(new Date(msg.timestamp) - prev_timestamp) > FIVE_MINS) {
         prev_sender = msg.sender;
-        messages_container.innerHTML += formatRoomMessage(
+
+        let formatted = formatRoomMessage(
             msg.avatar,
             msg.sender,
             msg.content ? msg.content : msg.message,
             msg.is_file,
             msg.timestamp
         );
+        let elm = document.createElement("div");
+        elm.innerHTML = formatted;
+        messages_container.append(elm.firstChild);
     } else {
         //Let's double up messages a bit so it's not as spread out.
         // Just with an extra line break between.
@@ -611,14 +633,13 @@ const renderGroupedMessages = msg => {
     prev_timestamp = new Date(msg.timestamp);
 };
 
-const renderRoomContent = (roomid, forceRender = false) => {
+const renderRoomContent = async (roomid, forceRender = false) => {
     //So the room doesn't rerender the same room if clicked again
     if (currentRoomId === roomid && !forceRender) {
         return;
     }
 
     displayLoad();
-    console.log("RENDERING ROOM: " + roomid);
     messages_container.innerHTML = "";
 
     fetchRoomData(roomid).then(function (room) {
@@ -649,36 +670,39 @@ const renderRoomContent = (roomid, forceRender = false) => {
             }
 
             //Attempts to wait until all imgs either rendered or errored out before scrolling.
-            let count = 0;
-            let imgs = messages_container.getElementsByTagName("img");
+            // let count = 0;
+            // let imgs = messages_container.querySelectorAll(".message img");
+            //
+            // let incr = () => {
+            //     // count++;
+            //     // if (count == imgs.length) {
+            //     messages_container.lastChild.scrollIntoView({behavior: "smooth"});
+            //     // }
+            // }
+            //
+            // let counted = [];
+            // for (let img of imgs) {
+            //     if (img.complete) {
+            //         incr();
+            //     }
+            //     img.onload = () => {
+            //         incr();
+            //     };
+            //     img.addEventListener("error", () => {
+            //         if (!img.onerror) {
+            //             if (!counted.includes(img)) {
+            //                 counted.push(img);
+            //                 incr();
+            //             }
+            //         }
+            //     });
+            // }
 
-            let incr = () => {
-                // count++;
-                // if (count == imgs.length) {
-                messages_container.lastChild.scrollIntoView({behavior: "smooth"});
-                // }
-            }
-
-            let counted = [];
-            for (let img of imgs) {
-                if (img.complete) {
-                    incr();
-                }
-                img.onload = () => {
-                    incr();
-                };
-                img.addEventListener("error", () => {
-                    if (!img.onerror) {
-                        if (!counted.includes(img)) {
-                            counted.push(img);
-                            incr();
-                        }
-                    }
-                });
-            }
             if (document.getElementById(roomid))
                 document.getElementById(roomid).getElementsByClassName("badge")[0]
                     .style.display = "";
+            messages_container.lastChild.scrollIntoView({block: "end"});
+            loadImages();
             hideLoad();
         });
     });
@@ -700,135 +724,136 @@ const hideRoomTip = (id) => {
     tip.style.display = "none";
 };
 
-const renderRoomList = () => {
-    fetchUser(username).then(function (user) {
-        console.log(user);
-        joined_rooms = user.joined_rooms;
-        room_titles = {};
-        let elements = [];
+const renderRoomList = async (roomList) => {
 
-        let buildMenu = elements => {
-            elements.sort((a, b) => {
-                let one = room_titles[a.id];
-                let two = room_titles[b.id];
-                if (one < two) return -1;
-                else if (two < one) return 1;
-                else return 0;
-            });
-            rooms_container.innerHTML = "";
-            elements.forEach(roomElm => rooms_container.appendChild(roomElm));
+    let user = USER;
+    let elements = [];
+    let iterated = 0;
+
+    const buildMenu = elements => {
+        elements.sort((a, b) => {
+            let one = room_titles[a.id];
+            let two = room_titles[b.id];
+            if (one < two) return -1;
+            else if (two < one) return 1;
+            else return 0;
+        });
+        rooms_container.innerHTML = "";
+        elements.forEach(roomElm => rooms_container.appendChild(roomElm));
+    };
+
+    const buildRoomMenuItem = room => {
+        iterated++;
+        if (!room) return;
+
+        room_titles[room.room_id] = room.room_title;
+
+        let touchTimeout;
+        let startTouch = (evt) => {
+            touchTimeout = window.setTimeout(function () {
+                hideRoomTip(user.joined_rooms[i]);
+                menu.style.display = "block";
+                menu.style.top = evt.touches[0].screenY + "px";
+                menu.style.left = evt.touches[0].screenX + "px";
+                evt.preventDefault();
+                currentContextRoomId = roomElm.id;
+            }.bind(this), 500);
+        };
+
+        let cancelTouch = () => {
+            hideRoomTip(room.room_id);
+            if (touchTimeout)
+                window.clearTimeout(touchTimeout);
         }
 
-        let iterated = 0;
-        for (let i = 0; i < joined_rooms.length; i++) {
-            let rm = joined_rooms[i];
-
-            fetchRoomData(rm).then(function (room) {
-                iterated++;
-                if (!room) return;
-                room_titles[room.room_id] = room.room_title;
-
-                let touchTimeout;
-                let startTouch = (evt) => {
-                    touchTimeout = window.setTimeout(function () {
-                        hideRoomTip(user.joined_rooms[i]);
-                        menu.style.display = "block";
-                        menu.style.top = evt.touches[0].screenY + "px";
-                        menu.style.left = evt.touches[0].screenX + "px";
-                        evt.preventDefault();
-                        currentContextRoomId = roomElm.id;
-                    }.bind(this), 500);
-                };
-
-                let cancelTouch = () => {
-                    hideRoomTip(user.joined_rooms[i]);
-                    if (touchTimeout)
-                        window.clearTimeout(touchTimeout);
-                }
-
-                let roomElm = document.createElement("span");
-                roomElm.className = "room";
-                roomElm.id = user.joined_rooms[i];
-                roomElm.addEventListener("click",
-                    evt => {
-                        renderRoomContent(user.joined_rooms[i]);
-                        hideRoomTip(user.joined_rooms[i]);
-                    });
-                roomElm.addEventListener("mouseover", evt => {
-                    if (!mobileCheck()) //Don't show the tooltip on hover on mobile.
-                        showRoomTip(roomElm, user.joined_rooms[i]);
-                });
-                roomElm.addEventListener("mouseout",
-                    evt => hideRoomTip(user.joined_rooms[i]));
-
-                roomElm.ontouchstart = //Use touch events on mobile!
-                    evt => {
-                        startTouch(evt);
-                        showRoomTip(roomElm, user.joined_rooms[i]);
-                    };
-                roomElm.addEventListener("touchend", cancelTouch);
-                roomElm.addEventListener("touchcancel", cancelTouch);
-
-                roomElm.addEventListener("contextmenu", function (e) {
-                    menu.style.display = "block";
-                    menu.style.top = e.y + "px";
-                    menu.style.left = e.x + "px";
-                    e.preventDefault();
-                    currentContextRoomId = roomElm.id;
-                });
-
-                let badge = document.createElement("span");
-                badge.classList = ["badge"];
-                roomElm.append(badge);
-
-
-                let url;
-                if (room.roomAvatar) {
-                    url = room.roomAvatar;
-                } else {
-                    url = "./images/room.png";
-                }
-                roomElm.style.backgroundImage = `url('${url}')`;
-                const checkImage = async add => {
-                    await fetch(add)
-                        .then(response => {
-                            if (response.status == 404) {
-                                roomElm.style.backgroundImage = "url('/images/user_icon_green.png')";
-                            }
-                        });
-                };
-                checkImage(url).then();
-
-                // let img = document.createElement("img");
-                // img.onerror = () => loadDefaultRoom({target: img});
-                // if (room.roomAvatar) {
-                //     img.src = room.roomAvatar;
-                // } else {
-                //     img.src = "./images/room.png";
-                // }
-                // img.style = "margin: 0 1px; width: 50px; height: 50px; object-fit: cover; background-color: var(--modal-color);";
-
-
-                let tip = document.createElement("span");
-                tip.id = user.joined_rooms[i] + "_tip";
-                tip.className = "tooltiptext";
-                tip.innerText = room.room_title;
-
-                // roomElm.appendChild(img);
-                document.getElementById("tooltips").appendChild(tip);
-                elements.push(roomElm);
-                if (iterated == joined_rooms.length)
-                    buildMenu(elements);
-
-                // rooms_container.innerHTML +=
-                //     `<span class='room' style='text-align:center' id='${user.joined_rooms[i]}' onclick='renderRoomContent("${user.joined_rooms[i]}");' onmouseover='showRoomTip("${user.joined_rooms[i]}");' onmouseout='hideRoomTip("${user.joined_rooms[i]}");'>` +
-                //     `<img onerror="loadDefaultRoom(this)" src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>` +
-                //     `<span id='${user.joined_rooms[i]}_tip' class='tooltiptext'>${room.room_title}</span>` +
-                //     `</span>`;
+        let roomElm = document.createElement("span");
+        roomElm.className = "room";
+        roomElm.id = room.room_id;
+        roomElm.addEventListener("click",
+            evt => {
+                renderRoomContent(room.room_id);
+                hideRoomTip(room.room_id);
             });
+        roomElm.addEventListener("mouseover", evt => {
+            if (!mobileCheck()) //Don't show the tooltip on hover on mobile.
+                showRoomTip(roomElm, room.room_id);
+        });
+        roomElm.addEventListener("mouseout",
+            evt => hideRoomTip(room.room_id));
+
+        roomElm.ontouchstart = //Use touch events on mobile!
+            evt => {
+                startTouch(evt);
+                showRoomTip(roomElm, room.room_id);
+            };
+        roomElm.addEventListener("touchend", cancelTouch);
+        roomElm.addEventListener("touchcancel", cancelTouch);
+
+        roomElm.addEventListener("contextmenu", function (e) {
+            menu.style.display = "block";
+            menu.style.top = e.y + "px";
+            menu.style.left = e.x + "px";
+            e.preventDefault();
+            currentContextRoomId = roomElm.id;
+        });
+
+        let badge = document.createElement("span");
+        badge.classList = ["badge"];
+        roomElm.append(badge);
+
+
+        let url;
+        if (room.roomAvatar) {
+            url = room.roomAvatar;
+        } else {
+            url = "./images/room.png";
         }
-    });
+        roomElm.style.backgroundImage = `url('${url}')`;
+        const checkImage = async add => {
+            await fetch(add)
+                .then(response => {
+                    if (response.status == 404) {
+                        roomElm.style.backgroundImage = "url('/images/user_icon_green.png')";
+                    }
+                });
+        };
+        checkImage(url).then();
+
+
+        let tip = document.createElement("span");
+        tip.id = room.room_id + "_tip";
+        tip.className = "tooltiptext";
+        tip.innerText = room.room_title;
+
+        document.getElementById("tooltips").appendChild(tip);
+        elements.push(roomElm);
+        if (iterated == joined_rooms.length) {
+            buildMenu(elements);
+        }
+    };
+
+    if (roomList) {
+        joined_rooms = roomList.map(room => room.room_id);
+        roomList.forEach(room => buildRoomMenuItem(room));
+    } else {
+        fetchUser(username).then(function (us) {
+            console.log(us);
+            USER = us;
+            user = us;
+            joined_rooms = us.joined_rooms;
+            room_titles = {};
+
+            for (let i = 0; i < joined_rooms.length; i++) {
+                let rm = joined_rooms[i];
+
+                fetchRoomData(rm).then(function (room) {
+                    buildRoomMenuItem(room);
+                });
+            }
+        });
+    }
 };
+
 const makeRoomClickable = (roomElementId) => {
     document
         .getElementById(roomElementId)
@@ -901,7 +926,6 @@ const getAllUrls = (message) => {
     let allUrls = [];
     let urlRegex = /(https?:\/\/\S*)/ig;
     allUrls = message.match(urlRegex);
-    console.log(allUrls);
     return allUrls;
 };
 
@@ -922,7 +946,7 @@ const getYoutubeVideoId = (url) => {
 
 //TODO Come back to make downloading files more fancy
 const downloadFile = (file) => {
-    var element = document.createElement("a");
+    let element = document.createElement("a");
 };
 
 // Change Avatar\

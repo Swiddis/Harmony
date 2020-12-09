@@ -12,7 +12,7 @@ const file_modal = document.getElementById("file_modal");
 const view_image_modal = document.getElementById("view_image_modal");
 const room_icon_modal = document.getElementById("room_icon_modal");
 const room_leave_modal = document.getElementById("leave_room_modal");
-var background_activated = false;
+let background_activated = false;
 
 const toggleDarkMode = () => {
     let theme = document.body.getAttribute("data-theme");
