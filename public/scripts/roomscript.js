@@ -157,7 +157,7 @@ const goBackModal = () => {
 }
 //When user clicks out of modal close it
 window.onclick = function (event) {
-    if (event.target == modal_background) {
+    if (event.target == modal_background || event.target == document.getElementsByClassName("view_image")[0]) {
         closeModals();
     }
 }
