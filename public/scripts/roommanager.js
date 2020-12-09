@@ -479,16 +479,18 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
             });
 
             if (urls != null) {
+                let newVideos = "";
                 urls.forEach(url => {
                     console.log(url);
                     let newMsg = `<a href='${url}' target="_blank">${url}</a>`;
                     //Need to change all rather than first instance
                     if (isYoutubeVideo(url)) {
                         let videoId = getYoutubeVideoId(url);
-                        newMsg += `<br><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                        newVideos += `<br><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
                     }
                     message = message.replaceAll(url, newMsg);
                 });
+                message += newVideos;
             }
         }
 
@@ -540,16 +542,18 @@ const formatRoomMessagePartial = (message, isFile, timestamp) => {
             });
 
             if (urls != null) {
+                let newVideos = "";
                 urls.forEach(url => {
                     console.log(url);
                     let newMsg = `<a href='${url}' target="_blank">${url}</a>`;
                     //Need to change all rather than first instance
                     if (isYoutubeVideo(url)) {
                         let videoId = getYoutubeVideoId(url);
-                        newMsg += `<br><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                        newVideos += `<br><iframe width="560" height="315" style="margin-top:0.8em" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
                     }
                     message = message.replaceAll(url, newMsg);
                 });
+                message += newVideos;
             }
         }
 
