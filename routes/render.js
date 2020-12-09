@@ -64,6 +64,7 @@ exports.rooms = (req, res) => {
 exports.checkAccess = (req, res) => {
     if (req.body.username == "" || req.body.password == null) {
         res.redirect("/login?invalid");
+        return;
     }
 
     let userName = req.body.username;
