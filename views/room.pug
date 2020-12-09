@@ -61,6 +61,7 @@ html
                         h2 Create/Join Room
                     div(class="modal_body")
                         span(id="create_room_option" class="button") Create Room
+                        br
                         span(id="join_room_option" class="button") Join Room
             div(id="create_room_modal" class="modal")
                 div(class="modal_content")
@@ -76,6 +77,8 @@ html
                         input(type="password" id="create_password" placeholder="Password")
                         br
                         span(id="create_room_button" class="button") Create Room
+                    br 
+                    br
                     div(class="modal_footer")
                         span(class="back_modal") Back 
             div(id="join_room_modal" class="modal")
@@ -88,7 +91,10 @@ html
                         input(type="text" id="join_id" placeholder="Room ID")
                         p Password:
                         input(type="text" id="join_password" placeholder="Password (if applicable)")
-                        span(id="join_room_button" class="button") Join 
+                        br
+                        span(id="join_room_button" class="button") Join
+                    br 
+                    br 
                     div(class="modal_footer")
                         span(class="back_modal") Back
             div(id="nickname_modal" class="modal")
