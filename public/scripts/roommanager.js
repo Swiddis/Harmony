@@ -52,19 +52,23 @@ let activeNotif;
 const sendNotification = (data) => {
     let notify = () => {
 
-        let notification = new Notification(data.title, {
-            icon: data.icon,
-            body: data.body,
-            silent: true
-        });
-        activeNotif = notification;
+        if (data.room_id != currentRoomId) { //Only send notification if in different room.
 
-        notification.onclick = () => {
-            window.focus();
-            renderRoomContent(data.room_id);
-        };
+            let notification = new Notification(data.title, {
+                icon: data.icon,
+                body: data.body,
+                silent: true
+            });
+            activeNotif = notification;
 
-        setTimeout(notification.close.bind(notification), 10000);
+            notification.onclick = () => {
+                window.focus();
+                renderRoomContent(data.room_id);
+            };
+
+            setTimeout(notification.close.bind(notification), 10000);
+
+        }
 
     };
 
