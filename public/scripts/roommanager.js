@@ -325,7 +325,7 @@ socket.on("message", (msg) => {
             let child = messages_container.lastChild;
             let bounds = messages_container.scrollHeight - child.scrollHeight - messages_container.getBoundingClientRect().height;
             if (msg.username == username || messages_container.scrollTop > bounds)
-                child.scrollIntoView({behavior: "smooth", block: "end"});
+                child.scrollIntoView({behavior: "smooth", block: "start"});
         } else {
             if (document.getElementById(msg.room_id))
                 document.getElementById(msg.room_id).getElementsByClassName("badge")[0]
@@ -674,7 +674,7 @@ const renderRoomContent = async (roomid, forceRender = false) => {
             let imgs = messages_container.querySelectorAll(".message img");
 
             let incr = () => {
-                messages_container.lastChild.scrollIntoView({behavior: "smooth", block: "end"});
+                messages_container.lastChild.scrollIntoView({behavior: "smooth", block: "start"});
             }
 
             let counted = [];
@@ -698,7 +698,7 @@ const renderRoomContent = async (roomid, forceRender = false) => {
             if (document.getElementById(roomid))
                 document.getElementById(roomid).getElementsByClassName("badge")[0]
                     .style.display = "";
-            messages_container.lastChild.scrollIntoView({block: "end"});
+            messages_container.lastChild.scrollIntoView({block: "start"});
             loadImages();
             hideLoad();
         });
