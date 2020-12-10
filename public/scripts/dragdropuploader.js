@@ -26,7 +26,7 @@ renderFile = evt => {
     validateFileSize(evt);
     console.log(evt.target.files[0]);
     if (evt.target.files[0]) {
-        var reader = new FileReader();
+        let reader = new FileReader();
 
         reader.onload = function (e) {
             // get loaded data and render thumbnail.
@@ -68,7 +68,7 @@ const dropHandler = evt => {
 
     let list = new DataTransfer();
     let blob;
-    var imageUrl = evt.dataTransfer.getData('Text');
+    let imageUrl = evt.dataTransfer.getData('Text');
     if (!imageUrl) {
         if (evt.dataTransfer.items) {
             blob = evt.dataTransfer.items[0].getAsFile();

@@ -2,14 +2,15 @@ extends navBar
 
 block content    
     form(id="createAccount" action="/signup" method="post")
-        label(for="username") Username: 
+        div(id="userNameBox")
+            label(for="username") Username:
+            br
+            input(type="text", name="username", id="username" autofocus placeholder='Username' maxlength="20")
         br
-        input(type="text", name="username", id="username")
+        div(id="passcode")
+            label(for="password") Password:
+            br
+            input(type="password", name="password", id="password" placeholder='Password')
         br
-        br
-        label(for="password") Password: 
-        br
-        input(type="password", name="password", id="password")
-        br
-        br
-        input(type="submit", value="Sign Up", id="createSubmit")
+        div(id='submitButton')
+            input(type="submit", value="Sign Up", id="createSubmit")

@@ -13,8 +13,6 @@ body {
 
 /* Left (Room Icon) Container*/
 #left_content, #rooms_container {
-    width: 6em;
-    flex-grow: 1;
     background-color: var(--secondary-bgColor);
     transition: background-color 0.5s;
     display: flex;
@@ -23,17 +21,26 @@ body {
     overflow-x: hidden;
 }
 
+#rooms_container {
+    flex-grow: 1;
+}
+
+#left_content::-webkit-scrollbar, #rooms_container::-webkit-scrollbar {
+    display: none;
+}
+
 /* Center (Messages Display and Input Message) Container*/
 #middle_content {
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
     margin: 0;
-    width: 100%;
+    width: 50%;
 }
 
 #display_messages_container {
-    min-width: 400px;
-    flex-grow: 30;
+    /*min-width: 400px;*/
+    flex-basis: 100%;
     display: flex;
     flex-direction: column;
     overflow: auto;
@@ -44,8 +51,7 @@ body {
     box-shadow: 5px 0px 10px var(--bg-color);
     transition: background-color 0.5s, box-shadow 0.5s;
     z-index: 1;
-    flex-grow: 1;
-    padding: 1em;
+    padding: 5px 1em;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -57,12 +63,11 @@ body {
     width: 15em;
     z-index: 2;
     min-width: 165px;
-    height: 100%;
+    padding-top: 1em;
     background-color: var(--secondary-bgColor);
     transition: background-color 0.5s;
-    display: flex;
-    flex-direction: column;
     overflow: auto;
+    box-sizing: border-box;
 }
 
 
@@ -109,23 +114,19 @@ body {
 /* transition getting smaller to bigger*/
 @-webkit-keyframes modalpop {
     from {
-        width: 15em;
-        height: 18em;
+        transform: scale(0, 0);
     }
     to {
-        width: 20em;
-        height: 24em;
+        transform: scale(1, 1);
     }
 }
 
 @keyframes modalpop {
     from {
-        width: 15em;
-        height: 18em
+        transform: scale(0, 0);
     }
     to {
-        width: 20em;
-        height: 24em;
+        transform: scale(1, 1);
     }
 }
 
@@ -154,12 +155,31 @@ body {
     height: 75%;
 }
 
+.modal_body form {
+    display: flex;
+}
+
+#room_icon_modal form {
+    margin: 1em;
+}
+
+#room_icon_preview {
+    background-color: #626262;
+}
+
+#header-title {
+    text-align: center;
+    color: var(--font-color);
+    font-size: 0.4em;
+}
+
 .modal_content {
     box-sizing: border-box;
     position: relative;
-    padding: 20px;
+    padding: 1.2em;
     width: 100%;
     height: 100%;
+    overflow: hidden;
     /*width: 20em;
     height: 24em;*/
     background-color: var(--modal-color);
@@ -168,14 +188,15 @@ body {
     transition: background-color 0.5s, border 0.5s;
 
     -webkit-animation-name: modalpop;
-    -webkit-animation-duration: 0.2s;
+    -webkit-animation-duration: 0.4s;
     animation-name: modalpop;
-    animation-duration: 0.2s;
+    animation-duration: 0.4s;
 }
 
 #user_modal {
+    align-items: center;
+    justify-content: center;
     width: 30%;
-    height: 40%;
 }
 
 #drop_overlay {
@@ -261,4 +282,190 @@ body {
 
 .room-link:hover {
     cursor: pointer;
+}
+
+#head-banner {
+    display: none;
+    background-color: var(--secondary-bgColor);
+    box-shadow: 0px 5px 10px #444;
+    z-index: 3;
+}
+
+.material-icons {
+    display: block;
+    font-size: 0.8em !important;
+    padding: 0.2em;
+    color: var(--bg-color);
+    text-shadow: 0 0 10px #000;
+    box-sizing: border-box;
+}
+
+.message_body {
+    display: flex;
+    flex-direction: column;
+}
+
+@-webkit-keyframes notif-anim {
+    0% { box-shadow: 0px 0px 5px #fff; }
+    50% { box-shadow: 0px 0px 5px 2px #fff; }
+    100% { box-shadow: 0px 0px 5px #fff; }
+}
+
+@keyframes notif-anim {
+    0% { box-shadow: 0px 0px 5px #fff; }
+    50% { box-shadow: 0px 0px 5px 2px #fff; }
+    100% { box-shadow: 0px 0px 5px #fff; }
+}
+
+.badge {
+    display: none;
+    position: absolute;
+    height: 0.6em;
+    width: 0.6em;
+    top: -0em;
+    right: -0em;
+    border-radius: 50%;
+    background: #ff8910;
+    color: white;
+    border: 1px solid #fff;
+    box-shadow: 0px 0px 5px #fff;
+    -webkit-animation-name: notif-anim;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-iteration-count: infinite;
+    animation-name: notif-anim;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+
+#right-wrapper {
+    display: flex;
+    min-height: 100%;
+    flex-direction: column;
+}
+
+/* Define styling rules for mobile phones (Really just whenever the width is less than the height). */
+@media screen and (max-aspect-ratio: 5/8), (max-device-width: 768px) and (orientation: portrait) {
+    #head-banner {
+        display: flex;
+        font-size: 4em;
+        align-items: center;
+        justify-content: center;
+        flex-grow: 0;
+    }
+
+    .badge {
+        height: 1.5em !important;
+        width: 1.5em !important;
+    }
+
+    #burger-menu:hover {
+        cursor: pointer;
+    }
+
+    #left_content {
+        height: 100%;
+        z-index: 5;
+        position: fixed !important;
+        transform: translate(-100%, 0);
+        transition: transform 0.4s;
+    }
+
+    #right_content {
+        height: 100%;
+        right: 0;
+        z-index: 5;
+        font-size: 2.5em;
+        position: fixed !important;
+        transform: translate(100%, 0);
+        transition: transform 0.4s;
+        box-sizing: border-box;
+    }
+
+    #middle_content {
+        font-size: 1.6em !important;
+    }
+
+    .room, #new_room {
+        height: 6em !important;
+        width: 6em !important;
+        margin: 2em !important;
+    }
+
+    span.tooltiptext {
+        font-size: 2.5em;
+        max-width: 50%;
+        padding: 10px;
+    }
+
+    .tooltiptext::after {
+        margin-top: -10px !important;
+        border-width: 10px !important;
+        left: 0;
+        transform: translate(-110%, 0);
+        right: unset !important;
+    }
+
+    #bottom_input {
+        display: -webkit-box !important;
+        -webkit-justify-content: center;
+        -webkit-box-align: center;
+        margin-bottom: 0.5em;
+    }
+
+    #bottom_input > #file_icon_container {
+        float: left;
+    }
+
+    span.textarea {
+        width: 84% !important;
+        padding-right: 10px;
+        font-size: 1.5em !important;
+    }
+
+    #input_message_container {
+        display: flex;
+        display: -webkit-box !important;
+        -webkit-box-orient: vertical;
+        /*flex-direction: column;*/
+        /*-webkit-flex-direction: column !important;*/
+        -webkit-justify-content: center;
+        -webkit-box-align: start;
+        max-height: 60vh !important;
+    }
+
+    .modal {
+        font-size: 2.4em !important;
+        width: 90% !important;
+    }
+
+    .modal input {
+        padding: 0.2em;
+        font-size: 1em;
+    }
+
+    .message_body {
+        font-size: 1.5em;
+    }
+
+    .close {
+        font-size: 3em !important;
+    }
+
+    #menu {
+        font-size: 3em;
+    }
+
+    #user_modal .modal_content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        max-height: 80%;
+        overflow: auto;
+    }
+
+    #user_modal .avatar {
+        float: none;
+    }
+
 }

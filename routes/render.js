@@ -2,7 +2,7 @@ const config = require("../config.json");
 const {User} = require("../conf/mongo_conf");
 const userdb = require("../db/userdb");
 
-var allowed;
+let allowed;
 
 exports.index = (req, res) => {
     res.render("index", {
@@ -54,7 +54,8 @@ exports.rooms = (req, res) => {
                 // Other accounts should be able to be created using the sign up page.
                 username: user.username,
                 avatar: user.avatar,
-                theme: user.theme
+                theme: user.theme,
+                id: user._id 
             });
         }
     );
@@ -63,6 +64,7 @@ exports.rooms = (req, res) => {
 exports.checkAccess = (req, res) => {
     if (req.body.username == "" || req.body.password == null) {
         res.redirect("/login?invalid");
+        return;
     }
 
     let userName = req.body.username;
@@ -87,7 +89,7 @@ exports.checkAccess = (req, res) => {
             theme: req.body.theme
         };
         allowed = userName;
-        res.redirect("/room");
+        res.redirect("/app");
     });
 };
 
@@ -98,5 +100,14 @@ exports.logout = (req, res) => {
         } else {
             res.redirect("/");
         }
+    });
+};
+
+exports.delete = function (req, res) {
+    userdb.deleteUser(req.params.id, (err, user) => {
+        if(err) return console.error(err);
+        console.log("Deleted user: " + user.username);
+        req.session.destroy();
+        res.json({success: true});
     });
 };

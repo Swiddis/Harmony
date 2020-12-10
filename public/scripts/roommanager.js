@@ -18,6 +18,8 @@ let prev_sender = undefined;
 let prev_timestamp = -1000;
 const FIVE_MINS = 5 * 60 * 1000;
 
+let USER;
+
 const PLACEHOLDER = document.createElement("div");
 PLACEHOLDER.innerHTML = "<span class='message_box'><span class='message'>No messages yet...</span></span>";
 
@@ -37,6 +39,11 @@ async function fetchUser(username) {
 
 //Does not include messages
 async function fetchRoomData(roomid) {
+    for (let room of USER.rooms) {
+        if (room.room_id == roomid)
+            return room;
+    }
+
     let response = await fetch(`/room/${roomid}`);
     let data = await response.text();
     return JSON.parse(data).data;
@@ -48,16 +55,71 @@ async function fetchRoomMessages(roomid) {
     return JSON.parse(data).data;
 }
 
-window.onload = function () {
+let activeNotif;
+const sendNotification = (data) => {
+    let notify = () => {
+
+        if (data.room_id != currentRoomId || !document.hasFocus()) { //Only send notification if in different room.
+
+            let notification = new Notification(data.title, {
+                icon: data.icon,
+                body: data.body,
+                silent: true
+            });
+            activeNotif = notification;
+
+            notification.onclick = () => {
+                window.focus();
+                renderRoomContent(data.room_id);
+            };
+
+            setTimeout(notification.close.bind(notification), 10000);
+
+        }
+
+    };
+
+    if (!("Notification" in window)) { //Browser supports notifications
+    } else {
+        if (Notification.permission === "granted") { //Notifications allowed
+            //Build notification
+            notify();
+        } else if (Notification.permission !== "denied") { //Not denied, but not granted yet.
+            Notification.requestPermission().then(result => {
+                notify();
+            });
+        }
+    }
+
+    //Regardless, we'll play sound here.
+    let audio = document.getElementById("notif");
+    audio.volume = 0.5;
+    audio.play();
+};
+document.onvisibilitychange = evt => {
+    if (activeNotif)
+        activeNotif.close();
+};
+
+window.onload = async function () {
     fetchUser(username).then(function (user) {
-        console.log(user);
+        USER = user;
         if (user.joined_rooms.length > 0) {
-            renderRoomList();
+            renderRoomList(user.rooms);
             //Currently when first loading in, will just load the first room in the list
-            console.log("JOINED_ROOMS:" + user.joined_rooms[0]);
             renderRoomContent(user.joined_rooms[0]);
         }
     });
+};
+
+const loadImages = () => {
+    let elms = document.querySelectorAll("img[lazysrc]");
+    if (elms) {
+        elms.forEach(elm => {
+            elm.src = elm.getAttribute("lazysrc");
+            elm.removeAttribute("lazysrc");
+        });
+    }
 };
 
 const socket = io.connect(document.location.host, {
@@ -86,7 +148,6 @@ const sendMessage = () => {
             alert("You're message is too long! Max of 2000 characters");
             return;
         }
-        console.log("Sending message: " + message_box.innerText);
         socket.emit("message", {
             username: username,
             message: message_box.innerText,
@@ -101,14 +162,14 @@ const sendMessage = () => {
 };
 
 const sendFile = (callback) => {
-    var form = document.forms.namedItem("send_media");
-    var formData = new FormData(form);
+    let form = document.forms.namedItem("send_media");
+    let formData = new FormData(form);
 
     formData.append("sender", username);
     formData.append("room_id", currentRoomId);
 
     displayLoad();
-    var request = new XMLHttpRequest();
+    let request = new XMLHttpRequest();
     request.open("POST", "/media");
     request.onload = function () {
         console.log(request.status);
@@ -227,17 +288,18 @@ const openUserInfo = user => {
                 content.innerHTML += "<div class='room-link'>No mutual rooms</div>";
 
             document.getElementById("modal_background").style.display = "flex";
-            modal.style.display = "block";
+            modal.style.display = "flex";
             document.getElementById("modal_background").append(modal);
             hideLoad();
         });
 };
 
 socket.on("message", (msg) => {
-    console.log(msg);
     //for now if msg recieved is from currentroomid display
     if (msg.nickname) {
         let set = false;
+        if(!nicknames)
+            nicknames = [];
         for (let obj of nicknames) {
             if (obj.name == msg.username) {
                 obj.nick = msg.nickname;
@@ -249,23 +311,35 @@ socket.on("message", (msg) => {
         }
     }
 
-    if (msg.room_id === currentRoomId) {
-        // messages_container.innerHTML += formatRoomMessage(
-        //     msg.avatar,
-        //     msg.username,
-        //     msg.message,
-        //     msg.is_file,
-        //     msg.timestamp
-        // );
-        renderGroupedMessages(msg);
+    if (msg.room_id && joined_rooms.includes(msg.room_id)) {
+        if (msg.room_id === currentRoomId) {
+            // messages_container.innerHTML += formatRoomMessage(
+            //     msg.avatar,
+            //     msg.username,
+            //     msg.message,
+            //     msg.is_file,
+            //     msg.timestamp
+            // );
+            renderGroupedMessages(msg);
+            loadImages();
+            let child = messages_container.lastChild;
+            let bounds = messages_container.scrollHeight - child.scrollHeight - messages_container.getBoundingClientRect().height - 150;
+            if (msg.username == username || messages_container.scrollTop > bounds)
+                child.scrollIntoView({behavior: "smooth", block: "start"});
+        } else {
+            if (document.getElementById(msg.room_id))
+                document.getElementById(msg.room_id).getElementsByClassName("badge")[0]
+                    .style.display = "block";
+        }
 
         if (msg.username != username) {
-            let notif = document.getElementById("notif");
-            notif.volume = 0.5;
-            notif.play();
+            sendNotification({
+                title: msg.username + " - " + room_titles[msg.room_id],
+                icon: msg.avatar,
+                body: msg.message,
+                room_id: msg.room_id
+            });
         }
-        //TODO make scroll to bottom every message only when already scrolled down
-        messages_container.scrollTop = messages_container.scrollHeight;
     }
 });
 
@@ -282,6 +356,11 @@ const createRoom = () => {
     const room_id = document.getElementById("create_id").value;
     const room_title = document.getElementById("create_title").value;
     const password = document.getElementById("create_password").value;
+
+    if (room_id.length > 40 || room_title.length > 40) {
+        alert("Title or ID too long! (>40 characters)");
+        return;
+    }
 
     const room = {
         room_id: room_id,
@@ -380,14 +459,18 @@ const formatImage = message => {
         ret += `<a href='${fileStr[0]}' download='${fileStr[1]}'>`;
     }
     if (isImage) {
-        ret += `<img src='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image' onclick="displayViewImageModal('${fileStr[0]}', '${fileStr[1]}')"/>`;
+        ret += `<img lazysrc='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image' onclick="displayViewImageModal('${fileStr[0]}', '${fileStr[1]}')"/>`;
     } else {
-        ret += `<img src='/images/media.png' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/><div>${fileStr[1]}</div>`;
+        ret += `<img lazysrc='/images/media.png' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/><div>${fileStr[1]}</div>`;
     }
     if (!isImage) {
         ret += `</a>`;
     }
     return ret;
+};
+
+const escapeRegex = str => {
+    return str.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
 };
 
 //Render Functions
@@ -402,7 +485,7 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
         formattedMessage =
             "<span class='message_box'>" +
             `<div onclick='openUserInfo("${username}")' class='msgAvatar'><span class='avatar'><img onerror="loadDefault(this)" src="${avatar}" alt="${username}_avatar"/></span></div>` +
-            `<span onclick='openUserInfo("${username}")' class='name'>` +
+            `<div class='message_body'><span onclick='openUserInfo("${username}")' class='name'>` +
             name +
             "</span>" +
             "<span class='message'>";
@@ -413,12 +496,39 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
             (now.toLocaleDateString() != date.toLocaleDateString() ? date.toLocaleDateString() + "<br>" : "") +
             date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) +
             "</div>" +
-            "</span></span>";
+            "</span></div></span>";
     } else {
+        //CURRENTLY WORKING HERE
+        if (hasUrl(message)) {
+            base_urls = getAllUrls(message);
+            let urls = [];
+            //Remove duplicate urls (cause will change all instances for each url)
+            base_urls.forEach((url) => {
+                if (!urls.includes(url)) {
+                    urls.push(url);
+                }
+            });
+
+            if (urls != null) {
+                let newVideos = "";
+                urls.forEach(url => {
+                    let newMsg = `<a href='${url}' target="_blank">${url}</a>`;
+                    //Need to change all rather than first instance
+                    if (isYoutubeVideo(url)) {
+                        let videoId = getYoutubeVideoId(url);
+                        newVideos += `<br><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                    }
+                    let regex = new RegExp(escapeRegex(url), "g");
+                    message = message.replace(regex, newMsg);
+                });
+                message += newVideos;
+            }
+        }
+
         formattedMessage =
             "<span class='message_box'>" +
             `<div onclick='openUserInfo("${username}")' class='msgAvatar'><span class='avatar'><img onerror="loadDefault(this)" src="${avatar}" alt="${username}_avatar"/></span></div>` +
-            `<span onclick='openUserInfo("${username}")' class='name'>` +
+            `<div class='message_body'><span onclick='openUserInfo("${username}")' class='name'>` +
             name +
             "</span>" +
             "<span class='message'>" +
@@ -428,7 +538,7 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
             date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'}) +
             "</div>" +
             "</span>" +
-            "</span>";
+            "</span></div>";
     }
 
     return formattedMessage;
@@ -452,6 +562,33 @@ const formatRoomMessagePartial = (message, isFile, timestamp) => {
             "</div>" +
             "</span>";
     } else {
+        if (hasUrl(message)) {
+            base_urls = getAllUrls(message);
+            let urls = [];
+            //Remove duplicate urls (cause will change all instances for each url)
+            base_urls.forEach((url) => {
+                if (!urls.includes(url)) {
+                    urls.push(url);
+                }
+            });
+
+            if (urls != null) {
+                let newVideos = "";
+                urls.forEach(url => {
+                    console.log(url);
+                    let newMsg = `<a href='${url}' target="_blank">${url}</a>`;
+                    //Need to change all rather than first instance
+                    if (isYoutubeVideo(url)) {
+                        let videoId = getYoutubeVideoId(url);
+                        newVideos += `<br><iframe width="560" height="315" style="margin-top:0.8em" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                    }
+                    let regex = new RegExp(escapeRegex(url), "g");
+                    message = message.replace(regex, newMsg);
+                });
+                message += newVideos;
+            }
+        }
+
         formattedMessage +=
             "<span class='message'>" +
             message +
@@ -473,17 +610,21 @@ const renderGroupedMessages = msg => {
         msg.sender = msg.username;
     if (!messages_container.lastChild || msg.sender != prev_sender || Math.abs(new Date(msg.timestamp) - prev_timestamp) > FIVE_MINS) {
         prev_sender = msg.sender;
-        messages_container.innerHTML += formatRoomMessage(
+
+        let formatted = formatRoomMessage(
             msg.avatar,
             msg.sender,
             msg.content ? msg.content : msg.message,
             msg.is_file,
             msg.timestamp
         );
+        let elm = document.createElement("div");
+        elm.innerHTML = formatted;
+        messages_container.append(elm.firstChild);
     } else {
         //Let's double up messages a bit so it's not as spread out.
         // Just with an extra line break between.
-        let prev_message = messages_container.lastChild;
+        let prev_message = messages_container.lastChild.lastChild;
         prev_message.innerHTML += formatRoomMessagePartial(
             msg.content ? msg.content : msg.message,
             msg.is_file,
@@ -493,20 +634,21 @@ const renderGroupedMessages = msg => {
     prev_timestamp = new Date(msg.timestamp);
 };
 
-const renderRoomContent = (roomid, forceRender = false) => {
+const renderRoomContent = async (roomid, forceRender = false) => {
     //So the room doesn't rerender the same room if clicked again
     if (currentRoomId === roomid && !forceRender) {
         return;
     }
 
     displayLoad();
-    console.log("RENDERING ROOM: " + roomid);
     messages_container.innerHTML = "";
 
     fetchRoomData(roomid).then(function (room) {
         if (!room) return;
         nicknames = room.nicknames;
         //RoomName Label (Right bar)
+        document.title = "Harmony \u2022 " + room.room_title;
+        document.getElementById("header-title").innerText = room.room_title;
         document.getElementById("roomname_label").innerHTML = room.room_title;
         //Nickname User Label (Right bar)
         let nickname = getNickname(username);
@@ -527,17 +669,48 @@ const renderRoomContent = (roomid, forceRender = false) => {
                 let msg = messages[i];
                 renderGroupedMessages(msg);
             }
+
+            //Attempts to wait until all imgs either rendered or errored out before scrolling.
+            let imgs = messages_container.querySelectorAll(".message img");
+
+            let incr = () => {
+                messages_container.lastChild.scrollIntoView({behavior: "smooth", block: "start"});
+            }
+
+            let counted = [];
+            for (let img of imgs) {
+                if (img.complete) {
+                    incr();
+                }
+                img.onload = () => {
+                    incr();
+                };
+                img.addEventListener("error", () => {
+                    if (!img.onerror) {
+                        if (!counted.includes(img)) {
+                            counted.push(img);
+                            incr();
+                        }
+                    }
+                });
+            }
+
+            if (document.getElementById(roomid))
+                document.getElementById(roomid).getElementsByClassName("badge")[0]
+                    .style.display = "";
+            messages_container.lastChild.scrollIntoView({block: "start"});
+            loadImages();
             hideLoad();
         });
     });
 };
 
-const showRoomTip = (id) => {
+const showRoomTip = (parent, id) => {
     tipId = id + "_tip";
     let tip = document.getElementById(tipId);
     tip.style.display = "block";
     let tipRect = tip.getBoundingClientRect();
-    let rect = tip.parentElement.getBoundingClientRect()
+    let rect = parent.getBoundingClientRect();
     tip.style.top = (rect.y + (rect.height / 2) - (tipRect.height / 2)) + "px";
     tip.style.left = rect.left + rect.width + 10 + "px";
     tip.style.pointerEvents = "none";
@@ -548,82 +721,136 @@ const hideRoomTip = (id) => {
     tip.style.display = "none";
 };
 
-const renderRoomList = () => {
-    displayLoad();
-    fetchUser(username).then(function (user) {
-        console.log(user);
-        joined_rooms = user.joined_rooms;
-        room_titles = {};
-        let elements = [];
+const renderRoomList = async (roomList) => {
 
-        let buildMenu = elements => {
-            elements.sort((a, b) => {
-                let one = room_titles[a.id];
-                let two = room_titles[b.id];
-                if (one < two) return -1;
-                else if (two < one) return 1;
-                else return 0;
-            });
-            rooms_container.innerHTML = "";
-            elements.forEach(roomElm => rooms_container.appendChild(roomElm));
-            hideLoad();
+    let user = USER;
+    let elements = [];
+    let iterated = 0;
+
+    const buildMenu = elements => {
+        elements.sort((a, b) => {
+            let one = room_titles[a.id];
+            let two = room_titles[b.id];
+            if (one < two) return -1;
+            else if (two < one) return 1;
+            else return 0;
+        });
+        rooms_container.innerHTML = "";
+        elements.forEach(roomElm => rooms_container.appendChild(roomElm));
+    };
+
+    const buildRoomMenuItem = room => {
+        iterated++;
+        if (!room) return;
+
+        room_titles[room.room_id] = room.room_title;
+
+        let touchTimeout;
+        let startTouch = (evt) => {
+            touchTimeout = window.setTimeout(function () {
+                hideRoomTip(user.joined_rooms[i]);
+                menu.style.display = "block";
+                menu.style.top = evt.touches[0].screenY + "px";
+                menu.style.left = evt.touches[0].screenX + "px";
+                evt.preventDefault();
+                currentContextRoomId = roomElm.id;
+            }.bind(this), 500);
+        };
+
+        let cancelTouch = () => {
+            hideRoomTip(room.room_id);
+            if (touchTimeout)
+                window.clearTimeout(touchTimeout);
         }
 
-        let iterated = 0;
-        for (let i = 0; i < joined_rooms.length; i++) {
-            let rm = joined_rooms[i];
+        let roomElm = document.createElement("span");
+        roomElm.className = "room";
+        roomElm.id = room.room_id;
+        roomElm.addEventListener("click",
+            evt => {
+                renderRoomContent(room.room_id);
+                hideRoomTip(room.room_id);
+            });
+        roomElm.addEventListener("mouseover", evt => {
+            if (!mobileCheck()) //Don't show the tooltip on hover on mobile.
+                showRoomTip(roomElm, room.room_id);
+        });
+        roomElm.addEventListener("mouseout",
+            evt => hideRoomTip(room.room_id));
 
-            fetchRoomData(rm).then(function (room) {
-                iterated++;
-                if (!room) return;
-                room_titles[room.room_id] = room.room_title;
+        roomElm.ontouchstart = //Use touch events on mobile!
+            evt => {
+                startTouch(evt);
+                showRoomTip(roomElm, room.room_id);
+            };
+        roomElm.addEventListener("touchend", cancelTouch);
+        roomElm.addEventListener("touchcancel", cancelTouch);
 
-                let roomElm = document.createElement("span");
-                roomElm.className = "room";
-                roomElm.id = user.joined_rooms[i];
-                roomElm.setAttribute("onclick", `renderRoomContent('${user.joined_rooms[i]}')`);
-                roomElm.setAttribute("onmouseover", `showRoomTip('${user.joined_rooms[i]}')`);
-                roomElm.setAttribute("onmouseout", `hideRoomTip('${user.joined_rooms[i]}')`);
+        roomElm.addEventListener("contextmenu", function (e) {
+            menu.style.display = "block";
+            menu.style.top = e.y + "px";
+            menu.style.left = e.x + "px";
+            e.preventDefault();
+            currentContextRoomId = roomElm.id;
+        });
 
-                //WORKING HERE
-                roomElm.addEventListener("contextmenu", function (e) {
-                    menu.style.display = "block";
-                    menu.style.top = e.y + "px";
-                    menu.style.left = e.x + "px";
-                    e.preventDefault();
-                    currentContextRoomId = roomElm.id;
+        let badge = document.createElement("span");
+        badge.classList = ["badge"];
+        roomElm.append(badge);
+
+
+        let url;
+        if (room.roomAvatar) {
+            url = room.roomAvatar;
+        } else {
+            url = "./images/room.png";
+        }
+        roomElm.style.backgroundImage = `url('${url}')`;
+        const checkImage = async add => {
+            await fetch(add)
+                .then(response => {
+                    if (response.status == 404) {
+                        roomElm.style.backgroundImage = "url('/images/user_icon_green.png')";
+                    }
                 });
-
-                let img = document.createElement("img");
-                img.onerror = () => loadDefaultRoom({target: img});
-                if (room.roomAvatar) {
-                    img.src = room.roomAvatar;
-                } else {
-                    img.src = "./images/room.png";
-                }
-                img.style = "margin: 0 1px; width: 50px; height: 50px; object-fit: cover; background-color: var(--modal-color);";
+        };
+        checkImage(url).then();
 
 
-                let tip = document.createElement("span");
-                tip.id = user.joined_rooms[i] + "_tip";
-                tip.className = "tooltiptext";
-                tip.innerText = room.room_title;
+        let tip = document.createElement("span");
+        tip.id = room.room_id + "_tip";
+        tip.className = "tooltiptext";
+        tip.innerText = room.room_title;
 
-                roomElm.appendChild(img);
-                roomElm.appendChild(tip);
-                elements.push(roomElm);
-                if (iterated == joined_rooms.length)
-                    buildMenu(elements);
-
-                // rooms_container.innerHTML +=
-                //     `<span class='room' style='text-align:center' id='${user.joined_rooms[i]}' onclick='renderRoomContent("${user.joined_rooms[i]}");' onmouseover='showRoomTip("${user.joined_rooms[i]}");' onmouseout='hideRoomTip("${user.joined_rooms[i]}");'>` +
-                //     `<img onerror="loadDefaultRoom(this)" src=./images/room.png style='margin:0 1px; width:50px; height:50px;'>` +
-                //     `<span id='${user.joined_rooms[i]}_tip' class='tooltiptext'>${room.room_title}</span>` +
-                //     `</span>`;
-            });
+        document.getElementById("tooltips").appendChild(tip);
+        elements.push(roomElm);
+        if (iterated == joined_rooms.length) {
+            buildMenu(elements);
         }
-    });
+    };
+
+    if (roomList) {
+        joined_rooms = roomList.map(room => room.room_id);
+        roomList.forEach(room => buildRoomMenuItem(room));
+    } else {
+        fetchUser(username).then(function (us) {
+            console.log(us);
+            USER = us;
+            user = us;
+            joined_rooms = us.joined_rooms;
+            room_titles = {};
+
+            for (let i = 0; i < joined_rooms.length; i++) {
+                let rm = joined_rooms[i];
+
+                fetchRoomData(rm).then(function (room) {
+                    buildRoomMenuItem(room);
+                });
+            }
+        });
+    }
 };
+
 const makeRoomClickable = (roomElementId) => {
     document
         .getElementById(roomElementId)
@@ -636,6 +863,7 @@ const updateNickname = () => {
     let name = document.getElementById("change_nickname").value;
     if (name.length > 20) {
         //TODO Display Nickname too long
+        alert("Nickname too long!");
         console.log("Nickname too long!");
         return;
     }
@@ -686,9 +914,36 @@ const splitFileString = (content) => {
     return content.split("::");
 };
 
+const hasUrl = (message) => {
+    let urlRegex = /https?:\/\/.{2,}/;
+    return urlRegex.test(message);
+};
+
+const getAllUrls = (message) => {
+    let allUrls = [];
+    let urlRegex = /(https?:\/\/\S*)/ig;
+    allUrls = message.match(urlRegex);
+    return allUrls;
+};
+
+const isYoutubeVideo = (url) => {
+    //need either form at:
+    //youtube.com/watch?v=Us6VsyGsC4o
+    //youtu.be/Us6VsyGsC4o
+    let youtubeRegex = /(youtube\.com\/watch\?v=.{11})|(youtu\.be\/.{11})/;
+    return youtubeRegex.test(url);
+};
+
+const getYoutubeVideoId = (url) => {
+    //id is always 11 characters long
+    let youtubeRegex = /(youtube\.com\/watch\?v=.{11})|(youtu\.be\/.{11})/;
+    let match = url.match(youtubeRegex);
+    return match[0].substring(match[0].length - 11);
+};
+
 //TODO Come back to make downloading files more fancy
 const downloadFile = (file) => {
-    var element = document.createElement("a");
+    let element = document.createElement("a");
 };
 
 // Change Avatar\
@@ -698,18 +953,38 @@ const myAvatars = () => {
     return theAvatar;
 };
 
-const tryAvatarBtn = document.getElementById("tryAvatar");
-tryAvatarBtn.addEventListener("click", function (evt) {
+document.getElementById("avatarSelection").onchange = evt => {
+    let upload = document.getElementById("avatar_upload");
+    upload.value = "";
+    previewAvatar();
+}
+
+const previewAvatar = evt => {
+    let preview = document.getElementById("changeAvatar");
+    let sel = myAvatars();
+    if (sel != "0") {
+        preview.src = "/images/" + myAvatars() + ".jpg";
+    } else {
+        let upload = document.getElementById("avatar_upload");
+        let reader = new FileReader();
+        reader.onload = e => preview.src = e.target.result;
+        // read the image file as a data URL.
+        reader.readAsDataURL(upload.files[0]);
+    }
+
+};
+
+const useStaticAvatar = (evt) => {
     evt.preventDefault();
     const avatar = document.getElementById("changeAvatar");
-    const url = `./images/${myAvatars()}.jpg`;
-    console.log("Avatar: " + url);
+    let av = myAvatars();
+    if (av == 0) return;
+    const url = `./images/${av}.jpg`;
     avatar.src = url;
 
     let data = {
         avatar: url
     };
-    console.log(data);
     fetch(`/user/${username}`, {
         method: "PATCH",
         headers: {
@@ -718,9 +993,15 @@ tryAvatarBtn.addEventListener("click", function (evt) {
         body: JSON.stringify(data)
     }).then(response => {
         console.log(response);
+        document.getElementById("avatarSelection").selectedIndex = 0;
+        document.getElementById("avatarImg").src = `./images/${av}.jpg`
+        closeModals();
         //TODO Tell the user it was a success
     });
-});
+};
+
+// const tryAvatarBtn = document.getElementById("tryAvatar");
+// tryAvatarBtn.addEventListener("click", useStaticAvatar);
 
 const uploadAvatar = () => {
     let form = document.forms.namedItem("choose_avatar");
@@ -753,6 +1034,7 @@ const uploadAvatar = () => {
                     avatar: url
                 })
             }).then(response => {
+                document.getElementById("avatar_upload").value = "";
                 closeModals();
                 hideLoad();
             })
@@ -843,14 +1125,15 @@ const changePassword = () => {
 
 const validateFileSize = evt => {
     let elm = evt.target; //This should be the <input type="file"> element
-    console.log(elm.files);
     let file = elm.files[0];
     if (file) {
         if (file.size >= 104857600) {
             elm.value = "";
             alert("That file is too large (>100MB)");
+            return false;
         }
     }
+    return true;
 };
 
 const sendToggle = (username, theme) => {
@@ -859,9 +1142,33 @@ const sendToggle = (username, theme) => {
     }).then();
 }
 
-document.getElementById("useAvatar").onclick = uploadAvatar;
-document.getElementById("avatar_upload").onchange = validateFileSize;
-document.getElementById("room_icon_upload").onchange = validateFileSize;
+document.getElementById("useAvatar").onclick = evt => {
+    let upload = document.getElementById("avatar_upload");
+    let sel = myAvatars();
+    if (upload.files.length > 0) {
+        console.log("Uploading file");
+        uploadAvatar(evt);
+    } else if (sel != 0) {
+        console.log("Using static");
+        useStaticAvatar(evt);
+    }
+}
+document.getElementById("avatar_upload").onchange = evt => {
+    if (validateFileSize(evt)) {
+        document.getElementById("avatarSelection").selectedIndex = 0;
+        previewAvatar();
+    }
+}
+document.getElementById("room_icon_upload").onchange = evt => {
+    if (validateFileSize(evt)) {
+        let upload = evt.target;
+        let preview = document.getElementById("room_icon_preview");
+        let reader = new FileReader();
+        reader.onload = e => preview.src = e.target.result;
+        // read the image file as a data URL.
+        reader.readAsDataURL(upload.files[0]);
+    }
+}
 
 document.getElementById("change_password_button").onclick = changePassword;
 
@@ -898,3 +1205,16 @@ document.getElementById("menu_copy").addEventListener("click", function () {
 });
 
 document.getElementById("leave_room_button").addEventListener("click", leaveRoom);
+
+document.getElementById("delete").onclick = evt => {
+    console.log(`/delete/${username}`);
+    fetch(`/delete/${username}`, {
+        method: "DELETE"
+    }).then(res => {
+        if (res.status == 200) {
+            console.log("Deleted.");
+            console.log(document.location);
+            // location.href = document.location.originalUrl;
+        }
+    });
+};
