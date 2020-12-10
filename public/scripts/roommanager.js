@@ -324,7 +324,7 @@ socket.on("message", (msg) => {
             renderGroupedMessages(msg);
             loadImages();
             let child = messages_container.lastChild;
-            let bounds = messages_container.scrollHeight - child.scrollHeight - messages_container.getBoundingClientRect().height;
+            let bounds = messages_container.scrollHeight - child.scrollHeight - messages_container.getBoundingClientRect().height - 150;
             if (msg.username == username || messages_container.scrollTop > bounds)
                 child.scrollIntoView({behavior: "smooth", block: "start"});
         } else {
