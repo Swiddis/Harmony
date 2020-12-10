@@ -325,7 +325,7 @@ socket.on("message", (msg) => {
             loadImages();
             let child = messages_container.lastChild;
             let bounds = messages_container.scrollHeight - child.scrollHeight - messages_container.getBoundingClientRect().height;
-            if (messages_container.scrollTop > bounds)
+            if (msg.username == username || messages_container.scrollTop > bounds)
                 child.scrollIntoView({behavior: "smooth", block: "end"});
         } else {
             if (document.getElementById(msg.room_id))
