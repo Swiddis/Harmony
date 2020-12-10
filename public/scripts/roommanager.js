@@ -674,7 +674,7 @@ const renderRoomContent = async (roomid, forceRender = false) => {
             let imgs = messages_container.querySelectorAll(".message img");
 
             let incr = () => {
-                messages_container.lastChild.scrollIntoView({behavior: "smooth"});
+                messages_container.lastChild.scrollIntoView({behavior: "smooth", block: "end"});
             }
 
             let counted = [];
