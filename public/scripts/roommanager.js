@@ -324,7 +324,7 @@ socket.on("message", (msg) => {
             loadImages();
             let child = messages_container.lastChild;
             let bounds = messages_container.scrollHeight - child.scrollHeight - messages_container.getBoundingClientRect().height;
-            if (messages_container.scrollTop > bounds)
+            if (msg.username == username || messages_container.scrollTop > bounds)
                 child.scrollIntoView({behavior: "smooth", block: "end"});
         } else {
             if (document.getElementById(msg.room_id))
@@ -671,33 +671,29 @@ const renderRoomContent = async (roomid, forceRender = false) => {
             }
 
             //Attempts to wait until all imgs either rendered or errored out before scrolling.
-            // let count = 0;
-            // let imgs = messages_container.querySelectorAll(".message img");
-            //
-            // let incr = () => {
-            //     // count++;
-            //     // if (count == imgs.length) {
-            //     messages_container.lastChild.scrollIntoView({behavior: "smooth"});
-            //     // }
-            // }
-            //
-            // let counted = [];
-            // for (let img of imgs) {
-            //     if (img.complete) {
-            //         incr();
-            //     }
-            //     img.onload = () => {
-            //         incr();
-            //     };
-            //     img.addEventListener("error", () => {
-            //         if (!img.onerror) {
-            //             if (!counted.includes(img)) {
-            //                 counted.push(img);
-            //                 incr();
-            //             }
-            //         }
-            //     });
-            // }
+            let imgs = messages_container.querySelectorAll(".message img");
+
+            let incr = () => {
+                messages_container.lastChild.scrollIntoView({behavior: "smooth"});
+            }
+
+            let counted = [];
+            for (let img of imgs) {
+                if (img.complete) {
+                    incr();
+                }
+                img.onload = () => {
+                    incr();
+                };
+                img.addEventListener("error", () => {
+                    if (!img.onerror) {
+                        if (!counted.includes(img)) {
+                            counted.push(img);
+                            incr();
+                        }
+                    }
+                });
+            }
 
             if (document.getElementById(roomid))
                 document.getElementById(roomid).getElementsByClassName("badge")[0]
