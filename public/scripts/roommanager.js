@@ -106,8 +106,15 @@ window.onload = async function () {
         USER = user;
         if (user.joined_rooms.length > 0) {
             renderRoomList(user.rooms);
-            //Currently when first loading in, will just load the first room in the list
-            renderRoomContent(user.joined_rooms[0]);
+            const params = new URLSearchParams(window.location.search);
+            const loadRoom = params.get('room');
+            //If room is specified in query parameters, load that one.
+            if (loadRoom && user.joined_rooms.includes(loadRoom)) {
+                renderRoomContent(loadRoom);
+            } else {
+                // just load the first room in the list
+                renderRoomContent(user.joined_rooms[0]);
+            }
         }
     });
 };
@@ -298,7 +305,7 @@ socket.on("message", (msg) => {
     //for now if msg recieved is from currentroomid display
     if (msg.nickname) {
         let set = false;
-        if(!nicknames)
+        if (!nicknames)
             nicknames = [];
         for (let obj of nicknames) {
             if (obj.name == msg.username) {
@@ -699,6 +706,10 @@ const renderRoomContent = async (roomid, forceRender = false) => {
                 document.getElementById(roomid).getElementsByClassName("badge")[0]
                     .style.display = "";
             messages_container.lastChild.scrollIntoView({block: "start"});
+            if (history.pushState) {
+                let history = window.location.origin + window.location.pathname + `?room=${currentRoomId}`;
+                window.history.replaceState({path: history}, document.title, history);
+            }
             loadImages();
             hideLoad();
         });
