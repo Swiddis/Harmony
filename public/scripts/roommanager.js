@@ -319,7 +319,7 @@ socket.on("message", (msg) => {
             //     msg.timestamp
             // );
             renderGroupedMessages(msg);
-            //TODO make scroll to bottom every message only when already scrolled down
+            loadImages();
             let child = messages_container.lastChild;
             let bounds = messages_container.scrollHeight - child.scrollHeight - messages_container.getBoundingClientRect().height;
             if (messages_container.scrollTop > bounds)
