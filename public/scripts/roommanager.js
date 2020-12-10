@@ -460,18 +460,23 @@ const loadDefaultRoom = img => {
 const formatImage = message => {
     //If message is an image (render it inline)
     let isImage = isFileImage(message);
+    let isVideo = isFileVideo(message);
     let fileStr = splitFileString(message);
     let ret = "";
-    if (!isImage) {
-        ret += `<a href='${fileStr[0]}' download='${fileStr[1]}'>`;
-    }
-    if (isImage) {
-        ret += `<img lazysrc='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image' onclick="displayViewImageModal('${fileStr[0]}', '${fileStr[1]}')"/>`;
+    if(isVideo) {
+        ret = `<video controls><source src="${fileStr[0]}" type="video/${fileStr[1].substring(fileStr[1].length - 3)}"></video>`;
     } else {
-        ret += `<img lazysrc='/images/media.png' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/><div>${fileStr[1]}</div>`;
-    }
-    if (!isImage) {
-        ret += `</a>`;
+        if (!isImage) {
+            ret += `<a href='${fileStr[0]}' download='${fileStr[1]}'>`;
+        }
+        if (isImage) {
+            ret += `<img lazysrc='${fileStr[0]}' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image' onclick="displayViewImageModal('${fileStr[0]}', '${fileStr[1]}')"/>`;
+        } else {
+            ret += `<img lazysrc='/images/media.png' alt='${fileStr[1]}' title='${fileStr[1]}' class='message_image'/><div>${fileStr[1]}</div>`;
+        }
+        if (!isImage) {
+            ret += `</a>`;
+        }
     }
     return ret;
 };
@@ -523,7 +528,7 @@ const formatRoomMessage = (avatar, username, message, isFile, timestamp) => {
                     //Need to change all rather than first instance
                     if (isYoutubeVideo(url)) {
                         let videoId = getYoutubeVideoId(url);
-                        newVideos += `<br><iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+                        newVideos += `<br><div class="video-wrapper"><iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
                     }
                     let regex = new RegExp(escapeRegex(url), "g");
                     message = message.replace(regex, newMsg);
@@ -919,6 +924,11 @@ const getNickname = (username) => {
 const isFileImage = (content) => {
     let imageRegex = /.+\.(gif|jpg|jpeg|png)/i;
     return imageRegex.test(content);
+};
+
+const isFileVideo = content => {
+    let vidRegex = /.+\.(mov|mp4)/i;
+    return vidRegex.test(content);
 };
 
 const splitFileString = (content) => {
