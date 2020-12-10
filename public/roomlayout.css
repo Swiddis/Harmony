@@ -343,6 +343,30 @@ body {
     flex-direction: column;
 }
 
+.message video {
+    max-height: 20em;
+    max-width: 95%;
+}
+
+.video-wrapper {
+    position: relative;
+    padding-bottom: 50.9%;
+    height: 0;
+    overflow: hidden;
+    width: 90%;
+    border-left: 0.2em solid #ff8721;
+    margin-left: -10px;
+}
+
+.video-wrapper iframe {
+    padding-left: 10px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
 /* Define styling rules for mobile phones (Really just whenever the width is less than the height). */
 @media screen and (max-aspect-ratio: 5/8), (max-device-width: 768px) and (orientation: portrait) {
     #head-banner {
