@@ -100,6 +100,7 @@ exports.getUser = (username, callback) => {
                         tmp.members = rm.members;
                         tmp.room_title = rm.room_title;
                         tmp.roomAvatar = rm.roomAvatar;
+                        tmp.nicknames = rm.nicknames;
                         list.push(tmp)
                     });
                     user.rooms = list;

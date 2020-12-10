@@ -299,6 +299,8 @@ socket.on("message", (msg) => {
     //for now if msg recieved is from currentroomid display
     if (msg.nickname) {
         let set = false;
+        if(!nicknames)
+            nicknames = [];
         for (let obj of nicknames) {
             if (obj.name == msg.username) {
                 obj.nick = msg.nickname;
