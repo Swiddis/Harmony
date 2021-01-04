@@ -25,7 +25,7 @@ const mongoose = require("mongoose");
 mongoose.Promise = global.Promise;
 
 mongoose.connect(
-    "mongodb://admin:Ydp4ZCmttqp2zPj@harmonyclient.xyz/data?authSource=admin&retryWrites=true&w=majority",
+    "mongodb+srv://admin:Ydp4ZCmttqp2zPj@harmony-main.784cu.mongodb.net/data?authSource=admin&retryWrites=true&w=majority",
     {
         useUnifiedTopology: true,
         useNewUrlParser: true,
